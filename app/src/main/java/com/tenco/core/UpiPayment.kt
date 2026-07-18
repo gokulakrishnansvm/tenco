@@ -29,6 +29,17 @@ object UpiPayment {
         // createChooser never throws ActivityNotFoundException even when no app can handle the
         // intent, so explicitly check for a handler first.
         if (intent.resolveActivity(context.packageManager) == null) return false
+        return launchChooser(context, intent)
+    }
+
+    /** Launches an explicit UPI deep link string (e.g. one returned by the backend intent). */
+    fun launchLink(context: Context, upiLink: String): Boolean {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(upiLink))
+        if (intent.resolveActivity(context.packageManager) == null) return false
+        return launchChooser(context, intent)
+    }
+
+    private fun launchChooser(context: Context, intent: Intent): Boolean {
         val chooser = Intent.createChooser(intent, "Pay with")
         return try {
             chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

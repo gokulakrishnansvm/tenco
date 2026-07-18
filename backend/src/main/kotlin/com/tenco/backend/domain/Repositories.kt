@@ -39,3 +39,8 @@ interface PaymentRepository : JpaRepository<Payment, String> {
     fun findByGatewayOrderId(orderId: String): Payment?
     fun findByUpdatedAtGreaterThan(cursor: Long): List<Payment>
 }
+
+interface DeviceTokenRepository : JpaRepository<DeviceToken, String> {
+    fun findByUserId(userId: String): List<DeviceToken>
+    fun findByToken(token: String): DeviceToken?
+}

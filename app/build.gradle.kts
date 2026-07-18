@@ -85,4 +85,9 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.kotlinx.serialization.json)
+
+    // Firebase Cloud Messaging (push). To enable live: add app/google-services.json and apply
+    // the com.google.gms.google-services plugin (see README, Phase 3c).
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-messaging")
 }

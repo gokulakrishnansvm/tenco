@@ -24,9 +24,15 @@ import javax.inject.Inject
 @HiltViewModel
 class VendorViewModel @Inject constructor(
     private val repository: TencoRepository,
+    private val api: com.tenco.data.remote.TencoApi,
+    private val syncManager: com.tenco.data.sync.SyncManager,
 ) : ViewModel() {
 
     private val vendorId = MutableStateFlow<String?>(null)
+
+    /** Set when a backend payment intent was created, so the manual confirmation reconciles
+     *  against the same payment id the backend/webhook will update. */
+    private var lastIntentId: String? = null
 
     fun setVendor(id: String) {
         if (id.isNotBlank()) vendorId.value = id
@@ -61,7 +67,30 @@ class VendorViewModel @Inject constructor(
     fun recordPayment(amountPaise: Long, success: Boolean) = viewModelScope.launch {
         val id = vendorId.value ?: return@launch
         val status = if (success) PaymentStatus.COMPLETED else PaymentStatus.FAILED
-        repository.recordPayment(id, amountPaise, PaymentMethod.UPI, status, note = null)
+        // Reuse the backend intent id when present so a later webhook-driven sync reconciles
+        // the same record instead of creating a duplicate.
+        repository.recordPayment(id, amountPaise, PaymentMethod.UPI, status, note = null, id = lastIntentId)
+        lastIntentId = null
+        syncManager.pull() // best-effort: pull authoritative status if the backend is reachable
+    }
+
+    /**
+     * Creates a backend payment intent (Razorpay order + UPI link). Invokes [onResult] with the
+     * backend-provided UPI deep link, or null to fall back to a locally-built UPI link (offline).
+     */
+    fun createBackendIntent(amountPaise: Long, onResult: (String?) -> Unit) {
+        val id = vendorId.value ?: return onResult(null)
+        viewModelScope.launch {
+            val link = try {
+                val intent = api.createPaymentIntent(id, amountPaise)
+                lastIntentId = intent.intentId
+                intent.upiDeepLink
+            } catch (e: Exception) {
+                lastIntentId = null
+                null
+            }
+            onResult(link)
+        }
     }
 
     fun raiseComplaint(reason: String, photoUri: String?) = viewModelScope.launch {

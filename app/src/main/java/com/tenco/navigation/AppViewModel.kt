@@ -14,6 +14,7 @@ class AppViewModel @Inject constructor(
     private val prefs: AppPreferences,
     private val repository: TencoRepository,
     private val syncManager: com.tenco.data.sync.SyncManager,
+    private val pushRegistrar: com.tenco.push.PushRegistrar,
 ) : ViewModel() {
 
     init {
@@ -51,6 +52,7 @@ class AppViewModel @Inject constructor(
     fun chooseSupplier() {
         prefs.role = ROLE_SUPPLIER
         viewModelScope.launch { syncManager.pull() }
+        viewModelScope.launch { pushRegistrar.registerCurrentToken() }
     }
 
     /**
@@ -59,6 +61,7 @@ class AppViewModel @Inject constructor(
      */
     fun chooseVendor(onReady: (String?) -> Unit) {
         prefs.role = ROLE_VENDOR
+        viewModelScope.launch { pushRegistrar.registerCurrentToken() }
         viewModelScope.launch {
             repository.ensureSeeded() // guarantee seed data before the one-shot reads
             syncManager.pull()        // pull backend data (best-effort) before resolving vendor

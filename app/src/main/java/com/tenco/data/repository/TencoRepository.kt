@@ -165,9 +165,9 @@ class TencoRepository @Inject constructor(
         deliveryDao.update(d.copy(status = DeliveryStatus.CONFIRMED, confirmedAt = now()))
     }
 
-    suspend fun recordPayment(vendorId: String, amountPaise: Long, method: String, status: String, note: String?) =
+    suspend fun recordPayment(vendorId: String, amountPaise: Long, method: String, status: String, note: String?, id: String? = null) =
         paymentDao.upsert(
-            PaymentEntity(newId(), vendorId, amountPaise, method, status, upiRef = null, note = note, createdAt = now())
+            PaymentEntity(id ?: newId(), vendorId, amountPaise, method, status, upiRef = null, note = note, createdAt = now())
         )
 
     suspend fun raiseComplaint(vendorId: String, deliveryId: String, reason: String, photoUri: String?) =

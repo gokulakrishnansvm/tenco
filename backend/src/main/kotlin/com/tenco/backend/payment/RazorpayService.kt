@@ -1,26 +1,61 @@
 package com.tenco.backend.payment
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
+import java.util.Base64
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
 @Service
 class RazorpayService(
     @Value("\${tenco.razorpay.key-id}") private val keyId: String,
+    @Value("\${tenco.razorpay.key-secret}") private val keySecret: String,
     @Value("\${tenco.razorpay.webhook-secret}") private val webhookSecret: String,
+    private val mapper: ObjectMapper,
 ) {
+    private val log = LoggerFactory.getLogger(javaClass)
+    private val http = HttpClient.newHttpClient()
+
+    private val useRealApi: Boolean
+        get() = !keyId.contains("dummy") && !keySecret.contains("dummy")
+
     /**
-     * Creates a payment order. In production this calls the Razorpay Orders API
-     * (POST https://api.razorpay.com/v1/orders) with Basic auth (keyId:keySecret).
-     * Here it returns a deterministic stub id so the flow is testable without live keys.
+     * Creates a payment order. With real keys this calls the Razorpay Orders API
+     * (POST https://api.razorpay.com/v1/orders, Basic auth). Without real keys (dev), it
+     * returns a deterministic stub id so the flow is testable offline.
      */
     fun createOrder(amountPaise: Long, receipt: String): String {
-        // TODO(Phase 3): replace with real Razorpay Orders API call.
-        return "order_" + receipt.take(8) + "_" + amountPaise
+        if (!useRealApi) return "order_" + receipt.take(8) + "_" + amountPaise
+        return try {
+            val body = mapper.writeValueAsString(
+                mapOf("amount" to amountPaise, "currency" to "INR", "receipt" to receipt)
+            )
+            val auth = Base64.getEncoder().encodeToString("$keyId:$keySecret".toByteArray())
+            val req = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.razorpay.com/v1/orders"))
+                .header("Authorization", "Basic $auth")
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build()
+            val resp = http.send(req, HttpResponse.BodyHandlers.ofString())
+            if (resp.statusCode() in 200..299) {
+                mapper.readTree(resp.body()).path("id").asText()
+            } else {
+                log.warn("Razorpay order create failed: {} {}", resp.statusCode(), resp.body())
+                "order_fallback_$receipt"
+            }
+        } catch (e: Exception) {
+            log.warn("Razorpay order create error: {}", e.message)
+            "order_fallback_$receipt"
+        }
     }
 
-    /** Builds a UPI deep link for the intent (fallback / display alongside the gateway order). */
     fun upiDeepLink(payeeVpa: String, payeeName: String, amountPaise: Long, note: String): String {
         val amt = String.format("%.2f", amountPaise / 100.0)
         return "upi://pay?pa=$payeeVpa&pn=$payeeName&am=$amt&cu=INR&tn=$note"

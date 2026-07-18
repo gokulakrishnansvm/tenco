@@ -101,3 +101,12 @@ class Payment(
     var createdAt: Long = now(),
     var updatedAt: Long = now(),
 )
+
+@Entity
+@Table(name = "device_tokens", indexes = [Index(columnList = "userId")])
+class DeviceToken(
+    @Id var id: String = newId(),
+    var userId: String = "",
+    var token: String = "",
+    var updatedAt: Long = now(),
+)

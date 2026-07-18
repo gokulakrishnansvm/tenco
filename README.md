@@ -139,14 +139,39 @@ curl -s localhost:8080/api/suppliers/me/dashboard -H "Authorization: Bearer $TOK
 |-------|-------|--------|
 | **P1** | Local-first Android MVP (Compose, Room, i18n, UPI deep link) | ✅ Done |
 | **P2** | Backend: auth (OTP/JWT), REST APIs, delta sync, Razorpay intent + signed webhook | ✅ Done |
-| **P3** | Wire the Android client to the backend (Ktor + WorkManager sync); real Razorpay Orders API + FCM push | ⏳ Next |
+| **P3** | App ↔ backend wiring: OTP login, authenticated sync, backend payment intent; real Razorpay Orders API (with fallback) + FCM push (credential-guarded) | ✅ Done (live keys/creds pending) |
 | **P4** | Voice prompts, advanced reports/export, dispute workflows, analytics | ⏳ Planned |
 
+### Enabling live integrations (Phase 3)
+
+**Real Razorpay** — provide test/live keys; the backend auto-switches from the stub to the real
+Orders API when the keys are not `*dummy*`:
+```bash
+RAZORPAY_KEY_ID=rzp_test_xxx RAZORPAY_KEY_SECRET=xxx RAZORPAY_WEBHOOK_SECRET=xxx \
+java -jar backend/build/libs/tenco-backend-0.1.0.jar
+```
+Point your Razorpay webhook at `POST /webhooks/pg` (events `payment.captured`, `payment.failed`).
+The signature is verified with `RAZORPAY_WEBHOOK_SECRET`.
+
+**FCM push** — the backend logs notifications until credentials are supplied:
+```bash
+TENCO_FCM_CREDENTIALS=/path/to/firebase-service-account.json \
+java -jar backend/build/libs/tenco-backend-0.1.0.jar
+```
+On the **app**, enable FCM by adding `app/google-services.json` and applying the plugin:
+```kotlin
+// settings/root build: classpath "com.google.gms:google-services"
+// app/build.gradle.kts:
+plugins { id("com.google.gms.google-services") }
+```
+The `TencoMessagingService`, device-token registration (`/api/devices/register`), and
+`POST_NOTIFICATIONS` permission are already wired.
+
 ### Known limitations (by design, this stage)
-- Android app is **local-only** until P3 wires it to the backend; the two share models and seed data but don't yet sync.
-- UPI deep links can't reliably auto-confirm on-device — automatic confirmation needs the Razorpay
-  webhook path (backend implemented; client wiring is P3).
-- Backend `RazorpayService.createOrder` is a stub; replace with the live Orders API call in P3.
+- Sync is currently **pull-only** (server → client via `/api/sync/changes`); an outbox/push-up
+  path (client → server) is the remaining sync work.
+- Razorpay Orders API call uses a **stub** until real keys are set (auto-detected).
+- FCM **logs** notifications until Firebase credentials + `google-services.json` are added.
 - Dev OTP is returned in the response and OTP challenges are stored in-memory — **dev only**.
 
 ---

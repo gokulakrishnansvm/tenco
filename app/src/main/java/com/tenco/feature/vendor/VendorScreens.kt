@@ -182,15 +182,23 @@ fun VendorPayScreen(
         val startPay: (Double) -> Unit = { amt ->
             if (amt > 0) {
                 amount = String.format("%.2f", amt)
-                val launched = UpiPayment.launch(
-                    context = context,
-                    payeeVpa = dashboard?.supplierVpa ?: Demo.SUPPLIER_VPA,
-                    payeeName = Demo.SUPPLIER_NAME,
-                    amountRupees = amt,
-                    note = "TENCO dues",
-                )
-                if (launched) showConfirm = true
-                else Toast.makeText(context, R.string.no_upi_app, Toast.LENGTH_LONG).show()
+                // Ask the backend for a payment intent (Razorpay order + UPI link); if the
+                // backend is unreachable, fall back to a locally-built UPI deep link.
+                viewModel.createBackendIntent(Money.rupeesToPaise(amt)) { backendLink ->
+                    val launched = if (backendLink != null) {
+                        UpiPayment.launchLink(context, backendLink)
+                    } else {
+                        UpiPayment.launch(
+                            context = context,
+                            payeeVpa = dashboard?.supplierVpa ?: Demo.SUPPLIER_VPA,
+                            payeeName = Demo.SUPPLIER_NAME,
+                            amountRupees = amt,
+                            note = "TENCO dues",
+                        )
+                    }
+                    if (launched) showConfirm = true
+                    else Toast.makeText(context, R.string.no_upi_app, Toast.LENGTH_LONG).show()
+                }
             }
         }
         Column(

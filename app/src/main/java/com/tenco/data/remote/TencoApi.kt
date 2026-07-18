@@ -40,6 +40,23 @@ class TencoApi @Inject constructor(
             url { parameters.append("since", since.toString()) }
         }.body()
 
+    /** Creates a backend payment intent (Razorpay order + UPI link). Requires a valid JWT. */
+    suspend fun createPaymentIntent(vendorId: String, amountPaise: Long): IntentResponse =
+        client.post("$BASE_URL/api/payments/intent") {
+            header("Authorization", "Bearer ${prefs.accessToken.orEmpty()}")
+            contentType(ContentType.Application.Json)
+            setBody(IntentBody(vendorId, amountPaise))
+        }.body()
+
+    /** Registers this device's FCM token for push notifications. Requires a valid JWT. */
+    suspend fun registerDevice(userId: String, fcmToken: String) {
+        client.post("$BASE_URL/api/devices/register") {
+            header("Authorization", "Bearer ${prefs.accessToken.orEmpty()}")
+            contentType(ContentType.Application.Json)
+            setBody(DeviceRegisterBody(userId, fcmToken))
+        }
+    }
+
     companion object {
         const val BASE_URL = "http://10.0.2.2:8080"
     }

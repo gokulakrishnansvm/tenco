@@ -52,6 +52,7 @@ class WebhookController(
     private val payments: PaymentRepository,
     private val razorpay: RazorpayService,
     private val mapper: ObjectMapper,
+    private val notifications: com.tenco.backend.notify.NotificationService,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -66,7 +67,11 @@ class WebhookController(
         }
         val node = mapper.readTree(rawBody)
         val event = node.path("event").asText("")
-        val orderId = node.path("orderId").asText("")
+        // Support both the simplified test payload {orderId} and the real Razorpay shape
+        // {payload:{payment:{entity:{order_id, acquirer_data:{rrn}}}}}.
+        val entity = node.path("payload").path("payment").path("entity")
+        val orderId = node.path("orderId").asText("").ifBlank { entity.path("order_id").asText("") }
+        val upiRef = node.path("upiRef").asText(null) ?: entity.path("acquirer_data").path("rrn").asText(null)
         val payment = payments.findByGatewayOrderId(orderId)
             ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).body("unknown order")
 
@@ -75,9 +80,10 @@ class WebhookController(
             "payment.failed" -> "FAILED"
             else -> payment.status
         }
-        payment.upiRef = node.path("upiRef").asText(null)
+        payment.upiRef = upiRef
         payment.updatedAt = now()
         payments.save(payment)
+        if (payment.status == "COMPLETED") notifications.notifyPaymentCaptured(payment)
         log.debug("Webhook {} applied to order {} -> {}", event, orderId, payment.status)
         return ResponseEntity.ok("ok")
     }
