@@ -183,6 +183,15 @@ class TencoRepository @Inject constructor(
     private fun newId() = UUID.randomUUID().toString()
     private fun now() = System.currentTimeMillis()
 
+    // --- Batch upserts (used by backend sync) ---
+    suspend fun upsertDealers(items: List<DealerEntity>) = items.forEach { dealerDao.upsert(it) }
+    suspend fun upsertPurchases(items: List<PurchaseEntity>) = items.forEach { purchaseDao.upsert(it) }
+    suspend fun upsertVendors(items: List<VendorEntity>) = items.forEach { vendorDao.upsert(it) }
+    suspend fun upsertPrices(items: List<PriceEntity>) = items.forEach { priceDao.upsert(it) }
+    suspend fun upsertDeliveries(items: List<DeliveryEntity>) = items.forEach { deliveryDao.upsert(it) }
+    suspend fun upsertComplaints(items: List<ComplaintEntity>) = items.forEach { complaintDao.upsert(it) }
+    suspend fun upsertPayments(items: List<PaymentEntity>) = items.forEach { paymentDao.upsert(it) }
+
     companion object {
         /** Phase-1 demo supplier VPA used for UPI deep links. */
         const val SUPPLIER_VPA = "tenco.supplier@upi"

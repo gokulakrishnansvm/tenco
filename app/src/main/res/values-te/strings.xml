@@ -20,6 +20,9 @@
     <string name="login">లాగిన్</string>
     <string name="logout">లాగ్ అవుట్</string>
     <string name="invalid_phone">సరైన 10 అంకెల ఫోన్ నంబర్ నమోదు చేయండి</string>
+    <string name="send_otp">OTP పంపండి</string>
+    <string name="enter_otp">OTP నమోదు చేయండి</string>
+    <string name="verify_otp">ధృవీకరించు</string>
 
     <string name="choose_language">మీ భాషను ఎంచుకోండి</string>
 

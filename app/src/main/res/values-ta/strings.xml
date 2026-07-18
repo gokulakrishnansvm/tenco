@@ -20,6 +20,9 @@
     <string name="login">உள்நுழை</string>
     <string name="logout">வெளியேறு</string>
     <string name="invalid_phone">சரியான 10 இலக்க எண்ணை உள்ளிடவும்</string>
+    <string name="send_otp">OTP அனுப்பு</string>
+    <string name="enter_otp">OTP ஐ உள்ளிடவும்</string>
+    <string name="verify_otp">சரிபார்</string>
 
     <string name="choose_language">உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்</string>
 

@@ -13,11 +13,14 @@ import javax.inject.Inject
 class AppViewModel @Inject constructor(
     private val prefs: AppPreferences,
     private val repository: TencoRepository,
+    private val syncManager: com.tenco.data.sync.SyncManager,
 ) : ViewModel() {
 
     init {
         // Ensure demo data exists as soon as the app starts (both roles rely on it).
         viewModelScope.launch { repository.ensureSeeded() }
+        // Pull backend data for returning, authenticated users (no-op if offline / not logged in).
+        viewModelScope.launch { syncManager.pull() }
     }
 
     val startRoute: String
@@ -47,6 +50,7 @@ class AppViewModel @Inject constructor(
 
     fun chooseSupplier() {
         prefs.role = ROLE_SUPPLIER
+        viewModelScope.launch { syncManager.pull() }
     }
 
     /**
@@ -57,6 +61,7 @@ class AppViewModel @Inject constructor(
         prefs.role = ROLE_VENDOR
         viewModelScope.launch {
             repository.ensureSeeded() // guarantee seed data before the one-shot reads
+            syncManager.pull()        // pull backend data (best-effort) before resolving vendor
             val matched = repository.findVendorByPhone(prefs.userPhone)?.id
             val vendorId = matched ?: prefs.selectedVendorId ?: repository.firstVendor()?.id
             prefs.selectedVendorId = vendorId

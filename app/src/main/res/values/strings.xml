@@ -23,6 +23,9 @@
     <string name="login">Login</string>
     <string name="logout">Logout</string>
     <string name="invalid_phone">Enter a valid 10-digit phone number</string>
+    <string name="send_otp">Send OTP</string>
+    <string name="enter_otp">Enter OTP</string>
+    <string name="verify_otp">Verify</string>
 
     <!-- Language selection -->
     <string name="choose_language">Choose your language</string>

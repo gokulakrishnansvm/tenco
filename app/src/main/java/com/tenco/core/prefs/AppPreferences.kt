@@ -42,15 +42,35 @@ class AppPreferences @Inject constructor(@ApplicationContext context: Context) {
         get() = prefs.getString(KEY_USER_PHONE, null)
         set(value) = prefs.edit().putString(KEY_USER_PHONE, value).apply()
 
+    var accessToken: String?
+        get() = prefs.getString(KEY_ACCESS_TOKEN, null)
+        set(value) = prefs.edit().putString(KEY_ACCESS_TOKEN, value).apply()
+
+    var refreshToken: String?
+        get() = prefs.getString(KEY_REFRESH_TOKEN, null)
+        set(value) = prefs.edit().putString(KEY_REFRESH_TOKEN, value).apply()
+
+    var userId: String?
+        get() = prefs.getString(KEY_USER_ID, null)
+        set(value) = prefs.edit().putString(KEY_USER_ID, value).apply()
+
+    /** Delta-sync cursor (epoch millis) of the last successful pull. */
+    var lastSyncCursor: Long
+        get() = prefs.getLong(KEY_SYNC_CURSOR, 0L)
+        set(value) = prefs.edit().putLong(KEY_SYNC_CURSOR, value).apply()
+
     val isLoggedIn: Boolean get() = !userPhone.isNullOrBlank()
 
-    /** Clears the session (login + role + vendor) but keeps the chosen language. */
+    /** Clears the session (login + tokens + role + vendor) but keeps the chosen language. */
     fun clearSession() {
         prefs.edit()
             .remove(KEY_USER_NAME)
             .remove(KEY_USER_PHONE)
             .remove(KEY_ROLE)
             .remove(KEY_VENDOR_ID)
+            .remove(KEY_ACCESS_TOKEN)
+            .remove(KEY_REFRESH_TOKEN)
+            .remove(KEY_USER_ID)
             .apply()
     }
 
@@ -61,5 +81,9 @@ class AppPreferences @Inject constructor(@ApplicationContext context: Context) {
         private const val KEY_VENDOR_ID = "selected_vendor_id"
         private const val KEY_USER_NAME = "user_name"
         private const val KEY_USER_PHONE = "user_phone"
+        private const val KEY_ACCESS_TOKEN = "access_token"
+        private const val KEY_REFRESH_TOKEN = "refresh_token"
+        private const val KEY_USER_ID = "user_id"
+        private const val KEY_SYNC_CURSOR = "last_sync_cursor"
     }
 }

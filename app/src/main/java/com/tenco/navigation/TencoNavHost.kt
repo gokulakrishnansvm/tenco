@@ -35,8 +35,7 @@ fun TencoNavHost(
 
         composable(Routes.LOGIN) {
             LoginScreen(
-                onLogin = { name, phone ->
-                    appViewModel.login(name, phone)
+                onLoggedIn = {
                     navController.navigate(Routes.ROLE) {
                         popUpTo(Routes.LOGIN) { inclusive = true }
                     }
