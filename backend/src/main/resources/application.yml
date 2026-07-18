@@ -1,0 +1,56 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: tenco-backend
+  # Default (dev) uses in-memory H2 so the service runs with no external infra.
+  datasource:
+    url: jdbc:h2:mem:tenco;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate.format_sql: true
+  h2:
+    console:
+      enabled: true
+
+tenco:
+  jwt:
+    # Override in real environments via TENCO_JWT_SECRET (min 32 bytes for HS256).
+    secret: ${TENCO_JWT_SECRET:dev-only-secret-change-me-please-32bytes-min}
+    access-token-minutes: 60
+    refresh-token-days: 30
+  otp:
+    # In dev the generated OTP is returned in the response / logged. Never do this in prod.
+    dev-mode: true
+  razorpay:
+    key-id: ${RAZORPAY_KEY_ID:rzp_test_dummy}
+    key-secret: ${RAZORPAY_KEY_SECRET:dummy_secret}
+    webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:dev-webhook-secret}
+
+logging:
+  level:
+    com.tenco.backend: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/tenco}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USER:tenco}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+tenco:
+  otp:
+    dev-mode: false
