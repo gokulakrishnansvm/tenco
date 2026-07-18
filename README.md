@@ -167,6 +167,17 @@ plugins { id("com.google.gms.google-services") }
 The `TencoMessagingService`, device-token registration (`/api/devices/register`), and
 `POST_NOTIFICATIONS` permission are already wired.
 
+**SMS OTP delivery** — OTPs are logged in dev; set a provider to send real SMS:
+```bash
+# MSG91 (India)
+SMS_PROVIDER=msg91 MSG91_AUTHKEY=xxx MSG91_SENDER=TENCOO MSG91_TEMPLATE_ID=xxx \
+  java -jar backend/build/libs/tenco-backend-0.1.0.jar
+# or Twilio
+SMS_PROVIDER=twilio TWILIO_SID=xxx TWILIO_TOKEN=xxx TWILIO_FROM=+1xxx \
+  java -jar backend/build/libs/tenco-backend-0.1.0.jar
+```
+Run with `SPRING_PROFILES_ACTIVE=prod` so the OTP is delivered by SMS (not returned in the API response).
+
 ### Known limitations (by design, this stage)
 - Sync is currently **pull-only** (server → client via `/api/sync/changes`); an outbox/push-up
   path (client → server) is the remaining sync work.

@@ -29,6 +29,18 @@ tenco:
   otp:
     # In dev the generated OTP is returned in the response / logged. Never do this in prod.
     dev-mode: true
+  sms:
+    # none | msg91 | twilio  (none = log only, no external call)
+    provider: ${SMS_PROVIDER:none}
+    country-code: ${SMS_COUNTRY_CODE:91}
+    msg91:
+      authkey: ${MSG91_AUTHKEY:}
+      sender: ${MSG91_SENDER:TENCOO}
+      template-id: ${MSG91_TEMPLATE_ID:}
+    twilio:
+      account-sid: ${TWILIO_SID:}
+      auth-token: ${TWILIO_TOKEN:}
+      from: ${TWILIO_FROM:}
   razorpay:
     key-id: ${RAZORPAY_KEY_ID:rzp_test_dummy}
     key-secret: ${RAZORPAY_KEY_SECRET:dummy_secret}
