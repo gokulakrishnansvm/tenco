@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_tagline">లేత కొబ్బరి సరఫరా గొలుసు</string>
+
+    <string name="continue_btn">కొనసాగించు</string>
+    <string name="save">సేవ్ చేయి</string>
+    <string name="cancel">రద్దు</string>
+    <string name="add">జోడించు</string>
+    <string name="submit">సమర్పించు</string>
+    <string name="ok">సరే</string>
+    <string name="yes">అవును</string>
+    <string name="no">కాదు</string>
+    <string name="no_data">డేటా లేదు</string>
+    <string name="change_language">భాష మార్చు</string>
+
+    <string name="login_title">TENCO కు స్వాగతం</string>
+    <string name="login_subtitle">కొనసాగించడానికి సైన్ ఇన్ చేయండి</string>
+    <string name="your_name">మీ పేరు</string>
+    <string name="phone_number">ఫోన్ నంబర్</string>
+    <string name="login">లాగిన్</string>
+    <string name="logout">లాగ్ అవుట్</string>
+    <string name="invalid_phone">సరైన 10 అంకెల ఫోన్ నంబర్ నమోదు చేయండి</string>
+
+    <string name="choose_language">మీ భాషను ఎంచుకోండి</string>
+
+    <string name="select_role">మీరు ఎవరు?</string>
+    <string name="role_supplier">సరఫరాదారు</string>
+    <string name="role_vendor">విక్రేత</string>
+    <string name="role_supplier_desc">సరుకు, విక్రేతలు, ధర మరియు చెల్లింపులు</string>
+    <string name="role_vendor_desc">సరఫరా, బకాయిలు మరియు చెల్లింపు</string>
+
+    <string name="supplier_dashboard">సరఫరాదారు డాష్‌బోర్డ్</string>
+    <string name="stock_on_hand">అందుబాటులో ఉన్న సరుకు</string>
+    <string name="total_earnings">మొత్తం ఆదాయం</string>
+    <string name="dues_receivable">రావలసిన బకాయిలు</string>
+    <string name="losses">నష్టాలు</string>
+    <string name="vendor_distribution">విక్రేత వారీగా</string>
+    <string name="quick_actions">త్వరిత చర్యలు</string>
+    <string name="menu_dealers">డీలర్లు</string>
+    <string name="menu_vendors">విక్రేతలు</string>
+    <string name="menu_pricing">ధర</string>
+    <string name="menu_transactions">లావాదేవీలు</string>
+    <string name="menu_reports">నివేదికలు</string>
+    <string name="menu_complaints">ఫిర్యాదులు</string>
+    <string name="coconuts">కొబ్బరికాయలు</string>
+
+    <string name="vendor_dashboard">విక్రేత డాష్‌బోర్డ్</string>
+    <string name="received">అందింది</string>
+    <string name="pending_dues">బకాయి మొత్తం</string>
+    <string name="remaining_dues">మిగిలిన బకాయి</string>
+    <string name="confirm_delivery">డెలివరీని నిర్ధారించు</string>
+    <string name="delivery_confirmed">డెలివరీ నిర్ధారించబడింది</string>
+    <string name="pay_now">ఇప్పుడు చెల్లించు</string>
+    <string name="raise_complaint">ఫిర్యాదు చేయి</string>
+    <string name="history">చరిత్ర</string>
+    <string name="contact_supplier">సరఫరాదారుని సంప్రదించు</string>
+    <string name="call">కాల్</string>
+    <string name="whatsapp">వాట్సాప్</string>
+
+    <string name="enter_amount">చెల్లించవలసిన మొత్తాన్ని నమోదు చేయండి</string>
+    <string name="amount_hint">మొత్తం (₹)</string>
+    <string name="pay">చెల్లించు</string>
+    <string name="pay_full">పూర్తిగా చెల్లించు</string>
+    <string name="no_upi_app">ఈ పరికరంలో UPI యాప్ లేదు</string>
+    <string name="did_payment_succeed">చెల్లింపు విజయవంతమైందా?</string>
+    <string name="mark_paid">అవును, చెల్లించాను</string>
+    <string name="mark_failed">కాదు, విఫలమైంది</string>
+    <string name="payment_recorded">చెల్లింపు నమోదైంది</string>
+
+    <string name="complaint_reason">కారణం</string>
+    <string name="reason_spoiled">చెడిపోయిన కొబ్బరికాయలు</string>
+    <string name="reason_damaged">రవాణాలో దెబ్బతింది</string>
+    <string name="reason_short">తక్కువ పరిమాణం</string>
+    <string name="reason_other">ఇతర</string>
+    <string name="attach_photo">ఫోటో జోడించు (ఐచ్ఛికం)</string>
+    <string name="complaint_submitted">ఫిర్యాదు సమర్పించబడింది</string>
+    <string name="resolve">పరిష్కరించు</string>
+    <string name="adjust_price">ధరను సర్దుబాటు చేయి</string>
+
+    <string name="status_pending">పెండింగ్</string>
+    <string name="status_completed">పూర్తయింది</string>
+    <string name="status_failed">విఫలమైంది</string>
+    <string name="status_pending_verification">ధృవీకరిస్తోంది</string>
+    <string name="status_delivered">డెలివరీ అయింది</string>
+    <string name="status_confirmed">నిర్ధారించబడింది</string>
+    <string name="status_open">తెరిచి ఉంది</string>
+    <string name="status_resolved">పరిష్కరించబడింది</string>
+
+    <string name="transaction_history">లావాదేవీల చరిత్ర</string>
+
+    <string name="pnl_report">లాభం &amp; నష్టం</string>
+    <string name="revenue">ఆదాయం</string>
+    <string name="purchase_cost">కొనుగోలు ఖర్చు</string>
+    <string name="price_adjustments">ధర సర్దుబాట్లు</string>
+    <string name="complaint_losses">ఫిర్యాదు నష్టాలు</string>
+    <string name="net_profit">నికర లాభం</string>
+    <string name="this_month">ఈ నెల</string>
+
+    <string name="dealers">డీలర్లు</string>
+    <string name="quantity">పరిమాణం</string>
+    <string name="unit_cost">యూనిట్ ధర (₹)</string>
+    <string name="add_purchase">కొనుగోలు జోడించు</string>
+
+    <string name="vendors">విక్రేతలు</string>
+    <string name="vendor_name">విక్రేత పేరు</string>
+    <string name="phone">ఫోన్</string>
+
+    <string name="pricing">ధర నిర్ణయం</string>
+    <string name="unit_price">యూనిట్ ధర (₹)</string>
+    <string name="set_price">ధరను సెట్ చేయి</string>
+</resources>

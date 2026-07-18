@@ -1,0 +1,109 @@
+package com.tenco.navigation
+
+import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.tenco.feature.onboarding.LoginScreen
+import com.tenco.feature.onboarding.RoleSelectScreen
+import com.tenco.feature.supplier.ComplaintsScreen
+import com.tenco.feature.supplier.DealersScreen
+import com.tenco.feature.supplier.PricingScreen
+import com.tenco.feature.supplier.ReportsScreen
+import com.tenco.feature.supplier.SupplierDashboardScreen
+import com.tenco.feature.supplier.TransactionsScreen
+import com.tenco.feature.supplier.VendorsScreen
+import com.tenco.feature.vendor.VendorComplaintScreen
+import com.tenco.feature.vendor.VendorDashboardScreen
+import com.tenco.feature.vendor.VendorHistoryScreen
+import com.tenco.feature.vendor.VendorPayScreen
+
+@Composable
+fun TencoNavHost(
+    appViewModel: AppViewModel,
+    onChangeLanguage: () -> Unit,
+) {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = appViewModel.startRoute) {
+
+        val logout: () -> Unit = {
+            appViewModel.logout()
+            navController.navigate(Routes.LOGIN) { popUpTo(0) { inclusive = true } }
+        }
+
+        composable(Routes.LOGIN) {
+            LoginScreen(
+                onLogin = { name, phone ->
+                    appViewModel.login(name, phone)
+                    navController.navigate(Routes.ROLE) {
+                        popUpTo(Routes.LOGIN) { inclusive = true }
+                    }
+                },
+            )
+        }
+
+        composable(Routes.ROLE) {
+            RoleSelectScreen(
+                onSupplier = {
+                    appViewModel.chooseSupplier()
+                    navController.navigate(Routes.SUPPLIER_HOME) {
+                        popUpTo(Routes.ROLE) { inclusive = true }
+                    }
+                },
+                onVendor = {
+                    appViewModel.chooseVendor {
+                        navController.navigate(Routes.VENDOR_HOME) {
+                            popUpTo(Routes.ROLE) { inclusive = true }
+                        }
+                    }
+                },
+                onChangeLanguage = onChangeLanguage,
+            )
+        }
+
+        // ---- Supplier ----
+        composable(Routes.SUPPLIER_HOME) {
+            SupplierDashboardScreen(
+                onNavigate = { route -> navController.navigate(route) },
+                onChangeLanguage = onChangeLanguage,
+                onLogout = logout,
+            )
+        }
+        composable(Routes.SUPPLIER_DEALERS) { DealersScreen(onBack = navController::popBackStack) }
+        composable(Routes.SUPPLIER_VENDORS) { VendorsScreen(onBack = navController::popBackStack) }
+        composable(Routes.SUPPLIER_PRICING) { PricingScreen(onBack = navController::popBackStack) }
+        composable(Routes.SUPPLIER_TRANSACTIONS) { TransactionsScreen(onBack = navController::popBackStack) }
+        composable(Routes.SUPPLIER_REPORTS) { ReportsScreen(onBack = navController::popBackStack) }
+        composable(Routes.SUPPLIER_COMPLAINTS) { ComplaintsScreen(onBack = navController::popBackStack) }
+
+        // ---- Vendor ----
+        composable(Routes.VENDOR_HOME) {
+            VendorDashboardScreen(
+                vendorId = appViewModel.currentVendorId.orEmpty(),
+                onNavigate = { route -> navController.navigate(route) },
+                onChangeLanguage = onChangeLanguage,
+                onLogout = logout,
+            )
+        }
+        composable(Routes.VENDOR_PAY) {
+            VendorPayScreen(
+                vendorId = appViewModel.currentVendorId.orEmpty(),
+                onBack = navController::popBackStack,
+            )
+        }
+        composable(Routes.VENDOR_COMPLAINT) {
+            VendorComplaintScreen(
+                vendorId = appViewModel.currentVendorId.orEmpty(),
+                onBack = navController::popBackStack,
+            )
+        }
+        composable(Routes.VENDOR_HISTORY) {
+            VendorHistoryScreen(
+                vendorId = appViewModel.currentVendorId.orEmpty(),
+                onBack = navController::popBackStack,
+            )
+        }
+    }
+}

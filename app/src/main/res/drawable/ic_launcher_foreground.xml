@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Simple tender-coconut: circle body + leaf -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,38m-20,0a20,20 0,1 1,40 0a20,20 0,1 1,-40 0" />
+    <path
+        android:fillColor="#A5D6A7"
+        android:pathData="M54,38 C54,24 62,18 74,18 C74,30 66,38 54,38 Z" />
+    <path
+        android:fillColor="#F9A825"
+        android:pathData="M46,54 h16 l-3,20 h-10 z" />
+</vector>

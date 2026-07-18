@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_tagline">இளநீர் விநியோகச் சங்கிலி</string>
+
+    <string name="continue_btn">தொடரவும்</string>
+    <string name="save">சேமி</string>
+    <string name="cancel">ரத்து</string>
+    <string name="add">சேர்</string>
+    <string name="submit">சமர்ப்பி</string>
+    <string name="ok">சரி</string>
+    <string name="yes">ஆம்</string>
+    <string name="no">இல்லை</string>
+    <string name="no_data">தரவு இல்லை</string>
+    <string name="change_language">மொழியை மாற்று</string>
+
+    <string name="login_title">TENCO க்கு வரவேற்கிறோம்</string>
+    <string name="login_subtitle">தொடர உள்நுழையவும்</string>
+    <string name="your_name">உங்கள் பெயர்</string>
+    <string name="phone_number">தொலைபேசி எண்</string>
+    <string name="login">உள்நுழை</string>
+    <string name="logout">வெளியேறு</string>
+    <string name="invalid_phone">சரியான 10 இலக்க எண்ணை உள்ளிடவும்</string>
+
+    <string name="choose_language">உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்</string>
+
+    <string name="select_role">நீங்கள் யார்?</string>
+    <string name="role_supplier">சப்ளையர்</string>
+    <string name="role_vendor">விற்பனையாளர்</string>
+    <string name="role_supplier_desc">சரக்கு, விற்பனையாளர்கள், விலை மற்றும் பணம்</string>
+    <string name="role_vendor_desc">சரக்கு, நிலுவை மற்றும் பணம் செலுத்துதல்</string>
+
+    <string name="supplier_dashboard">சப்ளையர் டாஷ்போர்டு</string>
+    <string name="stock_on_hand">கையிருப்பு</string>
+    <string name="total_earnings">மொத்த வருமானம்</string>
+    <string name="dues_receivable">வரவேண்டிய நிலுவை</string>
+    <string name="losses">இழப்புகள்</string>
+    <string name="vendor_distribution">விற்பனையாளர் வாரியாக</string>
+    <string name="quick_actions">விரைவு செயல்கள்</string>
+    <string name="menu_dealers">டீலர்கள்</string>
+    <string name="menu_vendors">விற்பனையாளர்கள்</string>
+    <string name="menu_pricing">விலை</string>
+    <string name="menu_transactions">பரிவர்த்தனைகள்</string>
+    <string name="menu_reports">அறிக்கைகள்</string>
+    <string name="menu_complaints">புகார்கள்</string>
+    <string name="coconuts">இளநீர்</string>
+
+    <string name="vendor_dashboard">விற்பனையாளர் டாஷ்போர்டு</string>
+    <string name="received">பெறப்பட்டது</string>
+    <string name="pending_dues">நிலுவைத் தொகை</string>
+    <string name="remaining_dues">மீதமுள்ள நிலுவை</string>
+    <string name="confirm_delivery">டெலிவரியை உறுதிசெய்</string>
+    <string name="delivery_confirmed">டெலிவரி உறுதி செய்யப்பட்டது</string>
+    <string name="pay_now">இப்போது செலுத்து</string>
+    <string name="raise_complaint">புகார் அளிக்க</string>
+    <string name="history">வரலாறு</string>
+    <string name="contact_supplier">சப்ளையரை தொடர்பு கொள்</string>
+    <string name="call">அழை</string>
+    <string name="whatsapp">வாட்ஸ்அப்</string>
+
+    <string name="enter_amount">செலுத்த வேண்டிய தொகையை உள்ளிடவும்</string>
+    <string name="amount_hint">தொகை (₹)</string>
+    <string name="pay">செலுத்து</string>
+    <string name="pay_full">முழுவதும் செலுத்து</string>
+    <string name="no_upi_app">இந்த சாதனத்தில் UPI ஆப் இல்லை</string>
+    <string name="did_payment_succeed">பணம் செலுத்தப்பட்டதா?</string>
+    <string name="mark_paid">ஆம், செலுத்தப்பட்டது</string>
+    <string name="mark_failed">இல்லை, தோல்வி</string>
+    <string name="payment_recorded">பணம் பதிவு செய்யப்பட்டது</string>
+
+    <string name="complaint_reason">காரணம்</string>
+    <string name="reason_spoiled">கெட்டுப்போன இளநீர்</string>
+    <string name="reason_damaged">போக்குவரத்தில் சேதம்</string>
+    <string name="reason_short">குறைந்த அளவு</string>
+    <string name="reason_other">மற்றவை</string>
+    <string name="attach_photo">புகைப்படம் இணைக்க (விருப்பம்)</string>
+    <string name="complaint_submitted">புகார் சமர்ப்பிக்கப்பட்டது</string>
+    <string name="resolve">தீர்வு</string>
+    <string name="adjust_price">விலையை சரிசெய்</string>
+
+    <string name="status_pending">நிலுவையில்</string>
+    <string name="status_completed">முடிந்தது</string>
+    <string name="status_failed">தோல்வி</string>
+    <string name="status_pending_verification">சரிபார்க்கிறது</string>
+    <string name="status_delivered">வழங்கப்பட்டது</string>
+    <string name="status_confirmed">உறுதி செய்யப்பட்டது</string>
+    <string name="status_open">திறந்துள்ளது</string>
+    <string name="status_resolved">தீர்க்கப்பட்டது</string>
+
+    <string name="transaction_history">பரிவர்த்தனை வரலாறு</string>
+
+    <string name="pnl_report">லாபம் &amp; நஷ்டம்</string>
+    <string name="revenue">வருவாய்</string>
+    <string name="purchase_cost">கொள்முதல் செலவு</string>
+    <string name="price_adjustments">விலை சரிசெய்தல்</string>
+    <string name="complaint_losses">புகார் இழப்புகள்</string>
+    <string name="net_profit">நிகர லாபம்</string>
+    <string name="this_month">இந்த மாதம்</string>
+
+    <string name="dealers">டீலர்கள்</string>
+    <string name="quantity">அளவு</string>
+    <string name="unit_cost">அலகு விலை (₹)</string>
+    <string name="add_purchase">கொள்முதல் சேர்</string>
+
+    <string name="vendors">விற்பனையாளர்கள்</string>
+    <string name="vendor_name">விற்பனையாளர் பெயர்</string>
+    <string name="phone">தொலைபேசி</string>
+
+    <string name="pricing">விலை நிர்ணயம்</string>
+    <string name="unit_price">அலகு விலை (₹)</string>
+    <string name="set_price">விலையை அமை</string>
+</resources>

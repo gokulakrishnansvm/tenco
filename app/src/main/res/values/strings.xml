@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TENCO</string>
+    <string name="app_tagline">Tender Coconut Supply Chain</string>
+
+    <!-- Common -->
+    <string name="continue_btn">Continue</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="add">Add</string>
+    <string name="submit">Submit</string>
+    <string name="ok">OK</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="no_data">No data yet</string>
+    <string name="change_language">Change language</string>
+
+    <!-- Login -->
+    <string name="login_title">Welcome to TENCO</string>
+    <string name="login_subtitle">Sign in to continue</string>
+    <string name="your_name">Your name</string>
+    <string name="phone_number">Phone number</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="invalid_phone">Enter a valid 10-digit phone number</string>
+
+    <!-- Language selection -->
+    <string name="choose_language">Choose your language</string>
+
+    <!-- Role selection -->
+    <string name="select_role">Who are you?</string>
+    <string name="role_supplier">Supplier</string>
+    <string name="role_vendor">Vendor</string>
+    <string name="role_supplier_desc">Manage stock, vendors, pricing and payments</string>
+    <string name="role_vendor_desc">View supplies, dues and pay your supplier</string>
+
+    <!-- Supplier dashboard -->
+    <string name="supplier_dashboard">Supplier Dashboard</string>
+    <string name="stock_on_hand">Stock on hand</string>
+    <string name="total_earnings">Total earnings</string>
+    <string name="dues_receivable">Dues receivable</string>
+    <string name="losses">Losses</string>
+    <string name="vendor_distribution">Vendor-wise distribution</string>
+    <string name="quick_actions">Quick actions</string>
+    <string name="menu_dealers">Dealers</string>
+    <string name="menu_vendors">Vendors</string>
+    <string name="menu_pricing">Pricing</string>
+    <string name="menu_transactions">Transactions</string>
+    <string name="menu_reports">Reports</string>
+    <string name="menu_complaints">Complaints</string>
+    <string name="coconuts">coconuts</string>
+
+    <!-- Vendor dashboard -->
+    <string name="vendor_dashboard">Vendor Dashboard</string>
+    <string name="received">Received</string>
+    <string name="pending_dues">Pending dues</string>
+    <string name="remaining_dues">Remaining dues</string>
+    <string name="confirm_delivery">Confirm delivery</string>
+    <string name="delivery_confirmed">Delivery confirmed</string>
+    <string name="pay_now">Pay now</string>
+    <string name="raise_complaint">Raise complaint</string>
+    <string name="history">History</string>
+    <string name="contact_supplier">Contact supplier</string>
+    <string name="call">Call</string>
+    <string name="whatsapp">WhatsApp</string>
+
+    <!-- Payment -->
+    <string name="enter_amount">Enter amount to pay</string>
+    <string name="amount_hint">Amount (₹)</string>
+    <string name="pay">Pay</string>
+    <string name="pay_full">Pay full</string>
+    <string name="no_upi_app">No UPI app found on this device</string>
+    <string name="did_payment_succeed">Did the payment succeed?</string>
+    <string name="mark_paid">Yes, paid</string>
+    <string name="mark_failed">No, failed</string>
+    <string name="payment_recorded">Payment recorded</string>
+
+    <!-- Complaint -->
+    <string name="complaint_reason">Reason</string>
+    <string name="reason_spoiled">Spoiled coconuts</string>
+    <string name="reason_damaged">Damaged in transit</string>
+    <string name="reason_short">Short quantity</string>
+    <string name="reason_other">Other</string>
+    <string name="attach_photo">Attach photo (optional)</string>
+    <string name="complaint_submitted">Complaint submitted</string>
+    <string name="resolve">Resolve</string>
+    <string name="adjust_price">Adjust price</string>
+
+    <!-- Statuses -->
+    <string name="status_pending">Pending</string>
+    <string name="status_completed">Completed</string>
+    <string name="status_failed">Failed</string>
+    <string name="status_pending_verification">Verifying</string>
+    <string name="status_delivered">Delivered</string>
+    <string name="status_confirmed">Confirmed</string>
+    <string name="status_open">Open</string>
+    <string name="status_resolved">Resolved</string>
+
+    <!-- Transactions / History -->
+    <string name="transaction_history">Transaction history</string>
+
+    <!-- Reports -->
+    <string name="pnl_report">Profit &amp; Loss</string>
+    <string name="revenue">Revenue</string>
+    <string name="purchase_cost">Purchase cost</string>
+    <string name="price_adjustments">Price adjustments</string>
+    <string name="complaint_losses">Complaint losses</string>
+    <string name="net_profit">Net profit</string>
+    <string name="this_month">This month</string>
+
+    <!-- Dealers -->
+    <string name="dealers">Dealers</string>
+    <string name="quantity">Quantity</string>
+    <string name="unit_cost">Unit cost (₹)</string>
+    <string name="add_purchase">Add purchase</string>
+
+    <!-- Vendors -->
+    <string name="vendors">Vendors</string>
+    <string name="vendor_name">Vendor name</string>
+    <string name="phone">Phone</string>
+
+    <!-- Pricing -->
+    <string name="pricing">Pricing</string>
+    <string name="unit_price">Unit price (₹)</string>
+    <string name="set_price">Set price</string>
+</resources>
