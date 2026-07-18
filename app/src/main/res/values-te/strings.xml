@@ -12,6 +12,23 @@
     <string name="no">కాదు</string>
     <string name="no_data">డేటా లేదు</string>
     <string name="change_language">భాష మార్చు</string>
+    <string name="speak">చదివి వినిపించు</string>
+    <string name="status_under_review">సమీక్షలో ఉంది</string>
+    <string name="status_rejected">తిరస్కరించబడింది</string>
+    <string name="review">సమీక్షించు</string>
+    <string name="reject">తిరస్కరించు</string>
+    <string name="my_complaints">నా ఫిర్యాదులు</string>
+    <string name="export_csv">CSV ఎగుమతి</string>
+    <string name="all_time">అన్ని కాలం</string>
+    <string name="period">కాలం</string>
+    <string name="menu_insights">విశ్లేషణలు</string>
+    <string name="insights">విశ్లేషణలు</string>
+    <string name="collection_rate">వసూలు రేటు</string>
+    <string name="total_billed">మొత్తం బిల్</string>
+    <string name="total_collected">వసూలు చేయబడింది</string>
+    <string name="outstanding">బకాయి</string>
+    <string name="top_vendors">అత్యధిక బకాయి విక్రేతలు</string>
+    <string name="deliveries_count">డెలివరీలు</string>
 
     <string name="login_title">TENCO కు స్వాగతం</string>
     <string name="login_subtitle">కొనసాగించడానికి సైన్ ఇన్ చేయండి</string>

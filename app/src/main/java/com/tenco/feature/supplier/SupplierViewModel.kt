@@ -15,9 +15,27 @@ import com.tenco.domain.SupplierDashboard
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import javax.inject.Inject
+
+/** Reporting period for the P&L report / export. */
+enum class ReportPeriod {
+    ALL, THIS_MONTH;
+
+    fun from(): Long = when (this) {
+        ALL -> 0L
+        THIS_MONTH -> Calendar.getInstance().apply {
+            set(Calendar.DAY_OF_MONTH, 1)
+            set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+    }
+
+    fun to(): Long = Long.MAX_VALUE
+}
 
 @HiltViewModel
 class SupplierViewModel @Inject constructor(
@@ -48,8 +66,18 @@ class SupplierViewModel @Inject constructor(
     val complaints: StateFlow<List<ComplaintEntity>> =
         repository.observeComplaints().stateInVm(emptyList())
 
+    private val period = kotlinx.coroutines.flow.MutableStateFlow(ReportPeriod.ALL)
+    val selectedPeriod: StateFlow<ReportPeriod> = period
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val pnl: StateFlow<PnlReport> =
-        repository.observePnl().stateInVm(PnlReport())
+        period.flatMapLatest { p -> repository.observePnl(p.from(), p.to()) }
+            .stateInVm(PnlReport())
+
+    fun setPeriod(p: ReportPeriod) { period.value = p }
+
+    val insights: StateFlow<com.tenco.domain.SupplierInsights> =
+        repository.observeInsights().stateInVm(com.tenco.domain.SupplierInsights())
 
     fun addPurchase(dealerId: String, quantity: Int, unitCostPaise: Long) = viewModelScope.launch {
         repository.addPurchase(dealerId, quantity, unitCostPaise)
@@ -65,6 +93,10 @@ class SupplierViewModel @Inject constructor(
 
     fun resolveComplaint(complaintId: String, adjustmentPaise: Long) = viewModelScope.launch {
         repository.resolveComplaint(complaintId, adjustmentPaise)
+    }
+
+    fun setComplaintStatus(complaintId: String, status: String) = viewModelScope.launch {
+        repository.setComplaintStatus(complaintId, status)
     }
 
     private fun <T> kotlinx.coroutines.flow.Flow<T>.stateInVm(initial: T): StateFlow<T> =

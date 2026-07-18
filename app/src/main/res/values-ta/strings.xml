@@ -12,6 +12,23 @@
     <string name="no">இல்லை</string>
     <string name="no_data">தரவு இல்லை</string>
     <string name="change_language">மொழியை மாற்று</string>
+    <string name="speak">படித்துக் காட்டு</string>
+    <string name="status_under_review">பரிசீலனையில்</string>
+    <string name="status_rejected">நிராகரிக்கப்பட்டது</string>
+    <string name="review">பரிசீலி</string>
+    <string name="reject">நிராகரி</string>
+    <string name="my_complaints">எனது புகார்கள்</string>
+    <string name="export_csv">CSV ஏற்றுமதி</string>
+    <string name="all_time">எல்லா காலமும்</string>
+    <string name="period">காலம்</string>
+    <string name="menu_insights">பகுப்பாய்வு</string>
+    <string name="insights">பகுப்பாய்வு</string>
+    <string name="collection_rate">வசூல் விகிதம்</string>
+    <string name="total_billed">மொத்த பில்</string>
+    <string name="total_collected">வசூலிக்கப்பட்டது</string>
+    <string name="outstanding">நிலுவை</string>
+    <string name="top_vendors">அதிக நிலுவை விற்பனையாளர்கள்</string>
+    <string name="deliveries_count">விநியோகங்கள்</string>
 
     <string name="login_title">TENCO க்கு வரவேற்கிறோம்</string>
     <string name="login_subtitle">தொடர உள்நுழையவும்</string>

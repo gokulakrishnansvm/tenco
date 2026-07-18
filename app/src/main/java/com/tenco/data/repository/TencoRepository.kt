@@ -127,17 +127,47 @@ class TencoRepository @Inject constructor(
         )
     }
 
+    // --- Analytics / insights ---
+    fun observeInsights(): Flow<com.tenco.domain.SupplierInsights> = combine(
+        deliveryDao.observeAll(),
+        paymentDao.observeAll(),
+        complaintDao.observeAll(),
+        vendorDao.observeAll(),
+    ) { deliveries, payments, complaints, vendors ->
+        val billed = deliveries.sumOf { it.quantity * it.unitPricePaise }
+        val collected = payments.filter { it.status == PaymentStatus.COMPLETED }.sumOf { it.amountPaise }
+        val adjustments = complaints.filter { it.status == ComplaintStatus.RESOLVED }.sumOf { it.adjustmentPaise }
+        val net = (billed - adjustments).coerceAtLeast(0)
+        val rate = if (net > 0) ((collected * 100) / net).toInt().coerceIn(0, 100) else 0
+        val top = vendors.map { v ->
+            val value = deliveries.filter { it.vendorId == v.id }.sumOf { it.quantity * it.unitPricePaise }
+            val paid = payments.filter { it.vendorId == v.id && it.status == PaymentStatus.COMPLETED }.sumOf { it.amountPaise }
+            val adj = complaints.filter { it.vendorId == v.id && it.status == ComplaintStatus.RESOLVED }.sumOf { it.adjustmentPaise }
+            val qty = deliveries.filter { it.vendorId == v.id }.sumOf { it.quantity }
+            VendorDistribution(v.id, v.name, qty, (value - adj - paid).coerceAtLeast(0))
+        }.sortedByDescending { it.duesPaise }.take(5)
+        com.tenco.domain.SupplierInsights(
+            totalBilledPaise = billed,
+            totalCollectedPaise = collected,
+            outstandingPaise = (net - collected).coerceAtLeast(0),
+            collectionRatePercent = rate,
+            deliveriesCount = deliveries.size,
+            topVendors = top,
+        )
+    }
+
     // --- Profit & Loss ---
-    fun observePnl(): Flow<PnlReport> = combine(
+    fun observePnl(from: Long = 0L, to: Long = Long.MAX_VALUE): Flow<PnlReport> = combine(
         purchaseDao.observeAll(),
         deliveryDao.observeAll(),
         complaintDao.observeAll(),
     ) { purchases, deliveries, complaints ->
+        fun inRange(t: Long) = t in from..to
         PnlReport(
-            revenuePaise = deliveries.sumOf { it.quantity * it.unitPricePaise },
-            purchaseCostPaise = purchases.sumOf { it.quantity * it.unitCostPaise },
+            revenuePaise = deliveries.filter { inRange(it.createdAt) }.sumOf { it.quantity * it.unitPricePaise },
+            purchaseCostPaise = purchases.filter { inRange(it.createdAt) }.sumOf { it.quantity * it.unitCostPaise },
             complaintLossesPaise = complaints
-                .filter { it.status == ComplaintStatus.RESOLVED }
+                .filter { it.status == ComplaintStatus.RESOLVED && inRange(it.createdAt) }
                 .sumOf { it.adjustmentPaise },
         )
     }
@@ -178,6 +208,12 @@ class TencoRepository @Inject constructor(
     suspend fun resolveComplaint(complaintId: String, adjustmentPaise: Long) {
         val c = complaintDao.getById(complaintId) ?: return
         complaintDao.update(c.copy(adjustmentPaise = adjustmentPaise, status = ComplaintStatus.RESOLVED))
+    }
+
+    /** Dispute lifecycle transition (e.g. OPEN -> UNDER_REVIEW, or -> REJECTED). */
+    suspend fun setComplaintStatus(complaintId: String, status: String) {
+        val c = complaintDao.getById(complaintId) ?: return
+        complaintDao.update(c.copy(status = status))
     }
 
     private fun newId() = UUID.randomUUID().toString()

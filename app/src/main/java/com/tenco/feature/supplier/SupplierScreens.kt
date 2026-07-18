@@ -3,12 +3,15 @@ package com.tenco.feature.supplier
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -18,6 +21,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -283,11 +287,43 @@ fun TransactionsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltVi
 private data class Row4(val time: Long, val vendor: String, val detail: String, val status: String)
 
 // ---------------- Reports (P&L) ----------------
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReportsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel()) {
     val pnl by viewModel.pnl.collectAsStateWithLifecycle()
-    TencoScaffold(title = stringResource(R.string.pnl_report), onBack = onBack) { padding ->
+    val period by viewModel.selectedPeriod.collectAsStateWithLifecycle()
+    val deliveries by viewModel.deliveries.collectAsStateWithLifecycle()
+    val payments by viewModel.payments.collectAsStateWithLifecycle()
+    val vendors by viewModel.vendors.collectAsStateWithLifecycle()
+    val context = androidx.compose.ui.platform.LocalContext.current
+
+    TencoScaffold(
+        title = stringResource(R.string.pnl_report),
+        onBack = onBack,
+        actions = {
+            IconButton(onClick = {
+                val names = vendors.associate { it.id to it.name }
+                val csv = com.tenco.core.export.CsvExporter.buildReport(pnl, deliveries, payments, names)
+                com.tenco.core.export.CsvExporter.share(context, csv)
+            }) {
+                Icon(androidx.compose.material.icons.Icons.Filled.Share, contentDescription = stringResource(R.string.export_csv))
+            }
+        },
+    ) { padding ->
         Column(Modifier.padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                androidx.compose.material3.FilterChip(
+                    selected = period == ReportPeriod.ALL,
+                    onClick = { viewModel.setPeriod(ReportPeriod.ALL) },
+                    label = { Text(stringResource(R.string.all_time)) },
+                )
+                androidx.compose.material3.FilterChip(
+                    selected = period == ReportPeriod.THIS_MONTH,
+                    onClick = { viewModel.setPeriod(ReportPeriod.THIS_MONTH) },
+                    label = { Text(stringResource(R.string.this_month)) },
+                )
+            }
+            Spacer(Modifier.height(8.dp))
             PnlRow(stringResource(R.string.revenue), Money.format(pnl.revenuePaise))
             PnlRow(stringResource(R.string.purchase_cost), "- ${Money.format(pnl.purchaseCostPaise)}")
             PnlRow(stringResource(R.string.complaint_losses), "- ${Money.format(pnl.complaintLossesPaise)}")
@@ -332,10 +368,21 @@ fun ComplaintsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltView
                                 StatusChip(c.status, statusLabel(c.status))
                             }
                             Text(c.reason, style = MaterialTheme.typography.bodyMedium)
-                            if (c.status == ComplaintStatus.OPEN) {
-                                TextButton(onClick = { resolvingId = c.id }) { Text(stringResource(R.string.resolve)) }
-                            } else {
-                                Text("${stringResource(R.string.price_adjustments)}: ${Money.format(c.adjustmentPaise)}", style = MaterialTheme.typography.bodyMedium)
+                            when (c.status) {
+                                ComplaintStatus.RESOLVED ->
+                                    Text("${stringResource(R.string.price_adjustments)}: ${Money.format(c.adjustmentPaise)}", style = MaterialTheme.typography.bodyMedium)
+                                ComplaintStatus.REJECTED -> {}
+                                else -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    if (c.status == ComplaintStatus.OPEN) {
+                                        TextButton(onClick = { viewModel.setComplaintStatus(c.id, ComplaintStatus.UNDER_REVIEW) }) {
+                                            Text(stringResource(R.string.review))
+                                        }
+                                    }
+                                    TextButton(onClick = { resolvingId = c.id }) { Text(stringResource(R.string.resolve)) }
+                                    TextButton(onClick = { viewModel.setComplaintStatus(c.id, ComplaintStatus.REJECTED) }) {
+                                        Text(stringResource(R.string.reject))
+                                    }
+                                }
                             }
                         }
                     }
@@ -400,6 +447,8 @@ private fun statusLabel(status: String): String = when (status) {
     com.tenco.domain.DeliveryStatus.CONFIRMED -> stringResource(R.string.status_confirmed)
     com.tenco.domain.DeliveryStatus.DELIVERED -> stringResource(R.string.status_delivered)
     ComplaintStatus.OPEN -> stringResource(R.string.status_open)
+    ComplaintStatus.UNDER_REVIEW -> stringResource(R.string.status_under_review)
+    ComplaintStatus.REJECTED -> stringResource(R.string.status_rejected)
     ComplaintStatus.RESOLVED -> stringResource(R.string.status_resolved)
     else -> stringResource(R.string.status_pending)
 }

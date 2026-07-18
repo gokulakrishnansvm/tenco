@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.PriceChange
 import androidx.compose.material.icons.filled.ReportProblem
 import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.Insights
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.TrendingDown
@@ -120,6 +121,12 @@ fun SupplierDashboardScreen(
                         listOf(
                             Triple(R.string.menu_reports, Icons.Filled.Assessment, Routes.SUPPLIER_REPORTS),
                             Triple(R.string.menu_complaints, Icons.Filled.ReportProblem, Routes.SUPPLIER_COMPLAINTS),
+                        ),
+                        onNavigate,
+                    )
+                    MenuRow(
+                        listOf(
+                            Triple(R.string.menu_insights, Icons.Filled.Insights, Routes.SUPPLIER_INSIGHTS),
                         ),
                         onNavigate,
                     )

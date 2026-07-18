@@ -140,7 +140,7 @@ curl -s localhost:8080/api/suppliers/me/dashboard -H "Authorization: Bearer $TOK
 | **P1** | Local-first Android MVP (Compose, Room, i18n, UPI deep link) | ✅ Done |
 | **P2** | Backend: auth (OTP/JWT), REST APIs, delta sync, Razorpay intent + signed webhook | ✅ Done |
 | **P3** | App ↔ backend wiring: OTP login, authenticated sync, backend payment intent; real Razorpay Orders API (with fallback) + FCM push (credential-guarded) | ✅ Done (live keys/creds pending) |
-| **P4** | Voice prompts, advanced reports/export, dispute workflows, analytics | ⏳ Planned |
+| **P4** | Voice prompts (TTS), advanced reports (date-range P&L + CSV export/share), dispute workflows (OPEN/UNDER_REVIEW/RESOLVED/REJECTED), supplier analytics/insights | ✅ Done |
 
 ### Enabling live integrations (Phase 3)
 

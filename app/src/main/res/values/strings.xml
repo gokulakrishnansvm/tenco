@@ -14,6 +14,29 @@
     <string name="no">No</string>
     <string name="no_data">No data yet</string>
     <string name="change_language">Change language</string>
+    <string name="speak">Read aloud</string>
+
+    <!-- Dispute workflow -->
+    <string name="status_under_review">Under review</string>
+    <string name="status_rejected">Rejected</string>
+    <string name="review">Review</string>
+    <string name="reject">Reject</string>
+    <string name="my_complaints">My complaints</string>
+
+    <!-- Reports / export -->
+    <string name="export_csv">Export CSV</string>
+    <string name="all_time">All time</string>
+    <string name="period">Period</string>
+
+    <!-- Analytics / insights -->
+    <string name="menu_insights">Insights</string>
+    <string name="insights">Insights</string>
+    <string name="collection_rate">Collection rate</string>
+    <string name="total_billed">Total billed</string>
+    <string name="total_collected">Total collected</string>
+    <string name="outstanding">Outstanding</string>
+    <string name="top_vendors">Top vendors by dues</string>
+    <string name="deliveries_count">Deliveries</string>
 
     <!-- Login -->
     <string name="login_title">Welcome to TENCO</string>

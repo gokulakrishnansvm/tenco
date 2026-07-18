@@ -34,3 +34,13 @@ data class PnlReport(
 ) {
     val netProfitPaise: Long get() = revenuePaise - purchaseCostPaise - complaintLossesPaise
 }
+
+/** Aggregated business insights for the supplier analytics screen. */
+data class SupplierInsights(
+    val totalBilledPaise: Long = 0,
+    val totalCollectedPaise: Long = 0,
+    val outstandingPaise: Long = 0,
+    val collectionRatePercent: Int = 0,
+    val deliveriesCount: Int = 0,
+    val topVendors: List<VendorDistribution> = emptyList(),
+)

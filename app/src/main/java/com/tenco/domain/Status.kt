@@ -20,5 +20,7 @@ object PaymentMethod {
 
 object ComplaintStatus {
     const val OPEN = "OPEN"
+    const val UNDER_REVIEW = "UNDER_REVIEW"
     const val RESOLVED = "RESOLVED"
+    const val REJECTED = "REJECTED"
 }

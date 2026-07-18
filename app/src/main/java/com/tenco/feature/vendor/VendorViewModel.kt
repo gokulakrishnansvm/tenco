@@ -26,9 +26,15 @@ class VendorViewModel @Inject constructor(
     private val repository: TencoRepository,
     private val api: com.tenco.data.remote.TencoApi,
     private val syncManager: com.tenco.data.sync.SyncManager,
+    private val tts: com.tenco.core.tts.TtsManager,
 ) : ViewModel() {
 
     private val vendorId = MutableStateFlow<String?>(null)
+
+    fun speak(languageTag: String, text: String) {
+        tts.setLanguage(languageTag)
+        tts.speak(text)
+    }
 
     /** Set when a backend payment intent was created, so the manual confirmation reconciles
      *  against the same payment id the backend/webhook will update. */

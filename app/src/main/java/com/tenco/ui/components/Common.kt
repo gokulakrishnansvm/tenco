@@ -115,7 +115,7 @@ fun StatCard(
 fun StatusChip(status: String, label: String) {
     val color = when (status) {
         PaymentStatus.COMPLETED, DeliveryStatus.CONFIRMED, ComplaintStatus.RESOLVED -> StatusCompleted
-        PaymentStatus.FAILED -> StatusFailed
+        PaymentStatus.FAILED, ComplaintStatus.REJECTED -> StatusFailed
         else -> StatusPending
     }
     Surface(

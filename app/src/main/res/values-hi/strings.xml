@@ -12,6 +12,23 @@
     <string name="no">नहीं</string>
     <string name="no_data">कोई डेटा नहीं</string>
     <string name="change_language">भाषा बदलें</string>
+    <string name="speak">पढ़कर सुनाएं</string>
+    <string name="status_under_review">समीक्षाधीन</string>
+    <string name="status_rejected">अस्वीकृत</string>
+    <string name="review">समीक्षा करें</string>
+    <string name="reject">अस्वीकार करें</string>
+    <string name="my_complaints">मेरी शिकायतें</string>
+    <string name="export_csv">CSV निर्यात</string>
+    <string name="all_time">सभी समय</string>
+    <string name="period">अवधि</string>
+    <string name="menu_insights">विश्लेषण</string>
+    <string name="insights">विश्लेषण</string>
+    <string name="collection_rate">वसूली दर</string>
+    <string name="total_billed">कुल बिल</string>
+    <string name="total_collected">वसूल किया गया</string>
+    <string name="outstanding">बकाया</string>
+    <string name="top_vendors">सर्वाधिक बकाया विक्रेता</string>
+    <string name="deliveries_count">डिलीवरी</string>
 
     <string name="login_title">TENCO में आपका स्वागत है</string>
     <string name="login_subtitle">जारी रखने के लिए साइन इन करें</string>

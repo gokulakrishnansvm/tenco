@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.ReportProblem
 import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -84,6 +85,18 @@ fun VendorDashboardScreen(
     TencoScaffold(
         title = stringResource(R.string.vendor_dashboard),
         actions = {
+            val langTag = androidx.compose.ui.platform.LocalConfiguration.current.locales[0].language
+            val d0 = dashboard
+            val receivedLabel = stringResource(R.string.received)
+            val coconutsLabel = stringResource(R.string.coconuts)
+            val pendingLabel = stringResource(R.string.pending_dues)
+            IconButton(onClick = {
+                val rupees = (d0?.pendingDuesPaise ?: 0L) / 100
+                val summary = "$receivedLabel ${d0?.receivedQty ?: 0} $coconutsLabel. $pendingLabel ₹$rupees"
+                viewModel.speak(langTag, summary)
+            }) {
+                Icon(Icons.Filled.VolumeUp, contentDescription = stringResource(R.string.speak))
+            }
             IconButton(onClick = onChangeLanguage) {
                 Icon(Icons.Filled.Translate, contentDescription = stringResource(R.string.change_language))
             }
@@ -314,9 +327,10 @@ fun VendorHistoryScreen(
 ) {
     LaunchedEffect(vendorId) { viewModel.setVendor(vendorId) }
     val payments by viewModel.payments.collectAsStateWithLifecycle()
+    val complaints by viewModel.complaints.collectAsStateWithLifecycle()
 
     TencoScaffold(title = stringResource(R.string.transaction_history), onBack = onBack) { padding ->
-        if (payments.isEmpty()) {
+        if (payments.isEmpty() && complaints.isEmpty()) {
             EmptyState(stringResource(R.string.no_data))
         } else {
             LazyColumn(Modifier.padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -331,9 +345,39 @@ fun VendorHistoryScreen(
                         }
                     }
                 }
+                if (complaints.isNotEmpty()) {
+                    item {
+                        Text(
+                            stringResource(R.string.my_complaints),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(top = 8.dp),
+                        )
+                    }
+                    items(complaints) { c ->
+                        Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
+                            Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                                Column {
+                                    Text(c.reason, fontWeight = FontWeight.SemiBold)
+                                    Text(dateFmt.format(Date(c.createdAt)), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                                }
+                                StatusChip(c.status, complaintStatusLabel(c.status))
+                            }
+                        }
+                    }
+                }
             }
         }
     }
+}
+
+@Composable
+private fun complaintStatusLabel(status: String): String = when (status) {
+    com.tenco.domain.ComplaintStatus.OPEN -> stringResource(R.string.status_open)
+    com.tenco.domain.ComplaintStatus.UNDER_REVIEW -> stringResource(R.string.status_under_review)
+    com.tenco.domain.ComplaintStatus.RESOLVED -> stringResource(R.string.status_resolved)
+    com.tenco.domain.ComplaintStatus.REJECTED -> stringResource(R.string.status_rejected)
+    else -> stringResource(R.string.status_open)
 }
 
 @Composable
