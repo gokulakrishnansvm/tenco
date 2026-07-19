@@ -395,6 +395,21 @@ fun ReportsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewMod
                 }
             }
             Spacer(Modifier.height(8.dp))
+            com.tenco.ui.components.TencoCard(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(16.dp)) {
+                    Text(stringResource(R.string.revenue_trend), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    Spacer(Modifier.height(12.dp))
+                    val now = System.currentTimeMillis()
+                    val day = 86_400_000L
+                    val buckets = FloatArray(7)
+                    deliveries.forEach {
+                        val idx = 6 - ((now - it.createdAt) / day).toInt()
+                        if (idx in 0..6) buckets[idx] += (it.quantity * it.unitPricePaise) / 100f
+                    }
+                    com.tenco.ui.components.TrendChart(buckets.toList(), com.tenco.ui.theme.TileGreen, Modifier.fillMaxWidth().height(110.dp))
+                }
+            }
+            Spacer(Modifier.height(8.dp))
             PnlRow(stringResource(R.string.revenue), Money.format(pnl.revenuePaise))
             PnlRow(stringResource(R.string.purchase_cost), "- ${Money.format(pnl.purchaseCostPaise)}")
             PnlRow(stringResource(R.string.complaint_losses), "- ${Money.format(pnl.complaintLossesPaise)}")

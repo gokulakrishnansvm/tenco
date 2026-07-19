@@ -30,6 +30,42 @@ import androidx.compose.ui.unit.dp
 
 data class ChartSlice(val label: String, val value: Float, val color: Color)
 
+/** Animated line/trend chart with a soft gradient fill under the line. */
+@Composable
+fun TrendChart(
+    values: List<Float>,
+    color: Color,
+    modifier: Modifier = Modifier,
+) {
+    val anim by animateFloatAsState(targetValue = 1f, animationSpec = tween(900), label = "trend")
+    Canvas(modifier) {
+        if (values.size < 2) return@Canvas
+        val maxV = (values.maxOrNull() ?: 1f).coerceAtLeast(1f)
+        val stepX = size.width / (values.size - 1)
+        val pts = values.mapIndexed { i, v ->
+            androidx.compose.ui.geometry.Offset(i * stepX, size.height - (v / maxV) * size.height * 0.9f - 6f)
+        }
+        val shown = (pts.size * anim).toInt().coerceIn(2, pts.size)
+        val visible = pts.take(shown)
+        // Fill
+        val fill = androidx.compose.ui.graphics.Path().apply {
+            moveTo(visible.first().x, size.height)
+            visible.forEach { lineTo(it.x, it.y) }
+            lineTo(visible.last().x, size.height)
+            close()
+        }
+        drawPath(fill, brush = androidx.compose.ui.graphics.Brush.verticalGradient(listOf(color.copy(alpha = 0.28f), color.copy(alpha = 0f))))
+        // Line
+        val line = androidx.compose.ui.graphics.Path().apply {
+            moveTo(visible.first().x, visible.first().y)
+            visible.drop(1).forEach { lineTo(it.x, it.y) }
+        }
+        drawPath(line, color = color, style = Stroke(width = 6f, cap = StrokeCap.Round))
+        // End dot
+        drawCircle(color = color, radius = 9f, center = visible.last())
+    }
+}
+
 /** Animated donut chart with a center label. */
 @Composable
 fun DonutChart(

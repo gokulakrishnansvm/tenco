@@ -115,6 +115,7 @@
 
     <string name="pnl_report">लाभ और हानि</string>
     <string name="revenue">राजस्व</string>
+    <string name="revenue_trend">राजस्व रुझान · 7 दिन</string>
     <string name="purchase_cost">खरीद लागत</string>
     <string name="price_adjustments">मूल्य समायोजन</string>
     <string name="complaint_losses">शिकायत नुकसान</string>

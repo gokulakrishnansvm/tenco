@@ -133,6 +133,7 @@
     <!-- Reports -->
     <string name="pnl_report">Profit &amp; Loss</string>
     <string name="revenue">Revenue</string>
+    <string name="revenue_trend">Revenue trend · 7 days</string>
     <string name="purchase_cost">Purchase cost</string>
     <string name="price_adjustments">Price adjustments</string>
     <string name="complaint_losses">Complaint losses</string>

@@ -115,6 +115,7 @@
 
     <string name="pnl_report">லாபம் &amp; நஷ்டம்</string>
     <string name="revenue">வருவாய்</string>
+    <string name="revenue_trend">வருவாய் போக்கு · 7 நாட்கள்</string>
     <string name="purchase_cost">கொள்முதல் செலவு</string>
     <string name="price_adjustments">விலை சரிசெய்தல்</string>
     <string name="complaint_losses">புகார் இழப்புகள்</string>

@@ -115,6 +115,7 @@
 
     <string name="pnl_report">లాభం &amp; నష్టం</string>
     <string name="revenue">ఆదాయం</string>
+    <string name="revenue_trend">ఆదాయ ధోరణి · 7 రోజులు</string>
     <string name="purchase_cost">కొనుగోలు ఖర్చు</string>
     <string name="price_adjustments">ధర సర్దుబాట్లు</string>
     <string name="complaint_losses">ఫిర్యాదు నష్టాలు</string>
