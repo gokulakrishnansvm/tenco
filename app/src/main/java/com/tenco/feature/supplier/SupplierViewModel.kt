@@ -40,7 +40,18 @@ enum class ReportPeriod {
 @HiltViewModel
 class SupplierViewModel @Inject constructor(
     private val repository: TencoRepository,
+    private val syncManager: com.tenco.data.sync.SyncManager,
 ) : ViewModel() {
+
+    private val _refreshing = kotlinx.coroutines.flow.MutableStateFlow(false)
+    val refreshing: StateFlow<Boolean> = _refreshing
+
+    fun refresh() = viewModelScope.launch {
+        _refreshing.value = true
+        syncManager.sync()
+        kotlinx.coroutines.delay(500)
+        _refreshing.value = false
+    }
 
     val dashboard: StateFlow<SupplierDashboard> =
         repository.observeSupplierDashboard().stateInVm(SupplierDashboard())

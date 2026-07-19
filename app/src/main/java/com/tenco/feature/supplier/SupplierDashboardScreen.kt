@@ -66,6 +66,7 @@ import com.tenco.ui.theme.TileRed
 import com.tenco.ui.theme.TileTeal
 import java.util.Calendar
 
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun SupplierDashboardScreen(
     onNavigate: (String) -> Unit,
@@ -76,15 +77,21 @@ fun SupplierDashboardScreen(
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
     val payments by viewModel.payments.collectAsStateWithLifecycle()
     val vendors by viewModel.vendors.collectAsStateWithLifecycle()
+    val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
     val names = vendors.associate { it.id to it.name }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = { SupplierBottomBar(onNavigate) },
     ) { padding ->
+        androidx.compose.material3.pulltorefresh.PullToRefreshBox(
+            isRefreshing = refreshing,
+            onRefresh = { viewModel.refresh() },
+            modifier = Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding()),
+        ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
-            contentPadding = PaddingValues(top = 20.dp, bottom = padding.calculateBottomPadding() + 16.dp),
+            contentPadding = PaddingValues(top = 20.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item { GreetingHeader(onNotifications = { onNavigate(Routes.NOTIFICATIONS) }, onProfile = { onNavigate(Routes.PROFILE) }) }
@@ -131,6 +138,7 @@ fun SupplierDashboardScreen(
                     )
                 }
             }
+        }
         }
     }
 }
