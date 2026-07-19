@@ -24,6 +24,7 @@ class PaymentController(
     private val razorpay: RazorpayService,
 ) {
     /** Creates a payment intent: persists a PENDING payment + gateway order, returns pay info. */
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('VENDOR')")
     @PostMapping("/intent")
     fun createIntent(@RequestBody body: IntentBody): IntentResponse {
         val payment = payments.save(

@@ -20,7 +20,7 @@ class JwtAuthFilter(private val jwtService: JwtService) : OncePerRequestFilter()
         val header = request.getHeader("Authorization")
         if (header != null && header.startsWith("Bearer ")) {
             val principal = jwtService.parse(header.substring(7))
-            if (principal != null && SecurityContextHolder.getContext().authentication == null) {
+            if (principal != null && principal.type == "access" && SecurityContextHolder.getContext().authentication == null) {
                 val authorities = listOf(SimpleGrantedAuthority("ROLE_${principal.role}"))
                 val auth = UsernamePasswordAuthenticationToken(principal, null, authorities)
                 SecurityContextHolder.getContext().authentication = auth

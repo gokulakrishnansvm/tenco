@@ -59,5 +59,33 @@ class AuthController(
         return AuthResponse(user.id, user.role, tokens.accessToken, tokens.refreshToken)
     }
 
+    @PostMapping("/refresh")
+    fun refresh(@RequestBody body: RefreshBody): AuthResponse {
+        val principal = jwt.parse(body.refreshToken)
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token")
+        if (principal.type != "refresh") {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not a refresh token")
+        }
+        // Rotation: issue a fresh access+refresh pair. (Full revocation would require a token
+        // store / jti denylist — a natural addition once Redis is wired in.)
+        val tokens = jwt.issue(principal.userId, principal.phone, principal.role)
+        return AuthResponse(principal.userId, principal.role, tokens.accessToken, tokens.refreshToken)
+    }
+
+    @PostMapping("/role")
+    fun setRole(@RequestBody body: RoleBody): AuthResponse {
+        val auth = org.springframework.security.core.context.SecurityContextHolder.getContext().authentication
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated")
+        val principal = auth.principal as com.tenco.backend.security.JwtPrincipal
+        val user = users.findById(principal.userId).orElseThrow()
+        user.role = body.role.uppercase()
+        users.save(user)
+        val tokens = jwt.issue(user.id, user.phone, user.role)
+        return AuthResponse(user.id, user.role, tokens.accessToken, tokens.refreshToken)
+    }
+
     private fun normalize(phone: String) = phone.filter(Char::isDigit).takeLast(10)
 }
+
+data class RefreshBody(@field:NotBlank val refreshToken: String)
+data class RoleBody(@field:NotBlank val role: String)

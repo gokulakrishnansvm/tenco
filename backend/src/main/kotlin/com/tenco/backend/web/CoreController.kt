@@ -2,6 +2,7 @@ package com.tenco.backend.web
 
 import com.tenco.backend.core.CoreService
 import com.tenco.backend.domain.*
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 // ---- Request bodies ----
@@ -27,26 +28,32 @@ class CoreController(
 ) {
     // Dealers & purchases
     @GetMapping("/dealers") fun dealers() = dealers.findAll()
+    @PreAuthorize("hasRole('SUPPLIER')")
     @PostMapping("/dealers") fun addDealer(@RequestBody b: DealerBody) =
         dealers.save(Dealer(name = b.name, location = b.location))
     @GetMapping("/purchases") fun purchases() = purchases.findAll()
+    @PreAuthorize("hasRole('SUPPLIER')")
     @PostMapping("/purchases") fun addPurchase(@RequestBody b: PurchaseBody) =
         purchases.save(Purchase(dealerId = b.dealerId, quantity = b.quantity, unitCostPaise = b.unitCostPaise))
 
     // Vendors & prices
     @GetMapping("/vendors") fun vendors() = vendors.findAll()
+    @PreAuthorize("hasRole('SUPPLIER')")
     @PostMapping("/vendors") fun addVendor(@RequestBody b: VendorBody) =
         vendors.save(Vendor(name = b.name, phone = b.phone, upiVpa = b.upiVpa, languageTag = b.languageTag))
     @GetMapping("/prices") fun prices(@RequestParam(required = false) vendorId: String?) =
         if (vendorId != null) prices.findByVendorIdOrderByEffectiveFromDesc(vendorId) else prices.findAll()
+    @PreAuthorize("hasRole('SUPPLIER')")
     @PutMapping("/prices") fun setPrice(@RequestBody b: PriceBody) =
         prices.save(Price(vendorId = b.vendorId, unitPricePaise = b.unitPricePaise))
 
     // Deliveries
     @GetMapping("/deliveries") fun deliveries(@RequestParam(required = false) vendorId: String?) =
         if (vendorId != null) deliveries.findByVendorId(vendorId) else deliveries.findAll()
+    @PreAuthorize("hasRole('SUPPLIER')")
     @PostMapping("/deliveries") fun addDelivery(@RequestBody b: DeliveryBody) =
         deliveries.save(Delivery(vendorId = b.vendorId, quantity = b.quantity, unitPricePaise = b.unitPricePaise))
+    @PreAuthorize("hasRole('VENDOR')")
     @PostMapping("/deliveries/{id}/confirm") fun confirm(@PathVariable id: String): Delivery {
         val d = deliveries.findById(id).orElseThrow()
         d.status = "CONFIRMED"; d.confirmedAt = now(); d.updatedAt = now()
@@ -56,8 +63,10 @@ class CoreController(
     // Complaints
     @GetMapping("/complaints") fun complaints(@RequestParam(required = false) vendorId: String?) =
         if (vendorId != null) complaints.findByVendorId(vendorId) else complaints.findAll()
+    @PreAuthorize("hasRole('VENDOR')")
     @PostMapping("/complaints") fun addComplaint(@RequestBody b: ComplaintBody) =
         complaints.save(Complaint(vendorId = b.vendorId, deliveryId = b.deliveryId, reason = b.reason, photoUrl = b.photoUrl))
+    @PreAuthorize("hasRole('SUPPLIER')")
     @PutMapping("/complaints/{id}/resolve") fun resolve(@PathVariable id: String, @RequestBody b: ResolveBody): Complaint {
         val c = complaints.findById(id).orElseThrow()
         c.status = "RESOLVED"; c.adjustmentPaise = b.adjustmentPaise; c.updatedAt = now()
@@ -69,8 +78,10 @@ class CoreController(
         if (vendorId != null) payments.findByVendorId(vendorId) else payments.findAll()
 
     // Dashboards & reports
+    @PreAuthorize("hasRole('SUPPLIER')")
     @GetMapping("/suppliers/me/dashboard") fun supplierDashboard() = core.supplierDashboard()
     @GetMapping("/vendors/{id}/dashboard") fun vendorDashboard(@PathVariable id: String) = core.vendorDashboard(id)
+    @PreAuthorize("hasRole('SUPPLIER')")
     @GetMapping("/reports/pnl") fun pnl() = core.pnl()
 }
 

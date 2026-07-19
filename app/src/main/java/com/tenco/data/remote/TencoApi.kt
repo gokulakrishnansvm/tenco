@@ -33,6 +33,14 @@ class TencoApi @Inject constructor(
             setBody(OtpVerifyBody(phone, code, name, role))
         }.body()
 
+    /** Updates the authenticated user's role and returns re-issued tokens. */
+    suspend fun setRole(role: String): AuthResponse =
+        client.post("$BASE_URL/auth/role") {
+            header("Authorization", "Bearer ${prefs.accessToken.orEmpty()}")
+            contentType(ContentType.Application.Json)
+            setBody(RoleBody(role))
+        }.body()
+
     /** Pulls all records changed after [since] (epoch millis). Requires a valid JWT. */
     suspend fun syncChanges(since: Long): RemoteSyncChanges =
         client.get("$BASE_URL/api/sync/changes") {

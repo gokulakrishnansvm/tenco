@@ -19,16 +19,17 @@ class JwtService(
 
     fun issue(userId: String, phone: String, role: String): TokenPair {
         val now = System.currentTimeMillis()
-        val access = build(userId, phone, role, now, accessMinutes * 60_000)
-        val refresh = build(userId, phone, role, now, refreshDays * 24 * 60 * 60_000)
+        val access = build(userId, phone, role, "access", now, accessMinutes * 60_000)
+        val refresh = build(userId, phone, role, "refresh", now, refreshDays * 24 * 60 * 60_000)
         return TokenPair(access, refresh, role)
     }
 
-    private fun build(userId: String, phone: String, role: String, now: Long, ttlMs: Long): String =
+    private fun build(userId: String, phone: String, role: String, type: String, now: Long, ttlMs: Long): String =
         Jwts.builder()
             .subject(userId)
             .claim("phone", phone)
             .claim("role", role)
+            .claim("type", type)
             .issuedAt(Date(now))
             .expiration(Date(now + ttlMs))
             .signWith(key)
@@ -41,10 +42,11 @@ class JwtService(
             userId = claims.subject,
             phone = claims["phone"] as? String ?: "",
             role = claims["role"] as? String ?: "VENDOR",
+            type = claims["type"] as? String ?: "access",
         )
     } catch (e: Exception) {
         null
     }
 }
 
-data class JwtPrincipal(val userId: String, val phone: String, val role: String)
+data class JwtPrincipal(val userId: String, val phone: String, val role: String, val type: String = "access")

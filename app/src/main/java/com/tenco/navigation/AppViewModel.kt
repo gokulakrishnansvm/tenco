@@ -15,6 +15,7 @@ class AppViewModel @Inject constructor(
     private val repository: TencoRepository,
     private val syncManager: com.tenco.data.sync.SyncManager,
     private val pushRegistrar: com.tenco.push.PushRegistrar,
+    private val api: com.tenco.data.remote.TencoApi,
 ) : ViewModel() {
 
     init {
@@ -51,7 +52,7 @@ class AppViewModel @Inject constructor(
 
     fun chooseSupplier() {
         prefs.role = ROLE_SUPPLIER
-        viewModelScope.launch { syncManager.sync() }
+        viewModelScope.launch { applyRoleRemote(ROLE_SUPPLIER); syncManager.sync() }
         viewModelScope.launch { pushRegistrar.registerCurrentToken() }
     }
 
@@ -64,11 +65,25 @@ class AppViewModel @Inject constructor(
         viewModelScope.launch { pushRegistrar.registerCurrentToken() }
         viewModelScope.launch {
             repository.ensureSeeded() // guarantee seed data before the one-shot reads
-            syncManager.sync()        // push local changes + pull backend data (best-effort)
+            applyRoleRemote(ROLE_VENDOR) // align backend JWT role for RBAC (best-effort)
+            syncManager.sync()           // push local changes + pull backend data (best-effort)
             val matched = repository.findVendorByPhone(prefs.userPhone)?.id
             val vendorId = matched ?: prefs.selectedVendorId ?: repository.firstVendor()?.id
             prefs.selectedVendorId = vendorId
             onReady(vendorId)
+        }
+    }
+
+    /** Re-issues the JWT with the chosen role so RBAC-protected endpoints accept it. */
+    private suspend fun applyRoleRemote(role: String) {
+        if (prefs.accessToken.isNullOrBlank()) return
+        try {
+            val auth = api.setRole(role)
+            prefs.accessToken = auth.accessToken
+            prefs.refreshToken = auth.refreshToken
+            prefs.userId = auth.userId
+        } catch (e: Exception) {
+            // Offline / backend unavailable — local role still drives the UI.
         }
     }
 

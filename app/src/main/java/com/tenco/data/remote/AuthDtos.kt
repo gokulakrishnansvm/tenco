@@ -17,6 +17,9 @@ data class OtpVerifyBody(
 )
 
 @Serializable
+data class RoleBody(val role: String)
+
+@Serializable
 data class AuthResponse(
     val userId: String,
     val role: String,
