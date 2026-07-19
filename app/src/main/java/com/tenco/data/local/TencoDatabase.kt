@@ -12,8 +12,9 @@ import androidx.room.RoomDatabase
         DeliveryEntity::class,
         ComplaintEntity::class,
         PaymentEntity::class,
+        OutboxEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = false,
 )
 abstract class TencoDatabase : RoomDatabase() {
@@ -24,6 +25,7 @@ abstract class TencoDatabase : RoomDatabase() {
     abstract fun deliveryDao(): DeliveryDao
     abstract fun complaintDao(): ComplaintDao
     abstract fun paymentDao(): PaymentDao
+    abstract fun outboxDao(): OutboxDao
 
     companion object {
         const val NAME = "tenco.db"

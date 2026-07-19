@@ -20,8 +20,8 @@ class AppViewModel @Inject constructor(
     init {
         // Ensure demo data exists as soon as the app starts (both roles rely on it).
         viewModelScope.launch { repository.ensureSeeded() }
-        // Pull backend data for returning, authenticated users (no-op if offline / not logged in).
-        viewModelScope.launch { syncManager.pull() }
+        // Push queued local changes + pull backend data (no-op if offline / not logged in).
+        viewModelScope.launch { syncManager.sync() }
     }
 
     val startRoute: String
@@ -51,7 +51,7 @@ class AppViewModel @Inject constructor(
 
     fun chooseSupplier() {
         prefs.role = ROLE_SUPPLIER
-        viewModelScope.launch { syncManager.pull() }
+        viewModelScope.launch { syncManager.sync() }
         viewModelScope.launch { pushRegistrar.registerCurrentToken() }
     }
 
@@ -64,7 +64,7 @@ class AppViewModel @Inject constructor(
         viewModelScope.launch { pushRegistrar.registerCurrentToken() }
         viewModelScope.launch {
             repository.ensureSeeded() // guarantee seed data before the one-shot reads
-            syncManager.pull()        // pull backend data (best-effort) before resolving vendor
+            syncManager.sync()        // push local changes + pull backend data (best-effort)
             val matched = repository.findVendorByPhone(prefs.userPhone)?.id
             val vendorId = matched ?: prefs.selectedVendorId ?: repository.firstVendor()?.id
             prefs.selectedVendorId = vendorId

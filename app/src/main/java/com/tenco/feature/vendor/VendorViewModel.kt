@@ -77,7 +77,7 @@ class VendorViewModel @Inject constructor(
         // the same record instead of creating a duplicate.
         repository.recordPayment(id, amountPaise, PaymentMethod.UPI, status, note = null, id = lastIntentId)
         lastIntentId = null
-        syncManager.pull() // best-effort: pull authoritative status if the backend is reachable
+        syncManager.sync() // push the payment + pull authoritative status if backend reachable
     }
 
     /**

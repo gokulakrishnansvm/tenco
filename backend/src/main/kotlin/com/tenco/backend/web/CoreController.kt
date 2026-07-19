@@ -76,15 +76,17 @@ class CoreController(
 
 // ---- Delta sync ----
 data class SyncChanges(
-    val cursor: Long,
-    val dealers: List<Dealer>,
-    val purchases: List<Purchase>,
-    val vendors: List<Vendor>,
-    val prices: List<Price>,
-    val deliveries: List<Delivery>,
-    val complaints: List<Complaint>,
-    val payments: List<Payment>,
+    val cursor: Long = 0,
+    val dealers: List<Dealer> = emptyList(),
+    val purchases: List<Purchase> = emptyList(),
+    val vendors: List<Vendor> = emptyList(),
+    val prices: List<Price> = emptyList(),
+    val deliveries: List<Delivery> = emptyList(),
+    val complaints: List<Complaint> = emptyList(),
+    val payments: List<Payment> = emptyList(),
 )
+
+data class SyncPushResult(val applied: Int, val cursor: Long)
 
 @RestController
 @RequestMapping("/api/sync")
@@ -109,4 +111,20 @@ class SyncController(
         complaints = complaints.findByUpdatedAtGreaterThan(since),
         payments = payments.findByUpdatedAtGreaterThan(since),
     )
+
+    /** Upserts a batch of client-side changes (outbox push). Idempotent by id; bumps updatedAt. */
+    @PostMapping("/push")
+    fun push(@RequestBody c: SyncChanges): SyncPushResult {
+        val ts = System.currentTimeMillis()
+        c.dealers.forEach { it.updatedAt = ts; dealers.save(it) }
+        c.purchases.forEach { it.updatedAt = ts; purchases.save(it) }
+        c.vendors.forEach { it.updatedAt = ts; vendors.save(it) }
+        c.prices.forEach { it.updatedAt = ts; prices.save(it) }
+        c.deliveries.forEach { it.updatedAt = ts; deliveries.save(it) }
+        c.complaints.forEach { it.updatedAt = ts; complaints.save(it) }
+        c.payments.forEach { it.updatedAt = ts; payments.save(it) }
+        val applied = c.dealers.size + c.purchases.size + c.vendors.size + c.prices.size +
+            c.deliveries.size + c.complaints.size + c.payments.size
+        return SyncPushResult(applied, ts)
+    }
 }

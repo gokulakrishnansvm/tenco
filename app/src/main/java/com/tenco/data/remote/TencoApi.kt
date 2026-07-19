@@ -40,6 +40,15 @@ class TencoApi @Inject constructor(
             url { parameters.append("since", since.toString()) }
         }.body()
 
+    /** Pushes locally-changed records (outbox) to the backend. Requires a valid JWT. */
+    suspend fun pushChanges(changes: RemoteSyncChanges) {
+        client.post("$BASE_URL/api/sync/push") {
+            header("Authorization", "Bearer ${prefs.accessToken.orEmpty()}")
+            contentType(ContentType.Application.Json)
+            setBody(changes)
+        }
+    }
+
     /** Creates a backend payment intent (Razorpay order + UPI link). Requires a valid JWT. */
     suspend fun createPaymentIntent(vendorId: String, amountPaise: Long): IntentResponse =
         client.post("$BASE_URL/api/payments/intent") {

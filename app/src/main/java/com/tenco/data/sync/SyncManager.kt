@@ -10,6 +10,13 @@ import com.tenco.data.local.PriceEntity
 import com.tenco.data.local.PurchaseEntity
 import com.tenco.data.local.VendorEntity
 import com.tenco.data.remote.RemoteSyncChanges
+import com.tenco.data.remote.RemoteDealer
+import com.tenco.data.remote.RemotePurchase
+import com.tenco.data.remote.RemoteVendor
+import com.tenco.data.remote.RemotePrice
+import com.tenco.data.remote.RemoteDelivery
+import com.tenco.data.remote.RemoteComplaint
+import com.tenco.data.remote.RemotePayment
 import com.tenco.data.remote.TencoApi
 import com.tenco.data.repository.TencoRepository
 import javax.inject.Inject
@@ -37,6 +44,38 @@ class SyncManager @Inject constructor(
             Log.w(TAG, "sync pull failed: ${e.message}")
             null
         }
+    }
+
+    /** Pushes queued local changes (outbox) to the backend, clearing them on success. */
+    suspend fun push(): Int? {
+        if (prefs.accessToken.isNullOrBlank()) return null
+        return try {
+            val entries = repository.outboxAll()
+            if (entries.isEmpty()) return 0
+            fun idsOf(type: String) = entries.filter { it.entityType == type }.map { it.entityId }.distinct()
+            val changes = RemoteSyncChanges(
+                cursor = 0,
+                dealers = repository.dealersByIds(idsOf(TencoRepository.OUT_DEALER)).map { RemoteDealer(it.id, it.name, it.location) },
+                purchases = repository.purchasesByIds(idsOf(TencoRepository.OUT_PURCHASE)).map { RemotePurchase(it.id, it.dealerId, it.quantity, it.unitCostPaise, it.createdAt) },
+                vendors = repository.vendorsByIds(idsOf(TencoRepository.OUT_VENDOR)).map { RemoteVendor(it.id, it.name, it.phone, it.upiVpa, it.languageTag) },
+                prices = repository.pricesByIds(idsOf(TencoRepository.OUT_PRICE)).map { RemotePrice(it.id, it.vendorId, it.unitPricePaise, it.effectiveFrom) },
+                deliveries = repository.deliveriesByIds(idsOf(TencoRepository.OUT_DELIVERY)).map { RemoteDelivery(it.id, it.vendorId, it.quantity, it.unitPricePaise, it.status, it.createdAt, it.confirmedAt) },
+                complaints = repository.complaintsByIds(idsOf(TencoRepository.OUT_COMPLAINT)).map { RemoteComplaint(it.id, it.deliveryId, it.vendorId, it.reason, it.photoUri, it.adjustmentPaise, it.status, it.createdAt) },
+                payments = repository.paymentsByIds(idsOf(TencoRepository.OUT_PAYMENT)).map { RemotePayment(it.id, it.vendorId, it.amountPaise, it.method, it.status, it.upiRef, it.note, it.createdAt) },
+            )
+            api.pushChanges(changes)
+            repository.clearOutbox(entries.map { it.seq.toString() })
+            entries.size.also { Log.d(TAG, "outbox pushed $it entries") }
+        } catch (e: Exception) {
+            Log.w(TAG, "sync push failed: ${e.message}")
+            null
+        }
+    }
+
+    /** Full sync: push local changes first, then pull remote changes. */
+    suspend fun sync() {
+        push()
+        pull()
     }
 
     private suspend fun apply(c: RemoteSyncChanges) {

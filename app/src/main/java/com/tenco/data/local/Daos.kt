@@ -12,6 +12,9 @@ interface DealerDao {
     @Query("SELECT * FROM dealers ORDER BY name")
     fun observeAll(): Flow<List<DealerEntity>>
 
+    @Query("SELECT * FROM dealers WHERE id IN (:ids)")
+    suspend fun getByIds(ids: List<String>): List<DealerEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(dealer: DealerEntity)
 
@@ -23,6 +26,9 @@ interface DealerDao {
 interface PurchaseDao {
     @Query("SELECT * FROM purchases ORDER BY createdAt DESC")
     fun observeAll(): Flow<List<PurchaseEntity>>
+
+    @Query("SELECT * FROM purchases WHERE id IN (:ids)")
+    suspend fun getByIds(ids: List<String>): List<PurchaseEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(purchase: PurchaseEntity)
@@ -39,6 +45,9 @@ interface VendorDao {
     @Query("SELECT * FROM vendors WHERE id = :id")
     suspend fun getById(id: String): VendorEntity?
 
+    @Query("SELECT * FROM vendors WHERE id IN (:ids)")
+    suspend fun getByIds(ids: List<String>): List<VendorEntity>
+
     @Query("SELECT * FROM vendors ORDER BY name LIMIT 1")
     suspend fun firstVendor(): VendorEntity?
 
@@ -54,6 +63,9 @@ interface PriceDao {
     @Query("SELECT * FROM prices ORDER BY effectiveFrom DESC")
     fun observeAll(): Flow<List<PriceEntity>>
 
+    @Query("SELECT * FROM prices WHERE id IN (:ids)")
+    suspend fun getByIds(ids: List<String>): List<PriceEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(price: PriceEntity)
 }
@@ -65,6 +77,9 @@ interface DeliveryDao {
 
     @Query("SELECT * FROM deliveries WHERE vendorId = :vendorId ORDER BY createdAt DESC")
     fun observeForVendor(vendorId: String): Flow<List<DeliveryEntity>>
+
+    @Query("SELECT * FROM deliveries WHERE id IN (:ids)")
+    suspend fun getByIds(ids: List<String>): List<DeliveryEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(delivery: DeliveryEntity)
@@ -84,6 +99,9 @@ interface ComplaintDao {
     @Query("SELECT * FROM complaints WHERE vendorId = :vendorId ORDER BY createdAt DESC")
     fun observeForVendor(vendorId: String): Flow<List<ComplaintEntity>>
 
+    @Query("SELECT * FROM complaints WHERE id IN (:ids)")
+    suspend fun getByIds(ids: List<String>): List<ComplaintEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(complaint: ComplaintEntity)
 
@@ -102,6 +120,21 @@ interface PaymentDao {
     @Query("SELECT * FROM payments WHERE vendorId = :vendorId ORDER BY createdAt DESC")
     fun observeForVendor(vendorId: String): Flow<List<PaymentEntity>>
 
+    @Query("SELECT * FROM payments WHERE id IN (:ids)")
+    suspend fun getByIds(ids: List<String>): List<PaymentEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(payment: PaymentEntity)
+}
+
+@Dao
+interface OutboxDao {
+    @Query("SELECT * FROM outbox ORDER BY seq")
+    suspend fun all(): List<OutboxEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(entry: OutboxEntity)
+
+    @Query("DELETE FROM outbox WHERE seq IN (:seqs)")
+    suspend fun deleteBySeqs(seqs: List<Long>)
 }

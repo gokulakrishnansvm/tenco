@@ -36,6 +36,7 @@ class TencoRepository @Inject constructor(
     private val deliveryDao = db.deliveryDao()
     private val complaintDao = db.complaintDao()
     private val paymentDao = db.paymentDao()
+    private val outboxDao = db.outboxDao()
 
     // --- Raw observers ---
     fun observeDealers(): Flow<List<DealerEntity>> = dealerDao.observeAll()
@@ -173,51 +174,72 @@ class TencoRepository @Inject constructor(
     }
 
     // --- Writes ---
-    suspend fun addDealer(name: String, location: String) =
-        dealerDao.upsert(DealerEntity(newId(), name, location))
+    suspend fun addDealer(name: String, location: String) {
+        val e = DealerEntity(newId(), name, location); dealerDao.upsert(e); enqueue(OUT_DEALER, e.id)
+    }
 
-    suspend fun addPurchase(dealerId: String, quantity: Int, unitCostPaise: Long) =
-        purchaseDao.upsert(PurchaseEntity(newId(), dealerId, quantity, unitCostPaise, now()))
+    suspend fun addPurchase(dealerId: String, quantity: Int, unitCostPaise: Long) {
+        val e = PurchaseEntity(newId(), dealerId, quantity, unitCostPaise, now()); purchaseDao.upsert(e); enqueue(OUT_PURCHASE, e.id)
+    }
 
-    suspend fun addVendor(name: String, phone: String, upiVpa: String?, languageTag: String) =
-        vendorDao.upsert(VendorEntity(newId(), name, phone, upiVpa, languageTag))
+    suspend fun addVendor(name: String, phone: String, upiVpa: String?, languageTag: String) {
+        val e = VendorEntity(newId(), name, phone, upiVpa, languageTag); vendorDao.upsert(e); enqueue(OUT_VENDOR, e.id)
+    }
 
-    suspend fun setPrice(vendorId: String, unitPricePaise: Long) =
-        priceDao.upsert(PriceEntity(newId(), vendorId, unitPricePaise, now()))
+    suspend fun setPrice(vendorId: String, unitPricePaise: Long) {
+        val e = PriceEntity(newId(), vendorId, unitPricePaise, now()); priceDao.upsert(e); enqueue(OUT_PRICE, e.id)
+    }
 
-    suspend fun addDelivery(vendorId: String, quantity: Int, unitPricePaise: Long) =
-        deliveryDao.upsert(
-            DeliveryEntity(newId(), vendorId, quantity, unitPricePaise, DeliveryStatus.DELIVERED, now(), null)
-        )
+    suspend fun addDelivery(vendorId: String, quantity: Int, unitPricePaise: Long) {
+        val e = DeliveryEntity(newId(), vendorId, quantity, unitPricePaise, DeliveryStatus.DELIVERED, now(), null)
+        deliveryDao.upsert(e); enqueue(OUT_DELIVERY, e.id)
+    }
 
     suspend fun confirmDelivery(deliveryId: String) {
         val d = deliveryDao.getById(deliveryId) ?: return
         deliveryDao.update(d.copy(status = DeliveryStatus.CONFIRMED, confirmedAt = now()))
+        enqueue(OUT_DELIVERY, deliveryId)
     }
 
-    suspend fun recordPayment(vendorId: String, amountPaise: Long, method: String, status: String, note: String?, id: String? = null) =
-        paymentDao.upsert(
-            PaymentEntity(id ?: newId(), vendorId, amountPaise, method, status, upiRef = null, note = note, createdAt = now())
-        )
+    suspend fun recordPayment(vendorId: String, amountPaise: Long, method: String, status: String, note: String?, id: String? = null) {
+        val e = PaymentEntity(id ?: newId(), vendorId, amountPaise, method, status, upiRef = null, note = note, createdAt = now())
+        paymentDao.upsert(e); enqueue(OUT_PAYMENT, e.id)
+    }
 
-    suspend fun raiseComplaint(vendorId: String, deliveryId: String, reason: String, photoUri: String?) =
-        complaintDao.upsert(
-            ComplaintEntity(newId(), deliveryId, vendorId, reason, photoUri, 0, ComplaintStatus.OPEN, now())
-        )
+    suspend fun raiseComplaint(vendorId: String, deliveryId: String, reason: String, photoUri: String?) {
+        val e = ComplaintEntity(newId(), deliveryId, vendorId, reason, photoUri, 0, ComplaintStatus.OPEN, now())
+        complaintDao.upsert(e); enqueue(OUT_COMPLAINT, e.id)
+    }
 
     suspend fun resolveComplaint(complaintId: String, adjustmentPaise: Long) {
         val c = complaintDao.getById(complaintId) ?: return
         complaintDao.update(c.copy(adjustmentPaise = adjustmentPaise, status = ComplaintStatus.RESOLVED))
+        enqueue(OUT_COMPLAINT, complaintId)
     }
 
     /** Dispute lifecycle transition (e.g. OPEN -> UNDER_REVIEW, or -> REJECTED). */
     suspend fun setComplaintStatus(complaintId: String, status: String) {
         val c = complaintDao.getById(complaintId) ?: return
         complaintDao.update(c.copy(status = status))
+        enqueue(OUT_COMPLAINT, complaintId)
     }
+
+    private suspend fun enqueue(type: String, id: String) =
+        outboxDao.insert(com.tenco.data.local.OutboxEntity(entityType = type, entityId = id, createdAt = now()))
 
     private fun newId() = UUID.randomUUID().toString()
     private fun now() = System.currentTimeMillis()
+
+    // --- Outbox access (client->server sync) ---
+    suspend fun outboxAll() = outboxDao.all()
+    suspend fun clearOutbox(seqs: List<String>) = outboxDao.deleteBySeqs(seqs.map { it.toLong() })
+    suspend fun dealersByIds(ids: List<String>) = dealerDao.getByIds(ids)
+    suspend fun purchasesByIds(ids: List<String>) = purchaseDao.getByIds(ids)
+    suspend fun vendorsByIds(ids: List<String>) = vendorDao.getByIds(ids)
+    suspend fun pricesByIds(ids: List<String>) = priceDao.getByIds(ids)
+    suspend fun deliveriesByIds(ids: List<String>) = deliveryDao.getByIds(ids)
+    suspend fun complaintsByIds(ids: List<String>) = complaintDao.getByIds(ids)
+    suspend fun paymentsByIds(ids: List<String>) = paymentDao.getByIds(ids)
 
     // --- Batch upserts (used by backend sync) ---
     suspend fun upsertDealers(items: List<DealerEntity>) = items.forEach { dealerDao.upsert(it) }
@@ -231,5 +253,12 @@ class TencoRepository @Inject constructor(
     companion object {
         /** Phase-1 demo supplier VPA used for UPI deep links. */
         const val SUPPLIER_VPA = "tenco.supplier@upi"
+        const val OUT_DEALER = "dealer"
+        const val OUT_PURCHASE = "purchase"
+        const val OUT_VENDOR = "vendor"
+        const val OUT_PRICE = "price"
+        const val OUT_DELIVERY = "delivery"
+        const val OUT_COMPLAINT = "complaint"
+        const val OUT_PAYMENT = "payment"
     }
 }

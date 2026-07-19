@@ -71,3 +71,12 @@ data class PaymentEntity(
     val note: String?,
     val createdAt: Long,
 )
+
+/** Records a locally-changed entity awaiting push to the backend (client->server sync). */
+@Entity(tableName = "outbox")
+data class OutboxEntity(
+    @PrimaryKey(autoGenerate = true) val seq: Long = 0,
+    val entityType: String,
+    val entityId: String,
+    val createdAt: Long,
+)
