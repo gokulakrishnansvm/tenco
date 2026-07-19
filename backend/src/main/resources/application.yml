@@ -65,6 +65,16 @@ logging:
   level:
     com.tenco.backend: DEBUG
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  health:
+    # Redis is opt-in (OTP_STORE=redis); don't fail health when it's absent (dev).
+    redis:
+      enabled: ${REDIS_HEALTH:false}
+
 ---
 spring:
   config:
