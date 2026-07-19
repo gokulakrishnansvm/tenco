@@ -6,9 +6,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -45,8 +52,14 @@ fun LoginScreen(
     LaunchedEffect(state.devOtp) { state.devOtp?.let { code = it } }
     LaunchedEffect(state.done) { if (state.done) onLoggedIn() }
 
+    val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
+    val phoneFocus = remember { androidx.compose.ui.focus.FocusRequester() }
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier.fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .imePadding()
+            .navigationBarsPadding()
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -57,7 +70,7 @@ fun LoginScreen(
         ) {
             androidx.compose.foundation.layout.Box(contentAlignment = Alignment.Center) {
                 androidx.compose.foundation.Image(
-                    painter = androidx.compose.ui.res.painterResource(R.drawable.ic_palm_tree),
+                    painter = androidx.compose.ui.res.painterResource(R.drawable.ic_tender_coconut),
                     contentDescription = null,
                     modifier = Modifier.size(56.dp),
                 )
@@ -80,6 +93,8 @@ fun LoginScreen(
                 onValueChange = { name = it },
                 label = { Text(stringResource(R.string.your_name)) },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { phoneFocus.requestFocus() }),
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(16.dp))
@@ -87,11 +102,15 @@ fun LoginScreen(
                 value = phone,
                 onValueChange = { if (it.length <= 10) { phone = it.filter(Char::isDigit); phoneError = false } },
                 label = { Text(stringResource(R.string.phone_number)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = {
+                    focusManager.clearFocus()
+                    if (phone.length == 10) viewModel.sendOtp(name.trim(), phone) else phoneError = true
+                }),
                 singleLine = true,
                 isError = phoneError,
                 supportingText = if (phoneError) { { Text(stringResource(R.string.invalid_phone)) } } else null,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().focusRequester(phoneFocus),
             )
             Spacer(Modifier.height(24.dp))
             Button(

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -50,7 +51,9 @@ fun TencoBottomNav(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+        modifier = modifier.fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         shape = RoundedCornerShape(30.dp),
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = 3.dp,

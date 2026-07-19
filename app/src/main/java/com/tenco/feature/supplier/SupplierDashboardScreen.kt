@@ -155,26 +155,26 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
             item {
                 com.tenco.ui.components.EntranceItem(4) {
                     Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        val ordersLabel = stringResource(R.string.orders) + if (newOrders > 0) " ($newOrders)" else ""
+                        QuickActionTile(Icons.Rounded.ShoppingCart, ordersLabel, TileBlue, { onNavigate(Routes.SUPPLIER_ORDERS) }, Modifier.weight(1f))
                         QuickActionTile(Icons.Rounded.Storefront, stringResource(R.string.buy_stock), TileGreen, { onNavigate(Routes.SUPPLIER_DEALERS) }, Modifier.weight(1f))
-                        QuickActionTile(Icons.Rounded.Sell, stringResource(R.string.sell_to_vendor), TileBlue, { onNavigate(Routes.SUPPLIER_SELL) }, Modifier.weight(1f))
-                        QuickActionTile(Icons.Rounded.Groups, stringResource(R.string.menu_vendors), TilePurple, { onNavigate(Routes.SUPPLIER_VENDORS) }, Modifier.weight(1f))
+                        QuickActionTile(Icons.Rounded.Sell, stringResource(R.string.sell_to_vendor), TileTeal, { onNavigate(Routes.SUPPLIER_SELL) }, Modifier.weight(1f))
                     }
                 }
             }
             item {
                 com.tenco.ui.components.EntranceItem(5) {
                     Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        QuickActionTile(Icons.Rounded.Groups, stringResource(R.string.menu_vendors), TilePurple, { onNavigate(Routes.SUPPLIER_VENDORS) }, Modifier.weight(1f))
                         QuickActionTile(Icons.Rounded.PriceChange, stringResource(R.string.menu_pricing), TileOrange, { onNavigate(Routes.SUPPLIER_PRICING) }, Modifier.weight(1f))
                         QuickActionTile(Icons.Rounded.Assessment, stringResource(R.string.menu_reports), TileTeal, { onNavigate(Routes.SUPPLIER_REPORTS) }, Modifier.weight(1f))
-                        QuickActionTile(Icons.Rounded.ReportProblem, stringResource(R.string.menu_complaints), TileRed, { onNavigate(Routes.SUPPLIER_COMPLAINTS) }, Modifier.weight(1f))
                     }
                 }
             }
             item {
                 com.tenco.ui.components.EntranceItem(6) {
                     Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        val ordersLabel = stringResource(R.string.orders) + if (newOrders > 0) " ($newOrders)" else ""
-                        QuickActionTile(Icons.Rounded.ShoppingCart, ordersLabel, TileBlue, { onNavigate(Routes.SUPPLIER_ORDERS) }, Modifier.weight(1f))
+                        QuickActionTile(Icons.Rounded.ReportProblem, stringResource(R.string.menu_complaints), TileRed, { onNavigate(Routes.SUPPLIER_COMPLAINTS) }, Modifier.weight(1f))
                         QuickActionTile(Icons.Rounded.Inventory2, stringResource(R.string.menu_inventory), TileGreen, { onNavigate(Routes.SUPPLIER_INVENTORY) }, Modifier.weight(1f))
                         androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
                     }

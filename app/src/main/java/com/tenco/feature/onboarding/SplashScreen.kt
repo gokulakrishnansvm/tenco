@@ -50,7 +50,7 @@ fun SplashScreen() {
             Surface(shape = CircleShape, color = Color.White.copy(alpha = 0.92f), modifier = Modifier.size(120.dp).scale(scale * pulse)) {
                 Box(contentAlignment = Alignment.Center) {
                     androidx.compose.foundation.Image(
-                        painter = androidx.compose.ui.res.painterResource(R.drawable.ic_palm_tree),
+                        painter = androidx.compose.ui.res.painterResource(R.drawable.ic_tender_coconut),
                         contentDescription = null,
                         modifier = Modifier.size(74.dp),
                     )

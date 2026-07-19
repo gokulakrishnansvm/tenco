@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -171,14 +172,14 @@ private fun VendorHomeTab(
         }
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            com.tenco.ui.components.QuickActionTile(Icons.Rounded.CheckCircle, stringResource(R.string.confirm_delivery), com.tenco.ui.theme.TileGreen, { viewModel.confirmLatestDelivery() }, Modifier.weight(1f))
             com.tenco.ui.components.QuickActionTile(Icons.Rounded.ReportProblem, stringResource(R.string.raise_complaint), com.tenco.ui.theme.TileRed, { onTab(3) }, Modifier.weight(1f))
+            com.tenco.ui.components.QuickActionTile(Icons.Rounded.History, stringResource(R.string.history), com.tenco.ui.theme.TileBlue, { onTab(2) }, Modifier.weight(1f))
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            com.tenco.ui.components.QuickActionTile(Icons.Rounded.History, stringResource(R.string.history), com.tenco.ui.theme.TileBlue, { onTab(2) }, Modifier.weight(1f))
             com.tenco.ui.components.QuickActionTile(Icons.Rounded.Chat, stringResource(R.string.contact_supplier), com.tenco.ui.theme.TileOrange, {
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/${Demo.SUPPLIER_PHONE.removePrefix("+")}")))
             }, Modifier.weight(1f))
+            androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
         }
     }
     }
@@ -226,7 +227,7 @@ private fun VendorHeaderBand(
 
 @Composable
 private fun VendorBottomBar(selected: Int, onSelect: (Int) -> Unit, onOrder: () -> Unit) {
-    androidx.compose.foundation.layout.Box(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp)) {
+    androidx.compose.foundation.layout.Box(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 16.dp, vertical = 10.dp)) {
         androidx.compose.material3.Surface(
             shape = RoundedCornerShape(30.dp),
             color = MaterialTheme.colorScheme.surface,

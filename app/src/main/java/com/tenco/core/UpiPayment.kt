@@ -26,16 +26,20 @@ object UpiPayment {
     /** Returns true if a UPI app was launched, false if none is available. */
     fun launch(context: Context, payeeVpa: String, payeeName: String, amountRupees: Double, note: String): Boolean {
         val intent = Intent(Intent.ACTION_VIEW, buildUri(payeeVpa, payeeName, amountRupees, note))
-        // createChooser never throws ActivityNotFoundException even when no app can handle the
-        // intent, so explicitly check for a handler first.
-        if (intent.resolveActivity(context.packageManager) == null) return false
-        return launchChooser(context, intent)
+        return launchIfResolvable(context, intent)
     }
 
     /** Launches an explicit UPI deep link string (e.g. one returned by the backend intent). */
     fun launchLink(context: Context, upiLink: String): Boolean {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(upiLink))
-        if (intent.resolveActivity(context.packageManager) == null) return false
+        return launchIfResolvable(context, intent)
+    }
+
+    private fun launchIfResolvable(context: Context, intent: Intent): Boolean {
+        // queryIntentActivities respects the <queries> manifest entry and is more reliable than
+        // resolveActivity on Android 11+ (which can return null under package visibility).
+        val matches = context.packageManager.queryIntentActivities(intent, 0)
+        if (matches.isEmpty()) return false
         return launchChooser(context, intent)
     }
 

@@ -41,7 +41,7 @@ fun LanguageScreen(
         ) {
             androidx.compose.foundation.layout.Box(contentAlignment = Alignment.Center) {
                 androidx.compose.foundation.Image(
-                    painter = androidx.compose.ui.res.painterResource(R.drawable.ic_palm_tree),
+                    painter = androidx.compose.ui.res.painterResource(R.drawable.ic_tender_coconut),
                     contentDescription = null,
                     modifier = Modifier.size(62.dp),
                 )
