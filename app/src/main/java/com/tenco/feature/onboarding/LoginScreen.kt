@@ -85,7 +85,7 @@ fun LoginScreen(
                 enabled = !state.loading,
                 modifier = Modifier.fillMaxWidth().height(56.dp),
             ) {
-                if (state.loading) CircularProgressIndicator(Modifier.height(20.dp))
+                if (state.loading) com.tenco.ui.components.CoconutLoader(size = 22.dp, color = MaterialTheme.colorScheme.onPrimary)
                 else Text(stringResource(R.string.send_otp))
             }
         } else {
@@ -105,7 +105,7 @@ fun LoginScreen(
                 enabled = !state.loading,
                 modifier = Modifier.fillMaxWidth().height(56.dp),
             ) {
-                if (state.loading) CircularProgressIndicator(Modifier.height(20.dp))
+                if (state.loading) com.tenco.ui.components.CoconutLoader(size = 22.dp, color = MaterialTheme.colorScheme.onPrimary)
                 else Text(stringResource(R.string.verify_otp))
             }
         }
