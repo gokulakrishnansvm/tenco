@@ -83,8 +83,20 @@ fun TencoNavHost(
                 onLogout = logout,
             )
         }
-        composable(Routes.SUPPLIER_DEALERS) { DealersScreen(onBack = navController::popBackStack) }
-        composable(Routes.SUPPLIER_VENDORS) { VendorsScreen(onBack = navController::popBackStack) }
+        composable(Routes.SUPPLIER_DEALERS) { DealersScreen(onBack = navController::popBackStack, onOpenDealer = { navController.navigate(Routes.dealerDetail(it)) }) }
+        composable(Routes.SUPPLIER_VENDORS) { VendorsScreen(onBack = navController::popBackStack, onOpenVendor = { navController.navigate(Routes.vendorDetail(it)) }) }
+        composable(
+            Routes.SUPPLIER_VENDOR_DETAIL,
+            arguments = listOf(androidx.navigation.navArgument("vendorId") { type = androidx.navigation.NavType.StringType }),
+        ) { entry ->
+            com.tenco.feature.supplier.VendorDetailScreen(entry.arguments?.getString("vendorId").orEmpty(), onBack = navController::popBackStack)
+        }
+        composable(
+            Routes.SUPPLIER_DEALER_DETAIL,
+            arguments = listOf(androidx.navigation.navArgument("dealerId") { type = androidx.navigation.NavType.StringType }),
+        ) { entry ->
+            com.tenco.feature.supplier.DealerDetailScreen(entry.arguments?.getString("dealerId").orEmpty(), onBack = navController::popBackStack)
+        }
         composable(Routes.SUPPLIER_PRICING) { PricingScreen(onBack = navController::popBackStack) }
         composable(Routes.SUPPLIER_TRANSACTIONS) { TransactionsScreen(onBack = navController::popBackStack) }
         composable(Routes.SUPPLIER_REPORTS) { ReportsScreen(onBack = navController::popBackStack) }

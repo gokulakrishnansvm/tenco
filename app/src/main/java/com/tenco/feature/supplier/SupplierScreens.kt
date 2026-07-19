@@ -1,5 +1,6 @@
 package com.tenco.feature.supplier
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -59,7 +60,7 @@ private fun ts(millis: Long) = dateFmt.format(Date(millis))
 // ---------------- Dealers ----------------
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DealersScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel()) {
+fun DealersScreen(onBack: () -> Unit, onOpenDealer: (String) -> Unit = {}, viewModel: SupplierViewModel = hiltViewModel()) {
     val dealers by viewModel.dealers.collectAsStateWithLifecycle()
     val purchases by viewModel.purchases.collectAsStateWithLifecycle()
     var showDialog by remember { mutableStateOf(false) }
@@ -95,6 +96,7 @@ fun DealersScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewMod
                             title = dealerNames[p.dealerId] ?: "-",
                             subtitle = "${p.quantity} ${stringResource(R.string.coconuts)} · ${ts(p.createdAt)}",
                             trailing = Money.format(p.quantity * p.unitCostPaise),
+                            onClick = { onOpenDealer(p.dealerId) },
                         )
                     }
                 }
@@ -187,7 +189,7 @@ private fun AddPurchaseDialog(
 
 // ---------------- Vendors ----------------
 @Composable
-fun VendorsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel()) {
+fun VendorsScreen(onBack: () -> Unit, onOpenVendor: (String) -> Unit = {}, viewModel: SupplierViewModel = hiltViewModel()) {
     val vendors by viewModel.vendors.collectAsStateWithLifecycle()
     var showDialog by remember { mutableStateOf(false) }
 
@@ -206,7 +208,7 @@ fun VendorsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewMod
             } else {
                 LazyColumn(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(vendors) { v ->
-                        InfoCard(title = v.name, subtitle = v.phone, trailing = v.upiVpa ?: "")
+                        InfoCard(title = v.name, subtitle = v.phone, trailing = v.upiVpa ?: "", onClick = { onOpenVendor(v.id) })
                     }
                 }
             }
@@ -457,8 +459,9 @@ fun ComplaintsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltView
 
 // ---------------- Shared small pieces ----------------
 @Composable
-private fun InfoCard(title: String, subtitle: String, trailing: String) {
-    Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
+private fun InfoCard(title: String, subtitle: String, trailing: String, onClick: (() -> Unit)? = null) {
+    val mod = Modifier.fillMaxWidth().let { if (onClick != null) it.clickable { onClick() } else it }
+    Card(mod, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
         Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Column {
                 Text(title, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleMedium)

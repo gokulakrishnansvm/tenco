@@ -16,6 +16,10 @@ object Routes {
     const val SUPPLIER_INSIGHTS = "supplier/insights"
     const val SUPPLIER_INVENTORY = "supplier/inventory"
     const val SUPPLIER_SELL = "supplier/sell"
+    const val SUPPLIER_VENDOR_DETAIL = "supplier/vendor/{vendorId}"
+    const val SUPPLIER_DEALER_DETAIL = "supplier/dealer/{dealerId}"
+    fun vendorDetail(id: String) = "supplier/vendor/$id"
+    fun dealerDetail(id: String) = "supplier/dealer/$id"
     const val PROFILE = "profile"
     const val NOTIFICATIONS = "notifications"
 
