@@ -47,10 +47,18 @@ fun TencoCard(
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
-    val base = Modifier
-        .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier)
+    val interaction = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+    val pressed by interaction.collectIsPressedAsState()
+    val scale by androidx.compose.animation.core.animateFloatAsState(
+        targetValue = if (pressed && onClick != null) 0.975f else 1f,
+        animationSpec = androidx.compose.animation.core.spring(dampingRatio = androidx.compose.animation.core.Spring.DampingRatioLowBouncy),
+        label = "cardPress",
+    )
+    val clickMod = if (onClick != null) {
+        Modifier.clickable(interactionSource = interaction, indication = androidx.compose.material3.ripple()) { onClick() }
+    } else Modifier
     Card(
-        modifier = modifier.then(base),
+        modifier = modifier.scale(scale).then(clickMod),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),

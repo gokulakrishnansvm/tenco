@@ -1,5 +1,6 @@
 package com.tenco.feature.onboarding
 
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -35,11 +36,18 @@ import com.tenco.ui.theme.Gradients
 fun SplashScreen() {
     var started by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(if (started) 1f else 0.6f, tween(700), label = "logo")
+    val transition = androidx.compose.animation.core.rememberInfiniteTransition(label = "pulse")
+    val pulse by transition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.06f,
+        animationSpec = androidx.compose.animation.core.infiniteRepeatable(tween(1100), androidx.compose.animation.core.RepeatMode.Reverse),
+        label = "pulse",
+    )
     androidx.compose.runtime.LaunchedEffect(Unit) { started = true }
 
     Box(Modifier.fillMaxSize().background(Gradients.hero), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Surface(shape = CircleShape, color = Color.White.copy(alpha = 0.18f), modifier = Modifier.size(120.dp).scale(scale)) {
+            Surface(shape = CircleShape, color = Color.White.copy(alpha = 0.18f), modifier = Modifier.size(120.dp).scale(scale * pulse)) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(Icons.Rounded.Eco, contentDescription = null, tint = Color.White, modifier = Modifier.size(64.dp))
                 }
