@@ -161,6 +161,7 @@ fun VendorPayScreen(
     val context = LocalContext.current
     var amount by remember { mutableStateOf("") }
     var showConfirm by remember { mutableStateOf(false) }
+    var result by remember { mutableStateOf<Boolean?>(null) }
     val dues = dashboard?.pendingDuesPaise ?: 0L
 
     TencoScaffold(title = stringResource(R.string.pay_now), onBack = onBack) { padding ->
@@ -222,17 +223,26 @@ fun VendorPayScreen(
                 TextButton(onClick = {
                     viewModel.recordPayment(paise, success = true)
                     showConfirm = false
-                    Toast.makeText(context, R.string.payment_recorded, Toast.LENGTH_SHORT).show()
-                    onBack()
+                    result = true
                 }) { Text(stringResource(R.string.mark_paid)) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     viewModel.recordPayment(paise, success = false)
                     showConfirm = false
-                    onBack()
+                    result = false
                 }) { Text(stringResource(R.string.mark_failed)) }
             },
+        )
+    }
+
+    result?.let { ok ->
+        val paise = Money.rupeesToPaise(amount.toDoubleOrNull() ?: 0.0)
+        com.tenco.ui.components.PaymentResultOverlay(
+            success = ok,
+            amountText = Money.format(paise),
+            title = if (ok) stringResource(R.string.payment_recorded) else stringResource(R.string.status_failed),
+            onDone = onBack,
         )
     }
 }
