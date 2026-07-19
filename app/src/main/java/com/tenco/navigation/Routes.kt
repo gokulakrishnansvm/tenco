@@ -15,6 +15,8 @@ object Routes {
     const val SUPPLIER_COMPLAINTS = "supplier/complaints"
     const val SUPPLIER_INSIGHTS = "supplier/insights"
     const val SUPPLIER_INVENTORY = "supplier/inventory"
+    const val PROFILE = "profile"
+    const val NOTIFICATIONS = "notifications"
 
     // Vendor
     const val VENDOR_HOME = "vendor"

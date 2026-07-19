@@ -79,6 +79,18 @@ fun TencoNavHost(
         composable(Routes.SUPPLIER_INSIGHTS) { com.tenco.feature.supplier.InsightsScreen(onBack = navController::popBackStack) }
         composable(Routes.SUPPLIER_INVENTORY) { com.tenco.feature.supplier.InventoryScreen(onBack = navController::popBackStack) }
 
+        composable(Routes.PROFILE) {
+            com.tenco.feature.profile.ProfileScreen(
+                onBack = navController::popBackStack,
+                onChangeLanguage = onChangeLanguage,
+                onNotifications = { navController.navigate(Routes.NOTIFICATIONS) },
+                onLogout = logout,
+            )
+        }
+        composable(Routes.NOTIFICATIONS) {
+            com.tenco.feature.profile.NotificationsScreen(onBack = navController::popBackStack)
+        }
+
         // ---- Vendor ----
         composable(Routes.VENDOR_HOME) {
             VendorDashboardScreen(

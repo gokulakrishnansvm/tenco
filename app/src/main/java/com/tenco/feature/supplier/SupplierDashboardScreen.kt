@@ -1,6 +1,7 @@
 package com.tenco.feature.supplier
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.rounded.ReportProblem
 import androidx.compose.material.icons.rounded.Storefront
 import androidx.compose.material.icons.rounded.TrendingDown
 import androidx.compose.material.icons.rounded.Insights
+import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -78,14 +80,14 @@ fun SupplierDashboardScreen(
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        bottomBar = { SupplierBottomBar(onNavigate, onChangeLanguage) },
+        bottomBar = { SupplierBottomBar(onNavigate) },
     ) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
             contentPadding = PaddingValues(top = 20.dp, bottom = padding.calculateBottomPadding() + 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            item { GreetingHeader(onLogout) }
+            item { GreetingHeader(onNotifications = { onNavigate(Routes.NOTIFICATIONS) }, onProfile = { onNavigate(Routes.PROFILE) }) }
             item {
                 HeroEarningsCard(
                     label = stringResource(R.string.total_earnings),
@@ -134,7 +136,7 @@ fun SupplierDashboardScreen(
 }
 
 @Composable
-private fun GreetingHeader(onLogout: () -> Unit) {
+private fun GreetingHeader(onNotifications: () -> Unit, onProfile: () -> Unit) {
     val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
     val greeting = when {
         hour < 12 -> "Good morning"
@@ -146,9 +148,18 @@ private fun GreetingHeader(onLogout: () -> Unit) {
             Text("$greeting 👋", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(stringResource(R.string.role_supplier), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
         }
-        Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.size(48.dp)) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(Icons.Rounded.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            androidx.compose.material3.IconButton(onClick = onNotifications) {
+                Icon(androidx.compose.material.icons.Icons.Rounded.Notifications, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
+            }
+            Surface(
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primaryContainer,
+                modifier = Modifier.size(48.dp).clickable { onProfile() },
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(Icons.Rounded.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                }
             }
         }
     }
@@ -180,7 +191,7 @@ private fun TransactionRow(name: String, amount: String, status: String) {
 }
 
 @Composable
-private fun SupplierBottomBar(onNavigate: (String) -> Unit, onProfile: () -> Unit) {
+private fun SupplierBottomBar(onNavigate: (String) -> Unit) {
     NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 8.dp) {
         val itemColors = NavigationBarItemDefaults.colors(
             selectedIconColor = MaterialTheme.colorScheme.primary,
@@ -190,6 +201,6 @@ private fun SupplierBottomBar(onNavigate: (String) -> Unit, onProfile: () -> Uni
         NavigationBarItem(selected = false, onClick = { onNavigate(Routes.SUPPLIER_INVENTORY) }, icon = { Icon(Icons.Rounded.Inventory2, null) }, label = { Text("Stock") }, colors = itemColors)
         NavigationBarItem(selected = false, onClick = { onNavigate(Routes.SUPPLIER_TRANSACTIONS) }, icon = { Icon(Icons.Rounded.ReceiptLong, null) }, label = { Text("Txns") }, colors = itemColors)
         NavigationBarItem(selected = false, onClick = { onNavigate(Routes.SUPPLIER_INSIGHTS) }, icon = { Icon(Icons.Rounded.AccountBalanceWallet, null) }, label = { Text("Money") }, colors = itemColors)
-        NavigationBarItem(selected = false, onClick = onProfile, icon = { Icon(Icons.Rounded.Person, null) }, label = { Text("Profile") }, colors = itemColors)
+        NavigationBarItem(selected = false, onClick = { onNavigate(Routes.PROFILE) }, icon = { Icon(Icons.Rounded.Person, null) }, label = { Text("Profile") }, colors = itemColors)
     }
 }

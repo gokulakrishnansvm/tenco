@@ -23,6 +23,9 @@
     <string name="period">अवधि</string>
     <string name="menu_insights">विश्लेषण</string>
     <string name="menu_inventory">इन्वेंटरी</string>
+    <string name="menu_profile">प्रोफ़ाइल</string>
+    <string name="menu_notifications">सूचनाएं</string>
+    <string name="about">परिचय</string>
     <string name="insights">विश्लेषण</string>
     <string name="collection_rate">वसूली दर</string>
     <string name="total_billed">कुल बिल</string>

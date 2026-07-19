@@ -23,6 +23,9 @@
     <string name="period">காலம்</string>
     <string name="menu_insights">பகுப்பாய்வு</string>
     <string name="menu_inventory">சரக்கு</string>
+    <string name="menu_profile">சுயவிவரம்</string>
+    <string name="menu_notifications">அறிவிப்புகள்</string>
+    <string name="about">பற்றி</string>
     <string name="insights">பகுப்பாய்வு</string>
     <string name="collection_rate">வசூல் விகிதம்</string>
     <string name="total_billed">மொத்த பில்</string>

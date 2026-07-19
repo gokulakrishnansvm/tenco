@@ -31,6 +31,9 @@
     <!-- Analytics / insights -->
     <string name="menu_insights">Insights</string>
     <string name="menu_inventory">Inventory</string>
+    <string name="menu_profile">Profile</string>
+    <string name="menu_notifications">Notifications</string>
+    <string name="about">About</string>
     <string name="insights">Insights</string>
     <string name="collection_rate">Collection rate</string>
     <string name="total_billed">Total billed</string>

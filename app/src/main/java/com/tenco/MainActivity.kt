@@ -50,10 +50,17 @@ private fun TencoApp() {
         ) {
             val appViewModel: AppViewModel = hiltViewModel()
             val context = LocalContext.current
+            var showSplash by remember { mutableStateOf(true) }
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                kotlinx.coroutines.delay(1300)
+                showSplash = false
+            }
             // `remember` (not rememberSaveable) so this re-initialises after a locale recreate.
             var showLanguage by remember { mutableStateOf(!appViewModel.isLanguageChosen) }
 
-            if (showLanguage) {
+            if (showSplash) {
+                com.tenco.feature.onboarding.SplashScreen()
+            } else if (showLanguage) {
                 LanguageScreen(
                     current = appViewModel.currentLanguage,
                     onChosen = { language ->

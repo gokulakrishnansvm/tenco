@@ -23,6 +23,9 @@
     <string name="period">కాలం</string>
     <string name="menu_insights">విశ్లేషణలు</string>
     <string name="menu_inventory">నిల్వ</string>
+    <string name="menu_profile">ప్రొఫైల్</string>
+    <string name="menu_notifications">నోటిఫికేషన్లు</string>
+    <string name="about">గురించి</string>
     <string name="insights">విశ్లేషణలు</string>
     <string name="collection_rate">వసూలు రేటు</string>
     <string name="total_billed">మొత్తం బిల్</string>
