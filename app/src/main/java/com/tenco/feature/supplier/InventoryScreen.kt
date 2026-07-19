@@ -44,16 +44,18 @@ private val invDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
 @Composable
 fun InventoryScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewModel = hiltViewModel()) {
     val purchases by viewModel.purchases.collectAsStateWithLifecycle()
-    val dealers by viewModel.dealers.collectAsStateWithLifecycle()
+    val dealers by viewModel.allDealers.collectAsStateWithLifecycle()
     val deliveries by viewModel.deliveries.collectAsStateWithLifecycle()
     val dealerById = dealers.associateBy { it.id }
+    // Only show batches whose dealer resolves (skip corrupt/orphaned sync rows).
+    val validPurchases = purchases.filter { dealerById.containsKey(it.dealerId) }
 
-    val totalIn = purchases.sumOf { it.quantity }.coerceAtLeast(1)
+    val totalIn = validPurchases.sumOf { it.quantity }.coerceAtLeast(1)
     val totalOut = deliveries.sumOf { it.quantity }
     val soldRatio = (totalOut.toFloat() / totalIn).coerceIn(0f, 1f)
 
     TencoScaffold(title = stringResource(R.string.menu_inventory), onBack = onBack) { padding ->
-        if (purchases.isEmpty()) {
+        if (validPurchases.isEmpty()) {
             EmptyState(R.drawable.ic_coconut, stringResource(R.string.no_data))
         } else {
             LazyColumn(
@@ -61,12 +63,12 @@ fun InventoryScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewModel =
                 contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                items(purchases) { p ->
+                items(validPurchases) { p ->
                     val dealer = dealerById[p.dealerId]
                     BatchCard(
                         batchNo = "Batch #${p.id.take(6).uppercase()}",
-                        market = dealer?.location ?: "-",
-                        dealer = dealer?.name ?: "-",
+                        market = dealer?.location ?: "",
+                        dealer = dealer?.name ?: "",
                         quantity = p.quantity,
                         remaining = (p.quantity * (1f - soldRatio)).toInt(),
                         costText = Money.format(p.quantity * p.unitCostPaise),

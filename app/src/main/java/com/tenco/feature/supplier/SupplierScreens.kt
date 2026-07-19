@@ -303,9 +303,9 @@ fun TransactionsScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewMode
     TencoScaffold(title = stringResource(R.string.transaction_history), onBack = onBack) { padding ->
         val purchaseLabel = stringResource(R.string.buy_stock)
         val rows = buildList {
-            purchases.forEach { add(Row4(it.createdAt, dealerNames[it.dealerId] ?: "-", "$purchaseLabel · ${it.quantity} @ ${Money.formatShort(it.unitCostPaise)}", "PURCHASE", "DEALER")) }
-            deliveries.forEach { add(Row4(it.createdAt, names[it.vendorId] ?: "-", "${it.quantity} ${'@'} ${Money.formatShort(it.unitPricePaise)}", it.status, "VENDOR")) }
-            payments.forEach { add(Row4(it.createdAt, names[it.vendorId] ?: "-", Money.format(it.amountPaise), it.status, "VENDOR")) }
+            purchases.forEach { p -> dealerNames[p.dealerId]?.let { add(Row4(p.createdAt, it, "$purchaseLabel · ${p.quantity} @ ${Money.formatShort(p.unitCostPaise)}", "PURCHASE", "DEALER")) } }
+            deliveries.forEach { d -> names[d.vendorId]?.let { add(Row4(d.createdAt, it, "${d.quantity} ${'@'} ${Money.formatShort(d.unitPricePaise)}", d.status, "VENDOR")) } }
+            payments.forEach { pay -> names[pay.vendorId]?.let { add(Row4(pay.createdAt, it, Money.format(pay.amountPaise), pay.status, "VENDOR")) } }
         }.sortedByDescending { it.time }
 
         var filter by remember { mutableStateOf("ALL") }
@@ -447,7 +447,7 @@ private fun PnlRow(label: String, value: String, emphasize: Boolean = false, neg
 @Composable
 fun ComplaintsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel()) {
     val complaints by viewModel.complaints.collectAsStateWithLifecycle()
-    val vendors by viewModel.vendors.collectAsStateWithLifecycle()
+    val vendors by viewModel.allVendors.collectAsStateWithLifecycle()
     val names = vendors.associate { it.id to it.name }
     var resolvingId by remember { mutableStateOf<String?>(null) }
 
