@@ -29,6 +29,9 @@ dependencies {
 
     implementation("com.google.firebase:firebase-admin:9.4.1")
 
+    implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-database-postgresql")
+
     runtimeOnly("com.h2database:h2")
     runtimeOnly("org.postgresql:postgresql")
 

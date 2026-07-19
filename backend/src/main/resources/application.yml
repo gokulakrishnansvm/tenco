@@ -16,6 +16,9 @@ spring:
     open-in-view: false
     properties:
       hibernate.format_sql: true
+  flyway:
+    # Dev uses H2 + ddl-auto; migrations run in prod (Postgres).
+    enabled: false
   h2:
     console:
       enabled: true
@@ -63,6 +66,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
 tenco:
   otp:
     dev-mode: false
