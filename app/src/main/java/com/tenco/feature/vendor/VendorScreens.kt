@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -136,11 +138,28 @@ private fun VendorHomeTab(
     val coconutsLabel = stringResource(R.string.coconuts)
     val pendingLabel = stringResource(R.string.pending_dues)
 
-    Column(
-        Modifier.fillMaxSize().padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-    ) {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+    androidx.compose.foundation.layout.Box(Modifier.fillMaxSize()) {
+        androidx.compose.foundation.layout.Box(
+            Modifier.fillMaxWidth().height(240.dp)
+                .clip(RoundedCornerShape(bottomStart = 44.dp, bottomEnd = 44.dp))
+                .background(
+                    androidx.compose.ui.graphics.Brush.verticalGradient(
+                        listOf(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f), MaterialTheme.colorScheme.background),
+                    ),
+                ),
+        ) {
+            androidx.compose.foundation.Image(
+                painter = androidx.compose.ui.res.painterResource(com.tenco.R.drawable.ic_palm_leaf),
+                contentDescription = null,
+                modifier = Modifier.align(Alignment.TopEnd).size(140.dp).padding(6.dp),
+                alpha = 0.16f,
+            )
+        }
+        Column(
+            Modifier.fillMaxSize().padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+        ) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Column {
                 Text("${stringResource(R.string.namaste)} 👋", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(d?.vendorName?.ifBlank { stringResource(R.string.role_vendor) } ?: stringResource(R.string.role_vendor),
@@ -184,6 +203,7 @@ private fun VendorHomeTab(
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/${Demo.SUPPLIER_PHONE.removePrefix("+")}")))
             }, Modifier.weight(1f))
         }
+    }
     }
 }
 
@@ -379,7 +399,7 @@ fun VendorHistoryScreen(
 
     TencoScaffold(title = stringResource(R.string.transaction_history), onBack = onBack) { padding ->
         if (payments.isEmpty() && complaints.isEmpty()) {
-            EmptyState(stringResource(R.string.no_data))
+            EmptyState(R.drawable.ic_tender_coconut, stringResource(R.string.empty_transactions))
         } else {
             LazyColumn(Modifier.padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(payments) { p ->

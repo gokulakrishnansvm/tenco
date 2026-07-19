@@ -114,11 +114,7 @@ fun SupplierDashboardScreen(
 @Composable
 private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierViewModel) {
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
-    val payments by viewModel.payments.collectAsStateWithLifecycle()
-    val vendors by viewModel.vendors.collectAsStateWithLifecycle()
-    val allVendors by viewModel.allVendors.collectAsStateWithLifecycle()
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
-    val names = allVendors.associate { it.id to it.name }
 
     androidx.compose.foundation.layout.Box(Modifier.fillMaxSize()) {
         androidx.compose.foundation.layout.Box(
@@ -193,18 +189,6 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
                 }
             }
 
-            item { com.tenco.ui.components.EntranceItem(6) { SectionHeader(stringResource(R.string.transaction_history)) } }
-            if (payments.isEmpty()) {
-                item { Text(stringResource(R.string.no_data), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-            } else {
-                items(payments.take(6)) { p ->
-                    TransactionRow(
-                        name = names[p.vendorId] ?: "-",
-                        amount = Money.format(p.amountPaise),
-                        status = p.status,
-                    )
-                }
-            }
         }
     }
     }

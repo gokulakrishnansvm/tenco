@@ -172,4 +172,5 @@
     <string name="theme_light">లైట్</string>
     <string name="theme_dark">డార్క్</string>
     <string name="appearance">రూపం</string>
+    <string name="filter_all">అన్నీ</string>
 </resources>

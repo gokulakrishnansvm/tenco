@@ -172,4 +172,5 @@
     <string name="theme_light">लाइट</string>
     <string name="theme_dark">डार्क</string>
     <string name="appearance">रूप</string>
+    <string name="filter_all">सभी</string>
 </resources>

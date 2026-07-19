@@ -30,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -302,24 +303,38 @@ fun TransactionsScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewMode
     TencoScaffold(title = stringResource(R.string.transaction_history), onBack = onBack) { padding ->
         val purchaseLabel = stringResource(R.string.buy_stock)
         val rows = buildList {
-            purchases.forEach { add(Row4(it.createdAt, dealerNames[it.dealerId] ?: "-", "$purchaseLabel · ${it.quantity} @ ${Money.formatShort(it.unitCostPaise)}", "PURCHASE")) }
-            deliveries.forEach { add(Row4(it.createdAt, names[it.vendorId] ?: "-", "${it.quantity} ${'@'} ${Money.formatShort(it.unitPricePaise)}", it.status)) }
-            payments.forEach { add(Row4(it.createdAt, names[it.vendorId] ?: "-", Money.format(it.amountPaise), it.status)) }
+            purchases.forEach { add(Row4(it.createdAt, dealerNames[it.dealerId] ?: "-", "$purchaseLabel · ${it.quantity} @ ${Money.formatShort(it.unitCostPaise)}", "PURCHASE", "DEALER")) }
+            deliveries.forEach { add(Row4(it.createdAt, names[it.vendorId] ?: "-", "${it.quantity} ${'@'} ${Money.formatShort(it.unitPricePaise)}", it.status, "VENDOR")) }
+            payments.forEach { add(Row4(it.createdAt, names[it.vendorId] ?: "-", Money.format(it.amountPaise), it.status, "VENDOR")) }
         }.sortedByDescending { it.time }
 
-        if (rows.isEmpty()) {
-            EmptyState(R.drawable.ic_tender_coconut, stringResource(R.string.empty_transactions))
-        } else {
-            LazyColumn(Modifier.padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(rows) { r ->
-                    Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
-                        Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Column {
-                                Text(r.vendor, fontWeight = FontWeight.SemiBold)
-                                Text(r.detail, style = MaterialTheme.typography.bodyMedium)
-                                Text(ts(r.time), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+        var filter by remember { mutableStateOf("ALL") }
+        val filtered = if (filter == "ALL") rows else rows.filter { it.category == filter }
+
+        Column(Modifier.padding(padding)) {
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                TxnFilterChip(stringResource(R.string.filter_all), filter == "ALL") { filter = "ALL" }
+                TxnFilterChip(stringResource(R.string.menu_vendors), filter == "VENDOR") { filter = "VENDOR" }
+                TxnFilterChip(stringResource(R.string.dealers), filter == "DEALER") { filter = "DEALER" }
+            }
+
+            if (filtered.isEmpty()) {
+                EmptyState(R.drawable.ic_tender_coconut, stringResource(R.string.empty_transactions))
+            } else {
+                LazyColumn(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(filtered) { r ->
+                        Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
+                            Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                                Column {
+                                    Text(r.vendor, fontWeight = FontWeight.SemiBold)
+                                    Text(r.detail, style = MaterialTheme.typography.bodyMedium)
+                                    Text(ts(r.time), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                                }
+                                StatusChip(r.status, statusLabel(r.status))
                             }
-                            StatusChip(r.status, statusLabel(r.status))
                         }
                     }
                 }
@@ -328,7 +343,16 @@ fun TransactionsScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewMode
     }
 }
 
-private data class Row4(val time: Long, val vendor: String, val detail: String, val status: String)
+@Composable
+private fun TxnFilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
+    val bg = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+    val fg = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+    Surface(shape = MaterialTheme.shapes.small, color = bg, modifier = Modifier.clickable { onClick() }) {
+        Text(label, style = MaterialTheme.typography.labelLarge, color = fg, fontWeight = FontWeight.Medium, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+    }
+}
+
+private data class Row4(val time: Long, val vendor: String, val detail: String, val status: String, val category: String)
 
 // ---------------- Reports (P&L) ----------------
 @OptIn(ExperimentalMaterial3Api::class)
