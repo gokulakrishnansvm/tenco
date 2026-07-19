@@ -14,6 +14,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.rounded.Groups
+import androidx.compose.material.icons.rounded.ReceiptLong
+import androidx.compose.material.icons.rounded.ReportProblem
+import androidx.compose.material.icons.rounded.Storefront
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -84,7 +88,7 @@ fun DealersScreen(onBack: () -> Unit, onOpenDealer: (String) -> Unit = {}, viewM
     ) { padding ->
         Column(Modifier.padding(padding)) {
             if (purchases.isEmpty()) {
-                EmptyState(stringResource(R.string.no_data))
+                EmptyState(Icons.Rounded.Storefront, stringResource(R.string.empty_purchases), stringResource(R.string.empty_purchases_sub))
             } else {
                 val dealerNames = dealers.associate { it.id to it.name }
                 LazyColumn(
@@ -107,19 +111,27 @@ fun DealersScreen(onBack: () -> Unit, onOpenDealer: (String) -> Unit = {}, viewM
     if (showDealer) {
         var name by remember { mutableStateOf("") }
         var market by remember { mutableStateOf("") }
+        val duplicate = name.isNotBlank() && dealers.any { it.name.trim().equals(name.trim(), ignoreCase = true) }
         AlertDialog(
             onDismissRequest = { showDealer = false },
             title = { Text(stringResource(R.string.add_dealer)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OutlinedTextField(name, { name = it }, label = { Text(stringResource(R.string.dealers)) }, modifier = Modifier.fillMaxWidth())
+                    OutlinedTextField(
+                        name, { name = it },
+                        label = { Text(stringResource(R.string.dealers)) },
+                        isError = duplicate,
+                        supportingText = if (duplicate) { { Text(stringResource(R.string.dealer_exists), color = MaterialTheme.colorScheme.error) } } else null,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                     OutlinedTextField(market, { market = it }, label = { Text(stringResource(R.string.market)) }, modifier = Modifier.fillMaxWidth())
                 }
             },
             confirmButton = {
-                TextButton(onClick = {
-                    if (name.isNotBlank()) { viewModel.addDealer(name, market); showDealer = false }
-                }) { Text(stringResource(R.string.save)) }
+                TextButton(
+                    enabled = name.isNotBlank() && !duplicate,
+                    onClick = { viewModel.addDealer(name, market); showDealer = false },
+                ) { Text(stringResource(R.string.save)) }
             },
             dismissButton = { TextButton(onClick = { showDealer = false }) { Text(stringResource(R.string.cancel)) } },
         )
@@ -204,7 +216,7 @@ fun VendorsScreen(onBack: () -> Unit, onOpenVendor: (String) -> Unit = {}, viewM
     ) { padding ->
         Column(Modifier.padding(padding)) {
             if (vendors.isEmpty()) {
-                EmptyState(stringResource(R.string.no_data))
+                EmptyState(Icons.Rounded.Groups, stringResource(R.string.empty_vendors), stringResource(R.string.empty_vendors_sub))
             } else {
                 LazyColumn(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(vendors) { v ->
@@ -218,20 +230,29 @@ fun VendorsScreen(onBack: () -> Unit, onOpenVendor: (String) -> Unit = {}, viewM
         var name by remember { mutableStateOf("") }
         var phone by remember { mutableStateOf("") }
         var vpa by remember { mutableStateOf("") }
+        val phoneKey = phone.filter(Char::isDigit).takeLast(10)
+        val duplicate = phoneKey.length >= 10 && vendors.any { it.phone.filter(Char::isDigit).takeLast(10) == phoneKey }
         AlertDialog(
             onDismissRequest = { showDialog = false },
             title = { Text(stringResource(R.string.add)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedTextField(name, { name = it }, label = { Text(stringResource(R.string.vendor_name)) }, modifier = Modifier.fillMaxWidth())
-                    OutlinedTextField(phone, { phone = it }, label = { Text(stringResource(R.string.phone)) }, modifier = Modifier.fillMaxWidth())
+                    OutlinedTextField(
+                        phone, { phone = it.filter(Char::isDigit) },
+                        label = { Text(stringResource(R.string.phone)) },
+                        isError = duplicate,
+                        supportingText = if (duplicate) { { Text(stringResource(R.string.vendor_exists), color = MaterialTheme.colorScheme.error) } } else null,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                     OutlinedTextField(vpa, { vpa = it }, label = { Text("UPI VPA") }, modifier = Modifier.fillMaxWidth())
                 }
             },
             confirmButton = {
-                TextButton(onClick = {
-                    if (name.isNotBlank()) { viewModel.addVendor(name, phone, vpa.ifBlank { null }); showDialog = false }
-                }) { Text(stringResource(R.string.save)) }
+                TextButton(
+                    enabled = name.isNotBlank() && !duplicate,
+                    onClick = { viewModel.addVendor(name, phone, vpa.ifBlank { null }); showDialog = false },
+                ) { Text(stringResource(R.string.save)) }
             },
             dismissButton = { TextButton(onClick = { showDialog = false }) { Text(stringResource(R.string.cancel)) } },
         )
@@ -301,7 +322,7 @@ fun TransactionsScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewMode
         }.sortedByDescending { it.time }
 
         if (rows.isEmpty()) {
-            EmptyState(stringResource(R.string.no_data))
+            EmptyState(Icons.Rounded.ReceiptLong, stringResource(R.string.empty_transactions))
         } else {
             LazyColumn(Modifier.padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(rows) { r ->
@@ -407,7 +428,7 @@ fun ComplaintsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltView
 
     TencoScaffold(title = stringResource(R.string.menu_complaints), onBack = onBack) { padding ->
         if (complaints.isEmpty()) {
-            EmptyState(stringResource(R.string.no_data))
+            EmptyState(Icons.Rounded.ReportProblem, stringResource(R.string.empty_complaints))
         } else {
             LazyColumn(Modifier.padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(complaints) { c ->

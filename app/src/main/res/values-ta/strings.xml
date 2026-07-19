@@ -139,6 +139,26 @@
     <string name="delete">நீக்கு</string>
     <string name="delete_confirm">இதையும் அதன் அனைத்து பதிவுகளையும் நீக்கவா? மீட்க முடியாது.</string>
 
+    <string name="vendor_exists">இந்த தொலைபேசி எண்ணுடன் விற்பனையாளர் ஏற்கனவே உள்ளார்</string>
+    <string name="dealer_exists">இந்த பெயருடன் டீலர் ஏற்கனவே உள்ளார்</string>
+
+    <string name="nav_home">முகப்பு</string>
+    <string name="nav_stock">சரக்கு</string>
+    <string name="nav_txns">பரிவர்த்தனை</string>
+    <string name="nav_money">பணம்</string>
+    <string name="greeting_morning">காலை வணக்கம்</string>
+    <string name="greeting_afternoon">மதிய வணக்கம்</string>
+    <string name="greeting_evening">மாலை வணக்கம்</string>
+    <string name="namaste">வணக்கம்</string>
+    <string name="done">முடிந்தது</string>
+
+    <string name="empty_vendors">இன்னும் விற்பனையாளர்கள் இல்லை</string>
+    <string name="empty_vendors_sub">விற்பனையைத் தொடங்க முதல் விற்பனையாளரைச் சேர்க்கவும்</string>
+    <string name="empty_purchases">இன்னும் சரக்கு வாங்கவில்லை</string>
+    <string name="empty_purchases_sub">டீலரிடமிருந்து கொள்முதலைப் பதிவு செய்யவும்</string>
+    <string name="empty_transactions">இன்னும் பரிவர்த்தனைகள் இல்லை</string>
+    <string name="empty_complaints">புகார்கள் இல்லை</string>
+
     <string name="vendors">விற்பனையாளர்கள்</string>
     <string name="vendor_name">விற்பனையாளர் பெயர்</string>
     <string name="phone">தொலைபேசி</string>

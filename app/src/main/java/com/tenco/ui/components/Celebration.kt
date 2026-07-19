@@ -106,7 +106,7 @@ fun PaymentResultOverlay(
             Text(amountText, style = MaterialTheme.typography.displayMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 24.dp))
             Text(title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 4.dp))
             Button(onClick = onDone, modifier = Modifier.fillMaxWidth().height(56.dp).padding(top = 32.dp)) {
-                Text("Done", style = MaterialTheme.typography.titleMedium)
+                Text(androidx.compose.ui.res.stringResource(com.tenco.R.string.done), style = MaterialTheme.typography.titleMedium)
             }
         }
         if (success) Confetti()

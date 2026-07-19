@@ -158,6 +158,29 @@
     <string name="delete">Delete</string>
     <string name="delete_confirm">Delete this and all its records? This cannot be undone.</string>
 
+    <!-- Duplicates -->
+    <string name="vendor_exists">A vendor with this phone number already exists</string>
+    <string name="dealer_exists">A dealer with this name already exists</string>
+
+    <!-- Nav + greetings -->
+    <string name="nav_home">Home</string>
+    <string name="nav_stock">Stock</string>
+    <string name="nav_txns">Txns</string>
+    <string name="nav_money">Money</string>
+    <string name="greeting_morning">Good morning</string>
+    <string name="greeting_afternoon">Good afternoon</string>
+    <string name="greeting_evening">Good evening</string>
+    <string name="namaste">Namaste</string>
+    <string name="done">Done</string>
+
+    <!-- Empty states -->
+    <string name="empty_vendors">No vendors yet</string>
+    <string name="empty_vendors_sub">Add your first vendor to start selling</string>
+    <string name="empty_purchases">No stock purchased yet</string>
+    <string name="empty_purchases_sub">Record a purchase from a dealer</string>
+    <string name="empty_transactions">No transactions yet</string>
+    <string name="empty_complaints">No complaints</string>
+
     <!-- Vendors -->
     <string name="vendors">Vendors</string>
     <string name="vendor_name">Vendor name</string>

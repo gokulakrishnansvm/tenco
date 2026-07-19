@@ -139,6 +139,26 @@
     <string name="delete">हटाएं</string>
     <string name="delete_confirm">इसे और इसके सभी रिकॉर्ड हटाएं? इसे पूर्ववत नहीं किया जा सकता।</string>
 
+    <string name="vendor_exists">इस फ़ोन नंबर वाला विक्रेता पहले से मौजूद है</string>
+    <string name="dealer_exists">इस नाम वाला डीलर पहले से मौजूद है</string>
+
+    <string name="nav_home">होम</string>
+    <string name="nav_stock">स्टॉक</string>
+    <string name="nav_txns">लेन-देन</string>
+    <string name="nav_money">पैसा</string>
+    <string name="greeting_morning">सुप्रभात</string>
+    <string name="greeting_afternoon">नमस्कार</string>
+    <string name="greeting_evening">शुभ संध्या</string>
+    <string name="namaste">नमस्ते</string>
+    <string name="done">पूर्ण</string>
+
+    <string name="empty_vendors">अभी तक कोई विक्रेता नहीं</string>
+    <string name="empty_vendors_sub">बेचना शुरू करने के लिए पहला विक्रेता जोड़ें</string>
+    <string name="empty_purchases">अभी तक कोई स्टॉक नहीं खरीदा</string>
+    <string name="empty_purchases_sub">डीलर से खरीद दर्ज करें</string>
+    <string name="empty_transactions">अभी तक कोई लेन-देन नहीं</string>
+    <string name="empty_complaints">कोई शिकायत नहीं</string>
+
     <string name="vendors">विक्रेता</string>
     <string name="vendor_name">विक्रेता का नाम</string>
     <string name="phone">फ़ोन</string>

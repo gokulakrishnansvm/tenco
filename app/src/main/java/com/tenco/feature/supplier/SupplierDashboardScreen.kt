@@ -192,9 +192,9 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
 private fun GreetingHeader(onNotifications: () -> Unit, onProfile: () -> Unit) {
     val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
     val greeting = when {
-        hour < 12 -> "Good morning"
-        hour < 17 -> "Good afternoon"
-        else -> "Good evening"
+        hour < 12 -> stringResource(R.string.greeting_morning)
+        hour < 17 -> stringResource(R.string.greeting_afternoon)
+        else -> stringResource(R.string.greeting_evening)
     }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
         Column {
@@ -247,11 +247,11 @@ private fun TransactionRow(name: String, amount: String, status: String) {
 private fun SupplierBottomBar(selected: Int, onSelect: (Int) -> Unit) {
     com.tenco.ui.components.TencoBottomNav(
         items = listOf(
-            com.tenco.ui.components.NavItem(Icons.Rounded.Home, "Home"),
-            com.tenco.ui.components.NavItem(Icons.Rounded.Inventory2, "Stock"),
-            com.tenco.ui.components.NavItem(Icons.Rounded.ReceiptLong, "Txns"),
-            com.tenco.ui.components.NavItem(Icons.Rounded.AccountBalanceWallet, "Money"),
-            com.tenco.ui.components.NavItem(Icons.Rounded.Person, "Profile"),
+            com.tenco.ui.components.NavItem(Icons.Rounded.Home, stringResource(R.string.nav_home)),
+            com.tenco.ui.components.NavItem(Icons.Rounded.Inventory2, stringResource(R.string.nav_stock)),
+            com.tenco.ui.components.NavItem(Icons.Rounded.ReceiptLong, stringResource(R.string.nav_txns)),
+            com.tenco.ui.components.NavItem(Icons.Rounded.AccountBalanceWallet, stringResource(R.string.nav_money)),
+            com.tenco.ui.components.NavItem(Icons.Rounded.Person, stringResource(R.string.menu_profile)),
         ),
         selected = selected,
         onSelect = onSelect,

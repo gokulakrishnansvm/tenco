@@ -142,7 +142,7 @@ private fun VendorHomeTab(
     ) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Column {
-                Text("Namaste 👋", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text("${stringResource(R.string.namaste)} 👋", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(d?.vendorName?.ifBlank { stringResource(R.string.role_vendor) } ?: stringResource(R.string.role_vendor),
                     style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
             }
@@ -192,7 +192,7 @@ private fun VendorHomeTab(
 private fun VendorBottomBar(selected: Int, onSelect: (Int) -> Unit) {
     com.tenco.ui.components.TencoBottomNav(
         items = listOf(
-            com.tenco.ui.components.NavItem(Icons.Rounded.Home, "Home"),
+            com.tenco.ui.components.NavItem(Icons.Rounded.Home, stringResource(R.string.nav_home)),
             com.tenco.ui.components.NavItem(Icons.Filled.CurrencyRupee, stringResource(R.string.pay)),
             com.tenco.ui.components.NavItem(Icons.Filled.History, stringResource(R.string.history)),
             com.tenco.ui.components.NavItem(Icons.Filled.ReportProblem, stringResource(R.string.raise_complaint)),
