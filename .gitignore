@@ -17,3 +17,9 @@ local.properties
 
 # Logs
 *.log
+
+# Release signing (keep secret)
+app/keystore.properties
+app/keystore/
+*.jks
+*.keystore
