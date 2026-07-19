@@ -219,8 +219,10 @@ fun VendorPayScreen(
 
     TencoScaffold(title = stringResource(R.string.pay_now), onBack = onBack) { padding ->
         // Shared payment launcher used by both "Pay full" and "Pay".
+        val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
         val startPay: (Double) -> Unit = { amt ->
             if (amt > 0) {
+                haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                 amount = String.format("%.2f", amt)
                 // Ask the backend for a payment intent (Razorpay order + UPI link); if the
                 // backend is unreachable, fall back to a locally-built UPI deep link.

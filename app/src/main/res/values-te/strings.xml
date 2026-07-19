@@ -136,6 +136,8 @@
     <string name="cash">నగదు</string>
     <string name="upi">UPI</string>
     <string name="payment_saved">చెల్లింపు సేవ్ అయింది</string>
+    <string name="delete">తొలగించు</string>
+    <string name="delete_confirm">దీన్ని మరియు దాని అన్ని రికార్డులను తొలగించాలా? దీన్ని రద్దు చేయలేరు.</string>
 
     <string name="vendors">విక్రేతలు</string>
     <string name="vendor_name">విక్రేత పేరు</string>

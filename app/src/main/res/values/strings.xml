@@ -155,6 +155,8 @@
     <string name="cash">Cash</string>
     <string name="upi">UPI</string>
     <string name="payment_saved">Payment saved</string>
+    <string name="delete">Delete</string>
+    <string name="delete_confirm">Delete this and all its records? This cannot be undone.</string>
 
     <!-- Vendors -->
     <string name="vendors">Vendors</string>

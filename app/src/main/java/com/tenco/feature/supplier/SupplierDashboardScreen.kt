@@ -126,39 +126,53 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
             contentPadding = PaddingValues(top = 20.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            item { GreetingHeader(onNotifications = { onNavigate(Routes.NOTIFICATIONS) }, onProfile = { onNavigate(Routes.PROFILE) }) }
+            item { com.tenco.ui.components.EntranceItem(0) { GreetingHeader(onNotifications = { onNavigate(Routes.NOTIFICATIONS) }, onProfile = { onNavigate(Routes.PROFILE) }) } }
             item {
-                HeroEarningsCard(
-                    label = stringResource(R.string.total_earnings),
-                    paise = dashboard.totalEarningsPaise,
-                    caption = "▲ ${stringResource(R.string.this_month)}",
-                )
+                com.tenco.ui.components.EntranceItem(1) {
+                    HeroEarningsCard(
+                        label = stringResource(R.string.total_earnings),
+                        paise = dashboard.totalEarningsPaise,
+                        caption = "▲ ${stringResource(R.string.this_month)}",
+                    )
+                }
             }
             item {
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    SummaryChip(Icons.Rounded.Inventory2, "${dashboard.stockOnHand}", stringResource(R.string.stock_on_hand), TileGreen, Modifier.weight(1f))
-                    SummaryChip(Icons.Rounded.CurrencyRupee, Money.formatShort(dashboard.duesReceivablePaise), stringResource(R.string.dues_receivable), TileOrange, Modifier.weight(1f))
-                    SummaryChip(Icons.Rounded.TrendingDown, Money.formatShort(dashboard.lossesPaise), stringResource(R.string.losses), TileRed, Modifier.weight(1f))
+                com.tenco.ui.components.EntranceItem(2) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        SummaryChip(Icons.Rounded.Inventory2, stringResource(R.string.stock_on_hand), TileGreen, Modifier.weight(1f)) {
+                            com.tenco.ui.components.AnimatedCount(dashboard.stockOnHand)
+                        }
+                        SummaryChip(Icons.Rounded.CurrencyRupee, stringResource(R.string.dues_receivable), TileOrange, Modifier.weight(1f)) {
+                            com.tenco.ui.components.AnimatedMoneyShort(dashboard.duesReceivablePaise)
+                        }
+                        SummaryChip(Icons.Rounded.TrendingDown, stringResource(R.string.losses), TileRed, Modifier.weight(1f)) {
+                            com.tenco.ui.components.AnimatedMoneyShort(dashboard.lossesPaise)
+                        }
+                    }
                 }
             }
 
-            item { SectionHeader(stringResource(R.string.quick_actions)) }
+            item { com.tenco.ui.components.EntranceItem(3) { SectionHeader(stringResource(R.string.quick_actions)) } }
             item {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    QuickActionTile(Icons.Rounded.Storefront, stringResource(R.string.buy_stock), TileGreen, { onNavigate(Routes.SUPPLIER_DEALERS) }, Modifier.weight(1f))
-                    QuickActionTile(Icons.Rounded.Sell, stringResource(R.string.sell_to_vendor), TileBlue, { onNavigate(Routes.SUPPLIER_SELL) }, Modifier.weight(1f))
-                    QuickActionTile(Icons.Rounded.Groups, stringResource(R.string.menu_vendors), TilePurple, { onNavigate(Routes.SUPPLIER_VENDORS) }, Modifier.weight(1f))
+                com.tenco.ui.components.EntranceItem(4) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        QuickActionTile(Icons.Rounded.Storefront, stringResource(R.string.buy_stock), TileGreen, { onNavigate(Routes.SUPPLIER_DEALERS) }, Modifier.weight(1f))
+                        QuickActionTile(Icons.Rounded.Sell, stringResource(R.string.sell_to_vendor), TileBlue, { onNavigate(Routes.SUPPLIER_SELL) }, Modifier.weight(1f))
+                        QuickActionTile(Icons.Rounded.Groups, stringResource(R.string.menu_vendors), TilePurple, { onNavigate(Routes.SUPPLIER_VENDORS) }, Modifier.weight(1f))
+                    }
                 }
             }
             item {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    QuickActionTile(Icons.Rounded.PriceChange, stringResource(R.string.menu_pricing), TileOrange, { onNavigate(Routes.SUPPLIER_PRICING) }, Modifier.weight(1f))
-                    QuickActionTile(Icons.Rounded.Assessment, stringResource(R.string.menu_reports), TileTeal, { onNavigate(Routes.SUPPLIER_REPORTS) }, Modifier.weight(1f))
-                    QuickActionTile(Icons.Rounded.ReportProblem, stringResource(R.string.menu_complaints), TileRed, { onNavigate(Routes.SUPPLIER_COMPLAINTS) }, Modifier.weight(1f))
+                com.tenco.ui.components.EntranceItem(5) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        QuickActionTile(Icons.Rounded.PriceChange, stringResource(R.string.menu_pricing), TileOrange, { onNavigate(Routes.SUPPLIER_PRICING) }, Modifier.weight(1f))
+                        QuickActionTile(Icons.Rounded.Assessment, stringResource(R.string.menu_reports), TileTeal, { onNavigate(Routes.SUPPLIER_REPORTS) }, Modifier.weight(1f))
+                        QuickActionTile(Icons.Rounded.ReportProblem, stringResource(R.string.menu_complaints), TileRed, { onNavigate(Routes.SUPPLIER_COMPLAINTS) }, Modifier.weight(1f))
+                    }
                 }
             }
 
-            item { SectionHeader(stringResource(R.string.transaction_history)) }
+            item { com.tenco.ui.components.EntranceItem(6) { SectionHeader(stringResource(R.string.transaction_history)) } }
             if (payments.isEmpty()) {
                 item { Text(stringResource(R.string.no_data), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
             } else {

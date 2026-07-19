@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -68,8 +69,17 @@ fun VendorDetailScreen(vendorId: String, onBack: () -> Unit, viewModel: Supplier
     }.sortedByDescending { it.time }
 
     var showCash by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    var showDelete by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
 
-    TencoScaffold(title = vendor?.name ?: stringResource(R.string.vendors), onBack = onBack) { padding ->
+    TencoScaffold(
+        title = vendor?.name ?: stringResource(R.string.vendors),
+        onBack = onBack,
+        actions = {
+            androidx.compose.material3.IconButton(onClick = { showDelete = true }) {
+                androidx.compose.material3.Icon(androidx.compose.material.icons.Icons.Rounded.DeleteOutline, contentDescription = stringResource(R.string.delete), tint = MaterialTheme.colorScheme.onPrimary)
+            }
+        },
+    ) { padding ->
         LazyColumn(
             Modifier.padding(padding).padding(horizontal = 16.dp),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 16.dp),
@@ -127,6 +137,22 @@ fun VendorDetailScreen(vendorId: String, onBack: () -> Unit, viewModel: Supplier
             },
             dismissButton = {
                 androidx.compose.material3.TextButton(onClick = { showCash = false }) { Text(stringResource(R.string.cancel)) }
+            },
+        )
+    }
+
+    if (showDelete) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showDelete = false },
+            title = { Text("${stringResource(R.string.delete)} ${vendor?.name ?: ""}") },
+            text = { Text(stringResource(R.string.delete_confirm)) },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    viewModel.deleteVendor(vendorId); showDelete = false; onBack()
+                }) { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { showDelete = false }) { Text(stringResource(R.string.cancel)) }
             },
         )
     }

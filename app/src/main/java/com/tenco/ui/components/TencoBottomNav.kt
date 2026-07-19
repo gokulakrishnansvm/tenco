@@ -79,12 +79,16 @@ private fun NavPill(item: NavItem, selected: Boolean, onClick: () -> Unit) {
         tween(300), label = "navtint",
     )
     val interaction = remember { MutableInteractionSource() }
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
     Row(
         Modifier
             .height(48.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(bg)
-            .selectable(selected = selected, interactionSource = interaction, indication = null, onClick = onClick)
+            .selectable(selected = selected, interactionSource = interaction, indication = null, onClick = {
+                haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                onClick()
+            })
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

@@ -26,10 +26,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -93,14 +95,14 @@ fun HeroEarningsCard(
     }
 }
 
-/** Compact summary chip (icon + value + label) used in a row under the hero. */
+/** Compact summary chip (icon + animated value + label) used in a row under the hero. */
 @Composable
 fun SummaryChip(
     icon: ImageVector,
-    value: String,
     label: String,
     accent: Color,
     modifier: Modifier = Modifier,
+    value: @Composable () -> Unit,
 ) {
     TencoCard(modifier = modifier) {
         Column(Modifier.padding(14.dp)) {
@@ -108,10 +110,37 @@ fun SummaryChip(
                 Box(contentAlignment = Alignment.Center) { Icon(icon, null, tint = accent, modifier = Modifier.size(20.dp)) }
             }
             Spacer(Modifier.height(10.dp))
-            Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+            value()
             Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
+}
+
+/** Animated integer that counts up to [target]. */
+@Composable
+fun AnimatedCount(target: Int, style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.titleMedium, color: Color = MaterialTheme.colorScheme.onSurface) {
+    val v by androidx.compose.animation.core.animateIntAsState(targetValue = target, animationSpec = androidx.compose.animation.core.tween(900), label = "count")
+    Text("$v", style = style, color = color, fontWeight = FontWeight.Bold)
+}
+
+/** Animated rupee value (short form) that counts up. */
+@Composable
+fun AnimatedMoneyShort(paise: Long, style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.titleMedium, color: Color = MaterialTheme.colorScheme.onSurface) {
+    val v by androidx.compose.animation.core.animateFloatAsState(targetValue = paise / 100f, animationSpec = androidx.compose.animation.core.tween(900), label = "money")
+    Text(com.tenco.core.Money.formatShort((v * 100).toLong()), style = style, color = color, fontWeight = FontWeight.Bold)
+}
+
+/** Wraps content with a subtle staggered fade + slide-up entrance (by [index]). */
+@Composable
+fun EntranceItem(index: Int, content: @Composable () -> Unit) {
+    var visible by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(index * 55L)
+        visible = true
+    }
+    val alpha by androidx.compose.animation.core.animateFloatAsState(if (visible) 1f else 0f, androidx.compose.animation.core.tween(380), label = "entAlpha")
+    val ty by androidx.compose.animation.core.animateFloatAsState(if (visible) 0f else 42f, androidx.compose.animation.core.tween(380), label = "entTy")
+    Box(Modifier.graphicsLayer { this.alpha = alpha; translationY = ty }) { content() }
 }
 
 /** Colorful gradient quick-action tile. */

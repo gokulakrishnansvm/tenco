@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -39,8 +41,17 @@ fun DealerDetailScreen(dealerId: String, onBack: () -> Unit, viewModel: Supplier
     val dPurchases = purchases.filter { it.dealerId == dealerId }.sortedByDescending { it.createdAt }
     val totalSpent = dPurchases.sumOf { it.quantity * it.unitCostPaise }
     val totalQty = dPurchases.sumOf { it.quantity }
+    var showDelete by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
 
-    TencoScaffold(title = dealer?.name ?: stringResource(R.string.dealers), onBack = onBack) { padding ->
+    TencoScaffold(
+        title = dealer?.name ?: stringResource(R.string.dealers),
+        onBack = onBack,
+        actions = {
+            androidx.compose.material3.IconButton(onClick = { showDelete = true }) {
+                androidx.compose.material3.Icon(androidx.compose.material.icons.Icons.Rounded.DeleteOutline, contentDescription = stringResource(R.string.delete), tint = MaterialTheme.colorScheme.onPrimary)
+            }
+        },
+    ) { padding ->
         LazyColumn(
             Modifier.padding(padding).padding(horizontal = 16.dp),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 16.dp),
@@ -67,5 +78,21 @@ fun DealerDetailScreen(dealerId: String, onBack: () -> Unit, viewModel: Supplier
                 }
             }
         }
+    }
+
+    if (showDelete) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showDelete = false },
+            title = { Text("${stringResource(R.string.delete)} ${dealer?.name ?: ""}") },
+            text = { Text(stringResource(R.string.delete_confirm)) },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    viewModel.deleteDealer(dealerId); showDelete = false; onBack()
+                }) { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { showDelete = false }) { Text(stringResource(R.string.cancel)) }
+            },
+        )
     }
 }

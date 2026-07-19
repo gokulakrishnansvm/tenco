@@ -227,6 +227,21 @@ class TencoRepository @Inject constructor(
     private suspend fun enqueue(type: String, id: String) =
         outboxDao.insert(com.tenco.data.local.OutboxEntity(entityType = type, entityId = id, createdAt = now()))
 
+    /** Deletes a vendor and all their sales/payments/complaints/prices (local). */
+    suspend fun deleteVendor(vendorId: String) {
+        deliveryDao.deleteByVendor(vendorId)
+        paymentDao.deleteByVendor(vendorId)
+        complaintDao.deleteByVendor(vendorId)
+        priceDao.deleteByVendor(vendorId)
+        vendorDao.deleteById(vendorId)
+    }
+
+    /** Deletes a dealer and all their purchases (local). */
+    suspend fun deleteDealer(dealerId: String) {
+        purchaseDao.deleteByDealer(dealerId)
+        dealerDao.deleteById(dealerId)
+    }
+
     private fun newId() = UUID.randomUUID().toString()
     private fun now() = System.currentTimeMillis()
 

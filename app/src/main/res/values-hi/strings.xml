@@ -136,6 +136,8 @@
     <string name="cash">नकद</string>
     <string name="upi">UPI</string>
     <string name="payment_saved">भुगतान सहेजा गया</string>
+    <string name="delete">हटाएं</string>
+    <string name="delete_confirm">इसे और इसके सभी रिकॉर्ड हटाएं? इसे पूर्ववत नहीं किया जा सकता।</string>
 
     <string name="vendors">विक्रेता</string>
     <string name="vendor_name">विक्रेता का नाम</string>

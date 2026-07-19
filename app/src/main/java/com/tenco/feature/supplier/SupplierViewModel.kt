@@ -98,6 +98,9 @@ class SupplierViewModel @Inject constructor(
         repository.addDealer(name, location)
     }
 
+    fun deleteVendor(vendorId: String) = viewModelScope.launch { repository.deleteVendor(vendorId) }
+    fun deleteDealer(dealerId: String) = viewModelScope.launch { repository.deleteDealer(dealerId) }
+
     /** Records a sale to a vendor (creates a delivery), which raises the vendor's dues. */
     fun sellToVendor(vendorId: String, quantity: Int, unitPricePaise: Long) = viewModelScope.launch {
         repository.addDelivery(vendorId, quantity, unitPricePaise)

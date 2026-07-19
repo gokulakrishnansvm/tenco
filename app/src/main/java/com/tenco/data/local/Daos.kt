@@ -20,6 +20,9 @@ interface DealerDao {
 
     @Query("SELECT COUNT(*) FROM dealers")
     suspend fun count(): Int
+
+    @Query("DELETE FROM dealers WHERE id = :id")
+    suspend fun deleteById(id: String)
 }
 
 @Dao
@@ -32,6 +35,9 @@ interface PurchaseDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(purchase: PurchaseEntity)
+
+    @Query("DELETE FROM purchases WHERE dealerId = :dealerId")
+    suspend fun deleteByDealer(dealerId: String)
 }
 
 @Dao
@@ -56,6 +62,9 @@ interface VendorDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(vendor: VendorEntity)
+
+    @Query("DELETE FROM vendors WHERE id = :id")
+    suspend fun deleteById(id: String)
 }
 
 @Dao
@@ -68,6 +77,9 @@ interface PriceDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(price: PriceEntity)
+
+    @Query("DELETE FROM prices WHERE vendorId = :vendorId")
+    suspend fun deleteByVendor(vendorId: String)
 }
 
 @Dao
@@ -89,6 +101,9 @@ interface DeliveryDao {
 
     @Query("SELECT * FROM deliveries WHERE id = :id")
     suspend fun getById(id: String): DeliveryEntity?
+
+    @Query("DELETE FROM deliveries WHERE vendorId = :vendorId")
+    suspend fun deleteByVendor(vendorId: String)
 }
 
 @Dao
@@ -110,6 +125,9 @@ interface ComplaintDao {
 
     @Query("SELECT * FROM complaints WHERE id = :id")
     suspend fun getById(id: String): ComplaintEntity?
+
+    @Query("DELETE FROM complaints WHERE vendorId = :vendorId")
+    suspend fun deleteByVendor(vendorId: String)
 }
 
 @Dao
@@ -125,6 +143,9 @@ interface PaymentDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(payment: PaymentEntity)
+
+    @Query("DELETE FROM payments WHERE vendorId = :vendorId")
+    suspend fun deleteByVendor(vendorId: String)
 }
 
 @Dao
