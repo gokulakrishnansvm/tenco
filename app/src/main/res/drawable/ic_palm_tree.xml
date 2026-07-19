@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp"
+    android:viewportWidth="48" android:viewportHeight="48">
+    <!-- Curved trunk -->
+    <path android:fillColor="#8D6E63"
+        android:pathData="M22,44 C21,34 20,24 26,15 L30,16 C25,25 26,34 27,44 Z" />
+    <path android:strokeColor="#6D4C41" android:strokeWidth="1" android:fillColor="#00000000"
+        android:pathData="M23,38 L27,38 M23,32 L28,32 M24,26 L29,26 M25,21 L30,21" />
+    <!-- Fronds radiating from the crown -->
+    <path android:fillColor="#2E7D32" android:pathData="M27,14 C18,9 10,9 4,13 C11,15 20,15 27,15 Z" />
+    <path android:fillColor="#388E3C" android:pathData="M27,14 C34,7 42,6 47,10 C40,12 32,13 27,15 Z" />
+    <path android:fillColor="#43A047" android:pathData="M27,14 C22,6 15,3 8,4 C13,9 20,13 27,15 Z" />
+    <path android:fillColor="#4CAF50" android:pathData="M27,14 C32,5 40,3 45,4 C39,8 32,12 27,15 Z" />
+    <path android:fillColor="#66BB6A" android:pathData="M27,13 C27,7 25,3 27,1 C30,4 30,9 28,14 Z" />
+    <!-- Coconuts at the crown -->
+    <path android:fillColor="#5D4037" android:pathData="M24,15 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0 Z" />
+    <path android:fillColor="#5D4037" android:pathData="M28,16 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0 Z" />
+</vector>

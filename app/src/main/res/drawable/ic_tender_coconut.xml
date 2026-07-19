@@ -1,0 +1,14 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp"
+    android:viewportWidth="48" android:viewportHeight="48">
+    <!-- Tender coconut body: rounded top tapering to a point -->
+    <path android:fillColor="#43A047"
+        android:pathData="M11,23 C11,16 17,11 24,11 C31,11 37,16 37,23 C37,34 29,44 24,44 C19,44 11,34 11,23 Z" />
+    <path android:fillColor="#66BB6A"
+        android:pathData="M17,22 C17,17 20,14 23,13 C20,20 20,33 24,43 C20,40 17,31 17,22 Z" />
+    <!-- Trimmed faceted top -->
+    <path android:fillColor="#C5E86C" android:pathData="M17,12 L24,12 L24,4 L20,4 Z" />
+    <path android:fillColor="#AED581" android:pathData="M24,12 L31,12 L27,4 L24,4 Z" />
+    <!-- Straw -->
+    <path android:fillColor="#EF6C00" android:pathData="M23,6 L23,1 L26,1 L26,6 Z" />
+</vector>

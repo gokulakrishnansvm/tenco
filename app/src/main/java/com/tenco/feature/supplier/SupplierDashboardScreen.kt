@@ -129,7 +129,14 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
                         listOf(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f), MaterialTheme.colorScheme.background),
                     ),
                 ),
-        )
+        ) {
+            androidx.compose.foundation.Image(
+                painter = androidx.compose.ui.res.painterResource(com.tenco.R.drawable.ic_palm_leaf),
+                contentDescription = null,
+                modifier = Modifier.align(androidx.compose.ui.Alignment.TopEnd).size(150.dp).padding(6.dp),
+                alpha = 0.16f,
+            )
+        }
         androidx.compose.material3.pulltorefresh.PullToRefreshBox(
             isRefreshing = refreshing,
             onRefresh = { viewModel.refresh() },

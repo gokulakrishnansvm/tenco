@@ -88,7 +88,7 @@ fun DealersScreen(onBack: () -> Unit, onOpenDealer: (String) -> Unit = {}, viewM
     ) { padding ->
         Column(Modifier.padding(padding)) {
             if (purchases.isEmpty()) {
-                EmptyState(Icons.Rounded.Storefront, stringResource(R.string.empty_purchases), stringResource(R.string.empty_purchases_sub))
+                EmptyState(R.drawable.ic_coconut, stringResource(R.string.empty_purchases), stringResource(R.string.empty_purchases_sub))
             } else {
                 val dealerNames = dealers.associate { it.id to it.name }
                 LazyColumn(
@@ -207,7 +207,7 @@ fun VendorsScreen(onBack: () -> Unit, onOpenVendor: (String) -> Unit = {}, viewM
     ) { padding ->
         Column(Modifier.padding(padding)) {
             if (vendors.isEmpty()) {
-                EmptyState(Icons.Rounded.Groups, stringResource(R.string.empty_vendors), stringResource(R.string.empty_vendors_sub))
+                EmptyState(R.drawable.ic_palm_tree, stringResource(R.string.empty_vendors), stringResource(R.string.empty_vendors_sub))
             } else {
                 LazyColumn(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(vendors) { v ->
@@ -308,7 +308,7 @@ fun TransactionsScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewMode
         }.sortedByDescending { it.time }
 
         if (rows.isEmpty()) {
-            EmptyState(Icons.Rounded.ReceiptLong, stringResource(R.string.empty_transactions))
+            EmptyState(R.drawable.ic_tender_coconut, stringResource(R.string.empty_transactions))
         } else {
             LazyColumn(Modifier.padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(rows) { r ->
@@ -429,7 +429,7 @@ fun ComplaintsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltView
 
     TencoScaffold(title = stringResource(R.string.menu_complaints), onBack = onBack) { padding ->
         if (complaints.isEmpty()) {
-            EmptyState(Icons.Rounded.ReportProblem, stringResource(R.string.empty_complaints))
+            EmptyState(R.drawable.ic_palm_leaf, stringResource(R.string.empty_complaints))
         } else {
             LazyColumn(Modifier.padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(complaints) { c ->
