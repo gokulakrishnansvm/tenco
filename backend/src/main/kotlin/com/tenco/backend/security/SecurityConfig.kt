@@ -25,6 +25,7 @@ class SecurityConfig(private val jwtAuthFilter: JwtAuthFilter) {
                     "/webhooks/**",
                     "/actuator/**",
                     "/h2-console/**",
+                    "/error",
                 ).permitAll()
                 it.anyRequest().authenticated()
             }

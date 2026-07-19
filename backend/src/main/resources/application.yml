@@ -19,6 +19,10 @@ spring:
   flyway:
     # Dev uses H2 + ddl-auto; migrations run in prod (Postgres).
     enabled: false
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
   h2:
     console:
       enabled: true
@@ -32,6 +36,8 @@ tenco:
   otp:
     # In dev the generated OTP is returned in the response / logged. Never do this in prod.
     dev-mode: true
+    # memory (default) | redis  — redis shares OTP/rate-limit state across instances.
+    store: ${OTP_STORE:memory}
   sms:
     # none | msg91 | twilio  (none = log only, no external call)
     provider: ${SMS_PROVIDER:none}
@@ -72,3 +78,4 @@ spring:
 tenco:
   otp:
     dev-mode: false
+    store: ${OTP_STORE:redis}
