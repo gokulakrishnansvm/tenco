@@ -112,29 +112,24 @@ fun DealersScreen(onBack: () -> Unit, onOpenDealer: (String) -> Unit = {}, viewM
         var name by remember { mutableStateOf("") }
         var market by remember { mutableStateOf("") }
         val duplicate = name.isNotBlank() && dealers.any { it.name.trim().equals(name.trim(), ignoreCase = true) }
-        AlertDialog(
-            onDismissRequest = { showDealer = false },
-            title = { Text(stringResource(R.string.add_dealer)) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OutlinedTextField(
-                        name, { name = it },
-                        label = { Text(stringResource(R.string.dealers)) },
-                        isError = duplicate,
-                        supportingText = if (duplicate) { { Text(stringResource(R.string.dealer_exists), color = MaterialTheme.colorScheme.error) } } else null,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    OutlinedTextField(market, { market = it }, label = { Text(stringResource(R.string.market)) }, modifier = Modifier.fillMaxWidth())
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    enabled = name.isNotBlank() && !duplicate,
-                    onClick = { viewModel.addDealer(name, market); showDealer = false },
-                ) { Text(stringResource(R.string.save)) }
-            },
-            dismissButton = { TextButton(onClick = { showDealer = false }) { Text(stringResource(R.string.cancel)) } },
-        )
+        com.tenco.ui.components.TencoBottomSheet(title = stringResource(R.string.add_dealer), onDismiss = { showDealer = false }) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(
+                    name, { name = it },
+                    label = { Text(stringResource(R.string.dealers)) },
+                    isError = duplicate,
+                    supportingText = if (duplicate) { { Text(stringResource(R.string.dealer_exists), color = MaterialTheme.colorScheme.error) } } else null,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                OutlinedTextField(market, { market = it }, label = { Text(stringResource(R.string.market)) }, modifier = Modifier.fillMaxWidth())
+                com.tenco.ui.components.SheetActions(
+                    onCancel = { showDealer = false },
+                    onSave = { viewModel.addDealer(name, market); showDealer = false },
+                    saveEnabled = name.isNotBlank() && !duplicate,
+                    saveText = stringResource(R.string.save),
+                )
+            }
+        }
     }
 
     if (showDialog) {
@@ -161,42 +156,38 @@ private fun AddPurchaseDialog(
     var qty by remember { mutableStateOf("") }
     var cost by remember { mutableStateOf("") }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.add_purchase)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
-                    OutlinedTextField(
-                        value = selected?.second ?: "",
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text(stringResource(R.string.dealers)) },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                        modifier = Modifier.fillMaxWidth().menuAnchor(),
-                    )
-                    ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                        dealers.forEach { d ->
-                            DropdownMenuItem(text = { Text(d.second) }, onClick = { selected = d; expanded = false })
-                        }
+    com.tenco.ui.components.TencoBottomSheet(title = stringResource(R.string.add_purchase), onDismiss = onDismiss) {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
+                OutlinedTextField(
+                    value = selected?.second ?: "",
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.dealers)) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier.fillMaxWidth().menuAnchor(),
+                )
+                ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    dealers.forEach { d ->
+                        DropdownMenuItem(text = { Text(d.second) }, onClick = { selected = d; expanded = false })
                     }
                 }
-                NumberField(qty, { qty = it }, stringResource(R.string.quantity))
-                NumberField(cost, { cost = it }, stringResource(R.string.unit_cost))
             }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
+            NumberField(qty, { qty = it }, stringResource(R.string.quantity))
+            NumberField(cost, { cost = it }, stringResource(R.string.unit_cost))
+            com.tenco.ui.components.SheetActions(
+                onCancel = onDismiss,
+                onSave = {
                     val q = qty.toIntOrNull() ?: 0
                     val c = cost.toDoubleOrNull() ?: 0.0
                     val id = selected?.first
                     if (id != null && q > 0) onConfirm(id, q, Money.rupeesToPaise(c))
                 },
-            ) { Text(stringResource(R.string.save)) }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
-    )
+                saveEnabled = (qty.toIntOrNull() ?: 0) > 0 && selected != null,
+                saveText = stringResource(R.string.save),
+            )
+        }
+    }
 }
 
 // ---------------- Vendors ----------------
@@ -232,30 +223,26 @@ fun VendorsScreen(onBack: () -> Unit, onOpenVendor: (String) -> Unit = {}, viewM
         var vpa by remember { mutableStateOf("") }
         val phoneKey = phone.filter(Char::isDigit).takeLast(10)
         val duplicate = phoneKey.length >= 10 && vendors.any { it.phone.filter(Char::isDigit).takeLast(10) == phoneKey }
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text(stringResource(R.string.add)) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OutlinedTextField(name, { name = it }, label = { Text(stringResource(R.string.vendor_name)) }, modifier = Modifier.fillMaxWidth())
-                    OutlinedTextField(
-                        phone, { phone = it.filter(Char::isDigit) },
-                        label = { Text(stringResource(R.string.phone)) },
-                        isError = duplicate,
-                        supportingText = if (duplicate) { { Text(stringResource(R.string.vendor_exists), color = MaterialTheme.colorScheme.error) } } else null,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    OutlinedTextField(vpa, { vpa = it }, label = { Text("UPI VPA") }, modifier = Modifier.fillMaxWidth())
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    enabled = name.isNotBlank() && !duplicate,
-                    onClick = { viewModel.addVendor(name, phone, vpa.ifBlank { null }); showDialog = false },
-                ) { Text(stringResource(R.string.save)) }
-            },
-            dismissButton = { TextButton(onClick = { showDialog = false }) { Text(stringResource(R.string.cancel)) } },
-        )
+        com.tenco.ui.components.TencoBottomSheet(title = stringResource(R.string.add), onDismiss = { showDialog = false }) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(name, { name = it }, label = { Text(stringResource(R.string.vendor_name)) }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(
+                    phone, { phone = it.filter(Char::isDigit) },
+                    label = { Text(stringResource(R.string.phone)) },
+                    isError = duplicate,
+                    supportingText = if (duplicate) { { Text(stringResource(R.string.vendor_exists), color = MaterialTheme.colorScheme.error) } } else null,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                OutlinedTextField(vpa, { vpa = it }, label = { Text("UPI VPA") }, modifier = Modifier.fillMaxWidth())
+                com.tenco.ui.components.SheetActions(
+                    onCancel = { showDialog = false },
+                    onSave = { viewModel.addVendor(name, phone, vpa.ifBlank { null }); showDialog = false },
+                    saveEnabled = name.isNotBlank() && !duplicate,
+                    saveText = stringResource(R.string.save),
+                )
+            }
+        }
     }
 }
 
@@ -287,18 +274,17 @@ fun PricingScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewMod
     }
     editing?.let { vendor ->
         var price by remember { mutableStateOf("") }
-        AlertDialog(
-            onDismissRequest = { editing = null },
-            title = { Text("${stringResource(R.string.set_price)} · ${vendor.name}") },
-            text = { NumberField(price, { price = it }, stringResource(R.string.unit_price)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    val p = price.toDoubleOrNull()
-                    if (p != null) { viewModel.setPrice(vendor.id, Money.rupeesToPaise(p)); editing = null }
-                }) { Text(stringResource(R.string.save)) }
-            },
-            dismissButton = { TextButton(onClick = { editing = null }) { Text(stringResource(R.string.cancel)) } },
-        )
+        com.tenco.ui.components.TencoBottomSheet(title = "${stringResource(R.string.set_price)} · ${vendor.name}", onDismiss = { editing = null }) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                NumberField(price, { price = it }, stringResource(R.string.unit_price))
+                com.tenco.ui.components.SheetActions(
+                    onCancel = { editing = null },
+                    onSave = { price.toDoubleOrNull()?.let { viewModel.setPrice(vendor.id, Money.rupeesToPaise(it)); editing = null } },
+                    saveEnabled = price.toDoubleOrNull() != null,
+                    saveText = stringResource(R.string.save),
+                )
+            }
+        }
     }
 }
 
@@ -478,18 +464,19 @@ fun ComplaintsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltView
     }
     resolvingId?.let { id ->
         var amount by remember { mutableStateOf("") }
-        AlertDialog(
-            onDismissRequest = { resolvingId = null },
-            title = { Text(stringResource(R.string.adjust_price)) },
-            text = { NumberField(amount, { amount = it }, stringResource(R.string.price_adjustments)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    val a = amount.toDoubleOrNull() ?: 0.0
-                    viewModel.resolveComplaint(id, Money.rupeesToPaise(a)); resolvingId = null
-                }) { Text(stringResource(R.string.resolve)) }
-            },
-            dismissButton = { TextButton(onClick = { resolvingId = null }) { Text(stringResource(R.string.cancel)) } },
-        )
+        com.tenco.ui.components.TencoBottomSheet(title = stringResource(R.string.adjust_price), onDismiss = { resolvingId = null }) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                NumberField(amount, { amount = it }, stringResource(R.string.price_adjustments))
+                com.tenco.ui.components.SheetActions(
+                    onCancel = { resolvingId = null },
+                    onSave = {
+                        val a = amount.toDoubleOrNull() ?: 0.0
+                        viewModel.resolveComplaint(id, Money.rupeesToPaise(a)); resolvingId = null
+                    },
+                    saveText = stringResource(R.string.resolve),
+                )
+            }
+        }
     }
 }
 

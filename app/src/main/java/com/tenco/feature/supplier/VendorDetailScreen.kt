@@ -117,28 +117,24 @@ fun VendorDetailScreen(vendorId: String, onBack: () -> Unit, viewModel: Supplier
 
     if (showCash) {
         var amount by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(String.format("%.2f", dues / 100.0)) }
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { showCash = false },
-            title = { Text(stringResource(R.string.record_cash_payment)) },
-            text = {
-                androidx.compose.material3.OutlinedTextField(
-                    value = amount,
-                    onValueChange = { amount = it },
-                    label = { Text(stringResource(R.string.amount_hint)) },
-                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal),
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            },
-            confirmButton = {
-                androidx.compose.material3.TextButton(onClick = {
+        com.tenco.ui.components.TencoBottomSheet(title = stringResource(R.string.record_cash_payment), onDismiss = { showCash = false }) {
+            androidx.compose.material3.OutlinedTextField(
+                value = amount,
+                onValueChange = { amount = it },
+                label = { Text(stringResource(R.string.amount_hint)) },
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            com.tenco.ui.components.SheetActions(
+                onCancel = { showCash = false },
+                onSave = {
                     val amt = amount.toDoubleOrNull()
                     if (amt != null && amt > 0) { viewModel.recordCashPayment(vendorId, Money.rupeesToPaise(amt)); showCash = false }
-                }) { Text(stringResource(R.string.save)) }
-            },
-            dismissButton = {
-                androidx.compose.material3.TextButton(onClick = { showCash = false }) { Text(stringResource(R.string.cancel)) }
-            },
-        )
+                },
+                saveEnabled = (amount.toDoubleOrNull() ?: 0.0) > 0,
+                saveText = stringResource(R.string.save),
+            )
+        }
     }
 
     if (showDelete) {
