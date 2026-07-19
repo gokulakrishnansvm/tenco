@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -56,10 +57,17 @@ fun VendorDetailScreen(vendorId: String, onBack: () -> Unit, viewModel: Supplier
 
     val soldLabel = stringResource(R.string.sell_to_vendor)
     val paymentLabel = stringResource(R.string.received)
+    val cashLabel = stringResource(R.string.cash)
+    val upiLabel = stringResource(R.string.upi)
     val entries = buildList {
         vDeliveries.forEach { add(LedgerEntry(it.createdAt, "$soldLabel · ${it.quantity} @ ${Money.formatShort(it.unitPricePaise)}", "+" + Money.formatShort(it.quantity * it.unitPricePaise), TileBlue, it.status, statusLabelOf(it.status))) }
-        vPayments.forEach { add(LedgerEntry(it.createdAt, paymentLabel, "-" + Money.formatShort(it.amountPaise), StatusCompleted, it.status, statusLabelOf(it.status))) }
+        vPayments.forEach {
+            val method = if (it.method == com.tenco.domain.PaymentMethod.CASH) cashLabel else upiLabel
+            add(LedgerEntry(it.createdAt, "$paymentLabel · $method", "-" + Money.formatShort(it.amountPaise), StatusCompleted, it.status, statusLabelOf(it.status)))
+        }
     }.sortedByDescending { it.time }
+
+    var showCash by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
 
     TencoScaffold(title = vendor?.name ?: stringResource(R.string.vendors), onBack = onBack) { padding ->
         LazyColumn(
@@ -74,6 +82,14 @@ fun VendorDetailScreen(vendorId: String, onBack: () -> Unit, viewModel: Supplier
                     caption = "${vendor?.phone ?: ""}  ·  ${vendor?.upiVpa ?: "-"}",
                 )
             }
+            item {
+                androidx.compose.material3.Button(
+                    onClick = { showCash = true },
+                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                ) {
+                    Text(stringResource(R.string.record_cash_payment))
+                }
+            }
             item { SectionHeader(stringResource(R.string.transaction_history)) }
             items(entries) { e ->
                 TencoCard(Modifier.fillMaxWidth()) {
@@ -87,6 +103,32 @@ fun VendorDetailScreen(vendorId: String, onBack: () -> Unit, viewModel: Supplier
                 }
             }
         }
+    }
+
+    if (showCash) {
+        var amount by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(String.format("%.2f", dues / 100.0)) }
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showCash = false },
+            title = { Text(stringResource(R.string.record_cash_payment)) },
+            text = {
+                androidx.compose.material3.OutlinedTextField(
+                    value = amount,
+                    onValueChange = { amount = it },
+                    label = { Text(stringResource(R.string.amount_hint)) },
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    val amt = amount.toDoubleOrNull()
+                    if (amt != null && amt > 0) { viewModel.recordCashPayment(vendorId, Money.rupeesToPaise(amt)); showCash = false }
+                }) { Text(stringResource(R.string.save)) }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { showCash = false }) { Text(stringResource(R.string.cancel)) }
+            },
+        )
     }
 }
 

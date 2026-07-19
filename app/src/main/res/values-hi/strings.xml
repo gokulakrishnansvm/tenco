@@ -132,6 +132,10 @@
     <string name="total">कुल</string>
     <string name="not_enough_stock">पर्याप्त स्टॉक उपलब्ध नहीं</string>
     <string name="sale_recorded">बिक्री दर्ज की गई</string>
+    <string name="record_cash_payment">नकद भुगतान दर्ज करें</string>
+    <string name="cash">नकद</string>
+    <string name="upi">UPI</string>
+    <string name="payment_saved">भुगतान सहेजा गया</string>
 
     <string name="vendors">विक्रेता</string>
     <string name="vendor_name">विक्रेता का नाम</string>

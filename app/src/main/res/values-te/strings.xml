@@ -132,6 +132,10 @@
     <string name="total">మొత్తం</string>
     <string name="not_enough_stock">తగినంత నిల్వ లేదు</string>
     <string name="sale_recorded">అమ్మకం నమోదైంది</string>
+    <string name="record_cash_payment">నగదు చెల్లింపు నమోదు చేయి</string>
+    <string name="cash">నగదు</string>
+    <string name="upi">UPI</string>
+    <string name="payment_saved">చెల్లింపు సేవ్ అయింది</string>
 
     <string name="vendors">విక్రేతలు</string>
     <string name="vendor_name">విక్రేత పేరు</string>

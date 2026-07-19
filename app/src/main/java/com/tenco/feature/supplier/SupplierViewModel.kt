@@ -103,6 +103,16 @@ class SupplierViewModel @Inject constructor(
         repository.addDelivery(vendorId, quantity, unitPricePaise)
     }
 
+    /** Records an in-person cash collection from a vendor (reduces their dues). */
+    fun recordCashPayment(vendorId: String, amountPaise: Long) = viewModelScope.launch {
+        repository.recordPayment(
+            vendorId, amountPaise,
+            method = com.tenco.domain.PaymentMethod.CASH,
+            status = com.tenco.domain.PaymentStatus.COMPLETED,
+            note = "Cash collection",
+        )
+    }
+
     fun addVendor(name: String, phone: String, upiVpa: String?) = viewModelScope.launch {
         repository.addVendor(name, phone, upiVpa, languageTag = "en")
     }

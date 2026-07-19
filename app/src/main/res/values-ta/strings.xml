@@ -132,6 +132,10 @@
     <string name="total">மொத்தம்</string>
     <string name="not_enough_stock">போதுமான சரக்கு இல்லை</string>
     <string name="sale_recorded">விற்பனை பதிவு செய்யப்பட்டது</string>
+    <string name="record_cash_payment">பணப் பணம் பதிவு செய்</string>
+    <string name="cash">பணம்</string>
+    <string name="upi">UPI</string>
+    <string name="payment_saved">பணம் சேமிக்கப்பட்டது</string>
 
     <string name="vendors">விற்பனையாளர்கள்</string>
     <string name="vendor_name">விற்பனையாளர் பெயர்</string>

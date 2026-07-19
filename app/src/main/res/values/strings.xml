@@ -151,6 +151,10 @@
     <string name="total">Total</string>
     <string name="not_enough_stock">Not enough stock available</string>
     <string name="sale_recorded">Sale recorded</string>
+    <string name="record_cash_payment">Record cash payment</string>
+    <string name="cash">Cash</string>
+    <string name="upi">UPI</string>
+    <string name="payment_saved">Payment saved</string>
 
     <!-- Vendors -->
     <string name="vendors">Vendors</string>
