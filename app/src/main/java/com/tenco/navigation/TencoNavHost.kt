@@ -26,7 +26,20 @@ fun TencoNavHost(
 ) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = appViewModel.startRoute) {
+    NavHost(
+        navController = navController,
+        startDestination = appViewModel.startRoute,
+        enterTransition = {
+            slideIntoContainer(androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Start, androidx.compose.animation.core.tween(320)) +
+                androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(320))
+        },
+        exitTransition = { androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(200)) },
+        popEnterTransition = { androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(300)) },
+        popExitTransition = {
+            slideOutOfContainer(androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.End, androidx.compose.animation.core.tween(320)) +
+                androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(320))
+        },
+    ) {
 
         val logout: () -> Unit = {
             appViewModel.logout()

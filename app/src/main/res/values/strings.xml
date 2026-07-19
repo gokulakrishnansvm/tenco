@@ -99,6 +99,7 @@
     <string name="amount_hint">Amount (₹)</string>
     <string name="pay">Pay</string>
     <string name="pay_full">Pay full</string>
+    <string name="scan_to_pay">Scan with any UPI app</string>
     <string name="no_upi_app">No UPI app found on this device</string>
     <string name="did_payment_succeed">Did the payment succeed?</string>
     <string name="mark_paid">Yes, paid</string>

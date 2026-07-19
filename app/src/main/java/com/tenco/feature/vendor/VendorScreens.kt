@@ -27,6 +27,8 @@ import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.ReportProblem
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -34,6 +36,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -92,7 +97,10 @@ fun VendorDashboardScreen(
     val coconutsLabel = stringResource(R.string.coconuts)
     val pendingLabel = stringResource(R.string.pending_dues)
 
-    androidx.compose.material3.Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
+    androidx.compose.material3.Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        bottomBar = { VendorBottomBar(onNavigate) },
+    ) { padding ->
         Column(
             Modifier.padding(padding).padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -151,6 +159,21 @@ fun VendorDashboardScreen(
 
 // ---------------- Pay (UPI) ----------------
 @Composable
+private fun VendorBottomBar(onNavigate: (String) -> Unit) {
+    NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 8.dp) {
+        val c = NavigationBarItemDefaults.colors(
+            selectedIconColor = MaterialTheme.colorScheme.primary,
+            indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+        )
+        NavigationBarItem(selected = true, onClick = {}, icon = { Icon(Icons.Rounded.Home, null) }, label = { Text("Home") }, colors = c)
+        NavigationBarItem(selected = false, onClick = { onNavigate(Routes.VENDOR_PAY) }, icon = { Icon(Icons.Filled.CurrencyRupee, null) }, label = { Text(stringResource(R.string.pay)) }, colors = c)
+        NavigationBarItem(selected = false, onClick = { onNavigate(Routes.VENDOR_HISTORY) }, icon = { Icon(Icons.Filled.History, null) }, label = { Text(stringResource(R.string.history)) }, colors = c)
+        NavigationBarItem(selected = false, onClick = { onNavigate(Routes.VENDOR_COMPLAINT) }, icon = { Icon(Icons.Filled.ReportProblem, null) }, label = { Text(stringResource(R.string.raise_complaint)) }, colors = c)
+        NavigationBarItem(selected = false, onClick = { onNavigate(Routes.PROFILE) }, icon = { Icon(Icons.Rounded.Person, null) }, label = { Text(stringResource(R.string.menu_profile)) }, colors = c)
+    }
+}
+
+@Composable
 fun VendorPayScreen(
     vendorId: String,
     onBack: () -> Unit,
@@ -193,6 +216,16 @@ fun VendorPayScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text("${stringResource(R.string.remaining_dues)}: ${Money.format(dues)}", style = MaterialTheme.typography.titleMedium)
+            run {
+                val qrAmt = amount.toDoubleOrNull() ?: (dues / 100.0)
+                val upiStr = com.tenco.core.UpiPayment.buildUri(
+                    dashboard?.supplierVpa ?: Demo.SUPPLIER_VPA, Demo.SUPPLIER_NAME, qrAmt, "TENCO dues",
+                ).toString()
+                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    com.tenco.ui.components.QrCode(upiStr)
+                    Text(stringResource(R.string.scan_to_pay), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
             OutlinedTextField(
                 value = amount,
                 onValueChange = { amount = it },

@@ -85,6 +85,7 @@
     <string name="amount_hint">தொகை (₹)</string>
     <string name="pay">செலுத்து</string>
     <string name="pay_full">முழுவதும் செலுத்து</string>
+    <string name="scan_to_pay">எந்த UPI ஆப்பிலும் ஸ்கேன் செய்யவும்</string>
     <string name="no_upi_app">இந்த சாதனத்தில் UPI ஆப் இல்லை</string>
     <string name="did_payment_succeed">பணம் செலுத்தப்பட்டதா?</string>
     <string name="mark_paid">ஆம், செலுத்தப்பட்டது</string>
