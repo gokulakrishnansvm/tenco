@@ -13,8 +13,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
+import androidx.compose.material.icons.rounded.BrightnessAuto
 import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.Language
+import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Shield
@@ -25,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -32,7 +36,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tenco.R
+import com.tenco.core.prefs.AppPreferences
 import com.tenco.ui.components.TencoCard
 import com.tenco.ui.components.TencoScaffold
 import com.tenco.ui.theme.StatusFailed
@@ -77,6 +83,20 @@ fun ProfileScreen(
                 }
             }
 
+            // Appearance / theme
+            val themeVm: com.tenco.navigation.ThemeViewModel = hiltViewModel()
+            val themeMode by themeVm.themeMode.collectAsStateWithLifecycle()
+            TencoCard(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(stringResource(R.string.appearance), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        ThemeChip(Icons.Rounded.BrightnessAuto, stringResource(R.string.theme_system), themeMode == AppPreferences.THEME_SYSTEM, Modifier.weight(1f)) { themeVm.setThemeMode(AppPreferences.THEME_SYSTEM) }
+                        ThemeChip(Icons.Rounded.LightMode, stringResource(R.string.theme_light), themeMode == AppPreferences.THEME_LIGHT, Modifier.weight(1f)) { themeVm.setThemeMode(AppPreferences.THEME_LIGHT) }
+                        ThemeChip(Icons.Rounded.DarkMode, stringResource(R.string.theme_dark), themeMode == AppPreferences.THEME_DARK, Modifier.weight(1f)) { themeVm.setThemeMode(AppPreferences.THEME_DARK) }
+                    }
+                }
+            }
+
             Button(
                 onClick = onLogout,
                 modifier = Modifier.fillMaxWidth().height(54.dp),
@@ -85,6 +105,18 @@ fun ProfileScreen(
                 Icon(Icons.AutoMirrored.Rounded.Logout, contentDescription = null)
                 Text("  " + stringResource(R.string.logout), fontWeight = FontWeight.SemiBold)
             }
+        }
+    }
+}
+
+@Composable
+private fun ThemeChip(icon: ImageVector, label: String, selected: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    val bg = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+    val fg = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+    Surface(shape = MaterialTheme.shapes.medium, color = bg, modifier = modifier.clickable { onClick() }) {
+        Column(Modifier.padding(vertical = 14.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Icon(icon, contentDescription = label, tint = fg)
+            Text(label, style = MaterialTheme.typography.labelMedium, color = fg, fontWeight = FontWeight.Medium)
         }
     }
 }

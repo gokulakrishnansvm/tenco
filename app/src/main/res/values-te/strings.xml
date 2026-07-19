@@ -167,4 +167,9 @@
     <string name="pricing">ధర నిర్ణయం</string>
     <string name="unit_price">యూనిట్ ధర (₹)</string>
     <string name="set_price">ధరను సెట్ చేయి</string>
+    <string name="theme">థీమ్</string>
+    <string name="theme_system">సిస్టమ్</string>
+    <string name="theme_light">లైట్</string>
+    <string name="theme_dark">డార్క్</string>
+    <string name="appearance">రూపం</string>
 </resources>

@@ -167,4 +167,9 @@
     <string name="pricing">मूल्य निर्धारण</string>
     <string name="unit_price">इकाई मूल्य (₹)</string>
     <string name="set_price">मूल्य निर्धारित करें</string>
+    <string name="theme">थीम</string>
+    <string name="theme_system">सिस्टम</string>
+    <string name="theme_light">लाइट</string>
+    <string name="theme_dark">डार्क</string>
+    <string name="appearance">रूप</string>
 </resources>

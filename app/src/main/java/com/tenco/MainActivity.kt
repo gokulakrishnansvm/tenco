@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tenco.core.locale.LocaleManager
 import com.tenco.core.prefs.AppPreferences
 import com.tenco.feature.onboarding.LanguageScreen
@@ -43,7 +44,14 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun TencoApp() {
-    TencoTheme {
+    val themeVm: com.tenco.navigation.ThemeViewModel = hiltViewModel()
+    val themeMode by themeVm.themeMode.collectAsStateWithLifecycle()
+    val darkTheme = when (themeMode) {
+        com.tenco.core.prefs.AppPreferences.THEME_LIGHT -> false
+        com.tenco.core.prefs.AppPreferences.THEME_DARK -> true
+        else -> androidx.compose.foundation.isSystemInDarkTheme()
+    }
+    TencoTheme(darkTheme = darkTheme) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background,

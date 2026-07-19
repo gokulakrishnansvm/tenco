@@ -59,6 +59,20 @@ class AppPreferences @Inject constructor(@ApplicationContext context: Context) {
         get() = prefs.getLong(KEY_SYNC_CURSOR, 0L)
         set(value) = prefs.edit().putLong(KEY_SYNC_CURSOR, value).apply()
 
+    private val _themeMode = kotlinx.coroutines.flow.MutableStateFlow(
+        prefs.getString(KEY_THEME, THEME_SYSTEM) ?: THEME_SYSTEM,
+    )
+
+    /** Observable UI theme mode: "system" | "light" | "dark". */
+    val themeModeFlow: kotlinx.coroutines.flow.StateFlow<String> = _themeMode
+
+    var themeMode: String
+        get() = _themeMode.value
+        set(value) {
+            prefs.edit().putString(KEY_THEME, value).apply()
+            _themeMode.value = value
+        }
+
     val isLoggedIn: Boolean get() = !userPhone.isNullOrBlank()
 
     /** Clears the session (login + tokens + role + vendor) but keeps the chosen language. */
@@ -85,5 +99,9 @@ class AppPreferences @Inject constructor(@ApplicationContext context: Context) {
         private const val KEY_REFRESH_TOKEN = "refresh_token"
         private const val KEY_USER_ID = "user_id"
         private const val KEY_SYNC_CURSOR = "last_sync_cursor"
+        private const val KEY_THEME = "theme_mode"
+        const val THEME_SYSTEM = "system"
+        const val THEME_LIGHT = "light"
+        const val THEME_DARK = "dark"
     }
 }

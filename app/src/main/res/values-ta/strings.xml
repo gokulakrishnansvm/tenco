@@ -167,4 +167,9 @@
     <string name="pricing">விலை நிர்ணயம்</string>
     <string name="unit_price">அலகு விலை (₹)</string>
     <string name="set_price">விலையை அமை</string>
+    <string name="theme">தீம்</string>
+    <string name="theme_system">கணினி</string>
+    <string name="theme_light">வெளிச்சம்</string>
+    <string name="theme_dark">இருள்</string>
+    <string name="appearance">தோற்றம்</string>
 </resources>
