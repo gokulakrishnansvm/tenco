@@ -301,10 +301,12 @@ fun TransactionsScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewMode
 
     TencoScaffold(title = stringResource(R.string.transaction_history), onBack = onBack) { padding ->
         val purchaseLabel = stringResource(R.string.buy_stock)
+        val vendorLabel = stringResource(R.string.role_vendor)
+        val dealerLabel = stringResource(R.string.dealers)
         val rows = buildList {
-            purchases.forEach { add(Row4(it.createdAt, dealerNames[it.dealerId] ?: "-", "$purchaseLabel · ${it.quantity} @ ${Money.formatShort(it.unitCostPaise)}", "PURCHASE")) }
-            deliveries.forEach { add(Row4(it.createdAt, names[it.vendorId] ?: "-", "${it.quantity} ${'@'} ${Money.formatShort(it.unitPricePaise)}", it.status)) }
-            payments.forEach { add(Row4(it.createdAt, names[it.vendorId] ?: "-", Money.format(it.amountPaise), it.status)) }
+            purchases.forEach { add(Row4(it.createdAt, dealerNames[it.dealerId] ?: dealerLabel, "$purchaseLabel · ${it.quantity} @ ${Money.formatShort(it.unitCostPaise)}", "PURCHASE")) }
+            deliveries.forEach { add(Row4(it.createdAt, names[it.vendorId] ?: vendorLabel, "${it.quantity} ${'@'} ${Money.formatShort(it.unitPricePaise)}", it.status)) }
+            payments.forEach { add(Row4(it.createdAt, names[it.vendorId] ?: vendorLabel, Money.format(it.amountPaise), it.status)) }
         }.sortedByDescending { it.time }
 
         if (rows.isEmpty()) {

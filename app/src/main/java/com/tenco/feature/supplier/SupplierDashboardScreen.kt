@@ -191,7 +191,7 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
             } else {
                 items(payments.take(6)) { p ->
                     TransactionRow(
-                        name = names[p.vendorId] ?: "-",
+                        name = names[p.vendorId] ?: stringResource(R.string.role_vendor),
                         amount = Money.format(p.amountPaise),
                         status = p.status,
                     )
