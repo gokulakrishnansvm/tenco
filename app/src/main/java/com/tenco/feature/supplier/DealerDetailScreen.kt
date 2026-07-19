@@ -48,7 +48,7 @@ fun DealerDetailScreen(dealerId: String, onBack: () -> Unit, viewModel: Supplier
         onBack = onBack,
         actions = {
             androidx.compose.material3.IconButton(onClick = { showDelete = true }) {
-                androidx.compose.material3.Icon(androidx.compose.material.icons.Icons.Rounded.DeleteOutline, contentDescription = stringResource(R.string.delete), tint = MaterialTheme.colorScheme.onPrimary)
+                androidx.compose.material3.Icon(androidx.compose.material.icons.Icons.Rounded.DeleteOutline, contentDescription = stringResource(R.string.delete), tint = MaterialTheme.colorScheme.onSurface)
             }
         },
     ) { padding ->

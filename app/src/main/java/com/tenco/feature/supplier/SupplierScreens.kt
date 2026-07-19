@@ -75,7 +75,7 @@ fun DealersScreen(onBack: () -> Unit, onOpenDealer: (String) -> Unit = {}, viewM
         onBack = onBack,
         actions = {
             androidx.compose.material3.TextButton(onClick = { showDealer = true }) {
-                Text(stringResource(R.string.add_dealer), color = MaterialTheme.colorScheme.onPrimary)
+                Text(stringResource(R.string.add_dealer), color = MaterialTheme.colorScheme.primary)
             }
         },
         floatingActionButton = {
