@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.animation.togetherWith
 import androidx.compose.material.icons.rounded.AccountBalanceWallet
 import androidx.compose.material.icons.rounded.Assessment
 import androidx.compose.material.icons.rounded.CurrencyRupee
@@ -82,8 +83,16 @@ fun SupplierDashboardScreen(
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = { SupplierBottomBar(tab) { tab = it } },
     ) { padding ->
-        Box(Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding())) {
-            when (tab) {
+        androidx.compose.animation.AnimatedContent(
+            targetState = tab,
+            transitionSpec = {
+                androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(260)) togetherWith
+                    androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(180))
+            },
+            label = "supplierTab",
+            modifier = Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding()),
+        ) { t ->
+            when (t) {
                 0 -> SupplierHomeTab(onNavigate, viewModel)
                 1 -> InventoryScreen()
                 2 -> TransactionsScreen()
@@ -222,15 +231,15 @@ private fun TransactionRow(name: String, amount: String, status: String) {
 
 @Composable
 private fun SupplierBottomBar(selected: Int, onSelect: (Int) -> Unit) {
-    NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 8.dp) {
-        val itemColors = NavigationBarItemDefaults.colors(
-            selectedIconColor = MaterialTheme.colorScheme.primary,
-            indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-        )
-        NavigationBarItem(selected = selected == 0, onClick = { onSelect(0) }, icon = { Icon(Icons.Rounded.Home, null) }, label = { Text("Home") }, colors = itemColors)
-        NavigationBarItem(selected = selected == 1, onClick = { onSelect(1) }, icon = { Icon(Icons.Rounded.Inventory2, null) }, label = { Text("Stock") }, colors = itemColors)
-        NavigationBarItem(selected = selected == 2, onClick = { onSelect(2) }, icon = { Icon(Icons.Rounded.ReceiptLong, null) }, label = { Text("Txns") }, colors = itemColors)
-        NavigationBarItem(selected = selected == 3, onClick = { onSelect(3) }, icon = { Icon(Icons.Rounded.AccountBalanceWallet, null) }, label = { Text("Money") }, colors = itemColors)
-        NavigationBarItem(selected = selected == 4, onClick = { onSelect(4) }, icon = { Icon(Icons.Rounded.Person, null) }, label = { Text("Profile") }, colors = itemColors)
-    }
+    com.tenco.ui.components.TencoBottomNav(
+        items = listOf(
+            com.tenco.ui.components.NavItem(Icons.Rounded.Home, "Home"),
+            com.tenco.ui.components.NavItem(Icons.Rounded.Inventory2, "Stock"),
+            com.tenco.ui.components.NavItem(Icons.Rounded.ReceiptLong, "Txns"),
+            com.tenco.ui.components.NavItem(Icons.Rounded.AccountBalanceWallet, "Money"),
+            com.tenco.ui.components.NavItem(Icons.Rounded.Person, "Profile"),
+        ),
+        selected = selected,
+        onSelect = onSelect,
+    )
 }

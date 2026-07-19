@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -96,8 +97,16 @@ fun VendorDashboardScreen(
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = { VendorBottomBar(tab) { tab = it } },
     ) { padding ->
-        Box(Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding())) {
-            when (tab) {
+        androidx.compose.animation.AnimatedContent(
+            targetState = tab,
+            transitionSpec = {
+                androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(260)) togetherWith
+                    androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(180))
+            },
+            label = "vendorTab",
+            modifier = Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding()),
+        ) { t ->
+            when (t) {
                 0 -> VendorHomeTab(onChangeLanguage, onLogout, { tab = it }, viewModel)
                 1 -> VendorPayScreen(vendorId, onBack = { tab = 0 })
                 2 -> VendorHistoryScreen(vendorId, onBack = { tab = 0 })
@@ -181,17 +190,17 @@ private fun VendorHomeTab(
 // ---------------- Pay (UPI) ----------------
 @Composable
 private fun VendorBottomBar(selected: Int, onSelect: (Int) -> Unit) {
-    NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 8.dp) {
-        val c = NavigationBarItemDefaults.colors(
-            selectedIconColor = MaterialTheme.colorScheme.primary,
-            indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-        )
-        NavigationBarItem(selected = selected == 0, onClick = { onSelect(0) }, icon = { Icon(Icons.Rounded.Home, null) }, label = { Text("Home") }, colors = c)
-        NavigationBarItem(selected = selected == 1, onClick = { onSelect(1) }, icon = { Icon(Icons.Filled.CurrencyRupee, null) }, label = { Text(stringResource(R.string.pay)) }, colors = c)
-        NavigationBarItem(selected = selected == 2, onClick = { onSelect(2) }, icon = { Icon(Icons.Filled.History, null) }, label = { Text(stringResource(R.string.history)) }, colors = c)
-        NavigationBarItem(selected = selected == 3, onClick = { onSelect(3) }, icon = { Icon(Icons.Filled.ReportProblem, null) }, label = { Text(stringResource(R.string.raise_complaint)) }, colors = c)
-        NavigationBarItem(selected = selected == 4, onClick = { onSelect(4) }, icon = { Icon(Icons.Rounded.Person, null) }, label = { Text(stringResource(R.string.menu_profile)) }, colors = c)
-    }
+    com.tenco.ui.components.TencoBottomNav(
+        items = listOf(
+            com.tenco.ui.components.NavItem(Icons.Rounded.Home, "Home"),
+            com.tenco.ui.components.NavItem(Icons.Filled.CurrencyRupee, stringResource(R.string.pay)),
+            com.tenco.ui.components.NavItem(Icons.Filled.History, stringResource(R.string.history)),
+            com.tenco.ui.components.NavItem(Icons.Filled.ReportProblem, stringResource(R.string.raise_complaint)),
+            com.tenco.ui.components.NavItem(Icons.Rounded.Person, stringResource(R.string.menu_profile)),
+        ),
+        selected = selected,
+        onSelect = onSelect,
+    )
 }
 
 @Composable
