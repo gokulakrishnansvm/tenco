@@ -197,4 +197,22 @@
     <string name="theme_dark">Dark</string>
     <string name="appearance">Appearance</string>
     <string name="filter_all">All</string>
+    <string name="orders">Orders</string>
+    <string name="my_orders">My Orders</string>
+    <string name="place_order">Place Order</string>
+    <string name="order_qty_hint">Number of coconuts</string>
+    <string name="order_placed_toast">Order placed</string>
+    <string name="ord_placed">Placed</string>
+    <string name="ord_confirmed">Priced</string>
+    <string name="ord_in_progress">In progress</string>
+    <string name="ord_in_transit">In transit</string>
+    <string name="ord_delivered">Delivered</string>
+    <string name="start_preparing">Start preparing</string>
+    <string name="out_for_delivery">Out for delivery</string>
+    <string name="mark_delivered">Mark delivered</string>
+    <string name="no_orders">No orders yet</string>
+    <string name="awaiting_price">Awaiting price</string>
+    <string name="order_total">Total</string>
+    <string name="new_label">New</string>
+    <string name="order_label">Order</string>
 </resources>

@@ -3,6 +3,7 @@ package com.tenco.data.repository
 import com.tenco.data.local.ComplaintEntity
 import com.tenco.data.local.DealerEntity
 import com.tenco.data.local.DeliveryEntity
+import com.tenco.data.local.OrderEntity
 import com.tenco.data.local.PaymentEntity
 import com.tenco.data.local.PriceEntity
 import com.tenco.data.local.PurchaseEntity
@@ -36,6 +37,7 @@ class TencoRepository @Inject constructor(
     private val deliveryDao = db.deliveryDao()
     private val complaintDao = db.complaintDao()
     private val paymentDao = db.paymentDao()
+    private val orderDao = db.orderDao()
     private val outboxDao = db.outboxDao()
 
     // --- Raw observers ---
@@ -48,6 +50,10 @@ class TencoRepository @Inject constructor(
     fun observeDeliveries(): Flow<List<DeliveryEntity>> = deliveryDao.observeAll()
     fun observePayments(): Flow<List<PaymentEntity>> = paymentDao.observeAll()
     fun observeComplaints(): Flow<List<ComplaintEntity>> = complaintDao.observeAll()
+    fun observeOrders(): Flow<List<OrderEntity>> = orderDao.observeAll()
+    fun observeOrdersForVendor(vendorId: String): Flow<List<OrderEntity>> = orderDao.observeForVendor(vendorId)
+    fun observeOrder(id: String): Flow<OrderEntity?> = orderDao.observeById(id)
+    fun observeNewOrderCount(): Flow<Int> = orderDao.observeNewCount()
     fun observeVendor(id: String): Flow<VendorEntity?> = vendorDao.observeById(id)
     fun observePaymentsForVendor(vendorId: String): Flow<List<PaymentEntity>> =
         paymentDao.observeForVendor(vendorId)
@@ -190,6 +196,45 @@ class TencoRepository @Inject constructor(
 
     suspend fun setPrice(vendorId: String, unitPricePaise: Long) {
         val e = PriceEntity(newId(), vendorId, unitPricePaise, now()); priceDao.upsert(e); enqueue(OUT_PRICE, e.id)
+    }
+
+    // ----------------- Vendor orders -----------------
+
+    /** Vendor places an order; prefills the last agreed unit price (if any) so they can pre-pay. */
+    suspend fun placeOrder(vendorId: String, quantity: Int) {
+        val lastPrice = priceDao.latestForVendor(vendorId)?.unitPricePaise
+        val e = OrderEntity(
+            id = newId(), vendorId = vendorId, quantity = quantity,
+            unitPricePaise = lastPrice, status = com.tenco.domain.OrderStatus.PLACED,
+            paid = false, createdAt = now(), updatedAt = now(),
+        )
+        orderDao.upsert(e)
+    }
+
+    /** Supplier sets the unit price and confirms the order. */
+    suspend fun setOrderPrice(orderId: String, unitPricePaise: Long) {
+        val o = orderDao.getById(orderId) ?: return
+        orderDao.upsert(o.copy(unitPricePaise = unitPricePaise, status = com.tenco.domain.OrderStatus.CONFIRMED, updatedAt = now()))
+    }
+
+    /** Supplier advances the order along its pipeline. On DELIVERED, records a sale (delivery). */
+    suspend fun advanceOrderStatus(orderId: String, status: String) {
+        val o = orderDao.getById(orderId) ?: return
+        orderDao.upsert(o.copy(status = status, updatedAt = now()))
+        if (status == com.tenco.domain.OrderStatus.DELIVERED && o.unitPricePaise != null) {
+            val d = DeliveryEntity(newId(), o.vendorId, o.quantity, o.unitPricePaise, DeliveryStatus.DELIVERED, now(), now())
+            deliveryDao.upsert(d); enqueue(OUT_DELIVERY, d.id)
+        }
+    }
+
+    /** Vendor pays for a priced order; records the payment and marks the order paid. */
+    suspend fun markOrderPaid(orderId: String) {
+        val o = orderDao.getById(orderId) ?: return
+        val unit = o.unitPricePaise ?: return
+        val total = unit * o.quantity
+        val p = PaymentEntity(newId(), o.vendorId, total, com.tenco.domain.PaymentMethod.ORDER, PaymentStatus.COMPLETED, upiRef = null, note = "Order ${o.id.take(6)}", createdAt = now())
+        paymentDao.upsert(p); enqueue(OUT_PAYMENT, p.id)
+        orderDao.upsert(o.copy(paid = true, updatedAt = now()))
     }
 
     suspend fun addDelivery(vendorId: String, quantity: Int, unitPricePaise: Long) {

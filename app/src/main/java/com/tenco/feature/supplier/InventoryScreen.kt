@@ -49,6 +49,8 @@ fun InventoryScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewModel =
     val dealerById = dealers.associateBy { it.id }
     // Only show batches whose dealer resolves (skip corrupt/orphaned sync rows).
     val validPurchases = purchases.filter { dealerById.containsKey(it.dealerId) }
+    // Stable sequential batch numbers in chronological order (oldest = #1).
+    val batchNumber = validPurchases.sortedBy { it.createdAt }.withIndex().associate { (i, p) -> p.id to i + 1 }
 
     val totalIn = validPurchases.sumOf { it.quantity }.coerceAtLeast(1)
     val totalOut = deliveries.sumOf { it.quantity }
@@ -66,7 +68,7 @@ fun InventoryScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewModel =
                 items(validPurchases) { p ->
                     val dealer = dealerById[p.dealerId]
                     BatchCard(
-                        batchNo = "Batch #${p.id.take(6).uppercase()}",
+                        batchNo = "Batch #${batchNumber[p.id] ?: 0}",
                         market = dealer?.location ?: "",
                         dealer = dealer?.name ?: "",
                         quantity = p.quantity,

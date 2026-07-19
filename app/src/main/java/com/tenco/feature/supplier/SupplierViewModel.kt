@@ -109,6 +109,15 @@ class SupplierViewModel @Inject constructor(
     fun deleteVendor(vendorId: String) = viewModelScope.launch { repository.deleteVendor(vendorId) }
     fun deleteDealer(dealerId: String) = viewModelScope.launch { repository.deleteDealer(dealerId) }
 
+    // Vendor orders
+    val orders: StateFlow<List<com.tenco.data.local.OrderEntity>> =
+        repository.observeOrders().stateInVm(emptyList())
+    val newOrderCount: StateFlow<Int> =
+        repository.observeNewOrderCount().stateInVm(0)
+    fun observeOrder(id: String) = repository.observeOrder(id)
+    fun setOrderPrice(orderId: String, unitPricePaise: Long) = viewModelScope.launch { repository.setOrderPrice(orderId, unitPricePaise) }
+    fun advanceOrder(orderId: String, status: String) = viewModelScope.launch { repository.advanceOrderStatus(orderId, status) }
+
     /** Records a sale to a vendor (creates a delivery), which raises the vendor's dues. */
     fun sellToVendor(vendorId: String, quantity: Int, unitPricePaise: Long) = viewModelScope.launch {
         repository.addDelivery(vendorId, quantity, unitPricePaise)

@@ -74,6 +74,19 @@ data class PaymentEntity(
     val createdAt: Long,
 )
 
+/** A vendor's coconut order to the supplier, progressing through a fulfilment lifecycle. */
+@Entity(tableName = "orders", indices = [Index("vendorId")])
+data class OrderEntity(
+    @PrimaryKey val id: String,
+    val vendorId: String,
+    val quantity: Int,
+    val unitPricePaise: Long?,   // null until the supplier sets a price
+    val status: String,          // PLACED, CONFIRMED, IN_PROGRESS, IN_TRANSIT, DELIVERED, CANCELLED
+    val paid: Boolean = false,
+    val createdAt: Long,
+    val updatedAt: Long,
+)
+
 /** Records a locally-changed entity awaiting push to the backend (client->server sync). */
 @Entity(tableName = "outbox")
 data class OutboxEntity(

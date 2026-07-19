@@ -104,6 +104,18 @@ fun TencoNavHost(
         composable(Routes.SUPPLIER_INSIGHTS) { com.tenco.feature.supplier.InsightsScreen(onBack = navController::popBackStack) }
         composable(Routes.SUPPLIER_INVENTORY) { com.tenco.feature.supplier.InventoryScreen(onBack = navController::popBackStack) }
         composable(Routes.SUPPLIER_SELL) { com.tenco.feature.supplier.SellScreen(onBack = navController::popBackStack) }
+        composable(Routes.SUPPLIER_ORDERS) {
+            com.tenco.feature.supplier.SupplierOrdersScreen(
+                onBack = navController::popBackStack,
+                onOpenOrder = { navController.navigate(Routes.orderDetail(it)) },
+            )
+        }
+        composable(
+            Routes.SUPPLIER_ORDER_DETAIL,
+            arguments = listOf(androidx.navigation.navArgument("orderId") { type = androidx.navigation.NavType.StringType }),
+        ) { entry ->
+            com.tenco.feature.supplier.SupplierOrderDetailScreen(entry.arguments?.getString("orderId").orEmpty(), onBack = navController::popBackStack)
+        }
 
         composable(Routes.PROFILE) {
             com.tenco.feature.profile.ProfileScreen(
@@ -128,6 +140,12 @@ fun TencoNavHost(
         }
         composable(Routes.VENDOR_PAY) {
             VendorPayScreen(
+                vendorId = appViewModel.currentVendorId.orEmpty(),
+                onBack = navController::popBackStack,
+            )
+        }
+        composable(Routes.VENDOR_ORDERS) {
+            com.tenco.feature.vendor.VendorOrdersScreen(
                 vendorId = appViewModel.currentVendorId.orEmpty(),
                 onBack = navController::popBackStack,
             )

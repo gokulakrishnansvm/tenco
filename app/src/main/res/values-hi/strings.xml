@@ -173,4 +173,22 @@
     <string name="theme_dark">डार्क</string>
     <string name="appearance">रूप</string>
     <string name="filter_all">सभी</string>
+    <string name="orders">ऑर्डर</string>
+    <string name="my_orders">मेरे ऑर्डर</string>
+    <string name="place_order">ऑर्डर करें</string>
+    <string name="order_qty_hint">नारियल की संख्या</string>
+    <string name="order_placed_toast">ऑर्डर हो गया</string>
+    <string name="ord_placed">रखा गया</string>
+    <string name="ord_confirmed">कीमत तय</string>
+    <string name="ord_in_progress">प्रगति में</string>
+    <string name="ord_in_transit">रास्ते में</string>
+    <string name="ord_delivered">डिलीवर हो गया</string>
+    <string name="start_preparing">तैयारी शुरू करें</string>
+    <string name="out_for_delivery">डिलीवरी के लिए</string>
+    <string name="mark_delivered">डिलीवर के रूप में चिह्नित करें</string>
+    <string name="no_orders">अभी कोई ऑर्डर नहीं</string>
+    <string name="awaiting_price">कीमत का इंतज़ार</string>
+    <string name="order_total">कुल</string>
+    <string name="new_label">नया</string>
+    <string name="order_label">ऑर्डर</string>
 </resources>

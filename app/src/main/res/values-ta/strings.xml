@@ -173,4 +173,22 @@
     <string name="theme_dark">இருள்</string>
     <string name="appearance">தோற்றம்</string>
     <string name="filter_all">அனைத்தும்</string>
+    <string name="orders">ஆர்டர்கள்</string>
+    <string name="my_orders">எனது ஆர்டர்கள்</string>
+    <string name="place_order">ஆர்டர் செய்</string>
+    <string name="order_qty_hint">தேங்காய் எண்ணிக்கை</string>
+    <string name="order_placed_toast">ஆர்டர் வைக்கப்பட்டது</string>
+    <string name="ord_placed">வைக்கப்பட்டது</string>
+    <string name="ord_confirmed">விலை நிர்ணயம்</string>
+    <string name="ord_in_progress">செயலில்</string>
+    <string name="ord_in_transit">வழியில்</string>
+    <string name="ord_delivered">வழங்கப்பட்டது</string>
+    <string name="start_preparing">தயார் செய்</string>
+    <string name="out_for_delivery">டெலிவரிக்கு</string>
+    <string name="mark_delivered">வழங்கியதாகக் குறி</string>
+    <string name="no_orders">இன்னும் ஆர்டர்கள் இல்லை</string>
+    <string name="awaiting_price">விலைக்காக காத்திருக்கிறது</string>
+    <string name="order_total">மொத்தம்</string>
+    <string name="new_label">புதியது</string>
+    <string name="order_label">ஆர்டர்</string>
 </resources>

@@ -29,6 +29,7 @@ import androidx.compose.material.icons.rounded.PriceChange
 import androidx.compose.material.icons.rounded.ReceiptLong
 import androidx.compose.material.icons.rounded.ReportProblem
 import androidx.compose.material.icons.rounded.Sell
+import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material.icons.rounded.Storefront
 import androidx.compose.material.icons.rounded.TrendingDown
 import androidx.compose.material.icons.rounded.Insights
@@ -114,6 +115,7 @@ fun SupplierDashboardScreen(
 @Composable
 private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierViewModel) {
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
+    val newOrders by viewModel.newOrderCount.collectAsStateWithLifecycle()
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
 
     androidx.compose.material3.pulltorefresh.PullToRefreshBox(
@@ -165,6 +167,16 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
                         QuickActionTile(Icons.Rounded.PriceChange, stringResource(R.string.menu_pricing), TileOrange, { onNavigate(Routes.SUPPLIER_PRICING) }, Modifier.weight(1f))
                         QuickActionTile(Icons.Rounded.Assessment, stringResource(R.string.menu_reports), TileTeal, { onNavigate(Routes.SUPPLIER_REPORTS) }, Modifier.weight(1f))
                         QuickActionTile(Icons.Rounded.ReportProblem, stringResource(R.string.menu_complaints), TileRed, { onNavigate(Routes.SUPPLIER_COMPLAINTS) }, Modifier.weight(1f))
+                    }
+                }
+            }
+            item {
+                com.tenco.ui.components.EntranceItem(6) {
+                    Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        val ordersLabel = stringResource(R.string.orders) + if (newOrders > 0) " ($newOrders)" else ""
+                        QuickActionTile(Icons.Rounded.ShoppingCart, ordersLabel, TileBlue, { onNavigate(Routes.SUPPLIER_ORDERS) }, Modifier.weight(1f))
+                        QuickActionTile(Icons.Rounded.Inventory2, stringResource(R.string.menu_inventory), TileGreen, { onNavigate(Routes.SUPPLIER_INVENTORY) }, Modifier.weight(1f))
+                        androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
                     }
                 }
             }

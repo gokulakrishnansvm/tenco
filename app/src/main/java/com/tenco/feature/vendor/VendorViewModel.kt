@@ -64,6 +64,18 @@ class VendorViewModel @Inject constructor(
             .flatMapLatest { repository.observeComplaintsForVendor(it) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    val orders: StateFlow<List<com.tenco.data.local.OrderEntity>> =
+        vendorId.filterNotNull()
+            .flatMapLatest { repository.observeOrdersForVendor(it) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    fun placeOrder(quantity: Int) = viewModelScope.launch {
+        val id = vendorId.value ?: return@launch
+        if (quantity > 0) repository.placeOrder(id, quantity)
+    }
+
+    fun payOrder(orderId: String) = viewModelScope.launch { repository.markOrderPaid(orderId) }
+
     fun confirmLatestDelivery() = viewModelScope.launch {
         deliveries.value.firstOrNull { it.confirmedAt == null }?.let {
             repository.confirmDelivery(it.id)

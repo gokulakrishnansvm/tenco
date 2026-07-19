@@ -173,4 +173,22 @@
     <string name="theme_dark">డార్క్</string>
     <string name="appearance">రూపం</string>
     <string name="filter_all">అన్నీ</string>
+    <string name="orders">ఆర్డర్లు</string>
+    <string name="my_orders">నా ఆర్డర్లు</string>
+    <string name="place_order">ఆర్డర్ చేయండి</string>
+    <string name="order_qty_hint">కొబ్బరికాయల సంఖ్య</string>
+    <string name="order_placed_toast">ఆర్డర్ చేయబడింది</string>
+    <string name="ord_placed">ఉంచబడింది</string>
+    <string name="ord_confirmed">ధర నిర్ణయించబడింది</string>
+    <string name="ord_in_progress">ప్రోగ్రెస్‌లో</string>
+    <string name="ord_in_transit">రవాణాలో</string>
+    <string name="ord_delivered">డెలివరీ అయింది</string>
+    <string name="start_preparing">సిద్ధం చేయి</string>
+    <string name="out_for_delivery">డెలివరీకి</string>
+    <string name="mark_delivered">డెలివరీ అయినట్లు గుర్తించు</string>
+    <string name="no_orders">ఇంకా ఆర్డర్లు లేవు</string>
+    <string name="awaiting_price">ధర కోసం వేచి ఉంది</string>
+    <string name="order_total">మొత్తం</string>
+    <string name="new_label">కొత్త</string>
+    <string name="order_label">ఆర్డర్</string>
 </resources>

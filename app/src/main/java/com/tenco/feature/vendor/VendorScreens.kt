@@ -29,6 +29,7 @@ import androidx.compose.material.icons.rounded.CurrencyRupee
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Chat
 import androidx.compose.material.icons.rounded.ReportProblem
+import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material.icons.rounded.Translate
 import androidx.compose.material.icons.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.Home
@@ -109,7 +110,7 @@ fun VendorDashboardScreen(
             modifier = Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding()),
         ) { t ->
             when (t) {
-                0 -> VendorHomeTab(onChangeLanguage, onLogout, { tab = it }, viewModel)
+                0 -> VendorHomeTab(onChangeLanguage, onLogout, { tab = it }, { onNavigate(Routes.VENDOR_ORDERS) }, viewModel)
                 1 -> VendorPayScreen(vendorId, onBack = { tab = 0 })
                 2 -> VendorHistoryScreen(vendorId, onBack = { tab = 0 })
                 3 -> VendorComplaintScreen(vendorId, onBack = { tab = 0 })
@@ -128,6 +129,7 @@ private fun VendorHomeTab(
     onChangeLanguage: () -> Unit,
     onLogout: () -> Unit,
     onTab: (Int) -> Unit,
+    onOrders: () -> Unit,
     viewModel: VendorViewModel,
 ) {
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
@@ -168,14 +170,18 @@ private fun VendorHomeTab(
         }
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            com.tenco.ui.components.QuickActionTile(Icons.Rounded.ShoppingCart, stringResource(R.string.place_order), com.tenco.ui.theme.TileTeal, onOrders, Modifier.weight(1f))
             com.tenco.ui.components.QuickActionTile(Icons.Rounded.CheckCircle, stringResource(R.string.confirm_delivery), com.tenco.ui.theme.TileGreen, { viewModel.confirmLatestDelivery() }, Modifier.weight(1f))
-            com.tenco.ui.components.QuickActionTile(Icons.Rounded.ReportProblem, stringResource(R.string.raise_complaint), com.tenco.ui.theme.TileRed, { onTab(3) }, Modifier.weight(1f))
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            com.tenco.ui.components.QuickActionTile(Icons.Rounded.ReportProblem, stringResource(R.string.raise_complaint), com.tenco.ui.theme.TileRed, { onTab(3) }, Modifier.weight(1f))
             com.tenco.ui.components.QuickActionTile(Icons.Rounded.History, stringResource(R.string.history), com.tenco.ui.theme.TileBlue, { onTab(2) }, Modifier.weight(1f))
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             com.tenco.ui.components.QuickActionTile(Icons.Rounded.Chat, stringResource(R.string.contact_supplier), com.tenco.ui.theme.TileOrange, {
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/${Demo.SUPPLIER_PHONE.removePrefix("+")}")))
             }, Modifier.weight(1f))
+            androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
         }
     }
     }

@@ -16,6 +16,9 @@ object Routes {
     const val SUPPLIER_INSIGHTS = "supplier/insights"
     const val SUPPLIER_INVENTORY = "supplier/inventory"
     const val SUPPLIER_SELL = "supplier/sell"
+    const val SUPPLIER_ORDERS = "supplier/orders"
+    const val SUPPLIER_ORDER_DETAIL = "supplier/order/{orderId}"
+    fun orderDetail(id: String) = "supplier/order/$id"
     const val SUPPLIER_VENDOR_DETAIL = "supplier/vendor/{vendorId}"
     const val SUPPLIER_DEALER_DETAIL = "supplier/dealer/{dealerId}"
     fun vendorDetail(id: String) = "supplier/vendor/$id"
@@ -26,6 +29,7 @@ object Routes {
     // Vendor
     const val VENDOR_HOME = "vendor"
     const val VENDOR_PAY = "vendor/pay"
+    const val VENDOR_ORDERS = "vendor/orders"
     const val VENDOR_COMPLAINT = "vendor/complaint"
     const val VENDOR_HISTORY = "vendor/history"
 }

@@ -84,6 +84,9 @@ interface PriceDao {
     @Query("SELECT * FROM prices ORDER BY effectiveFrom DESC")
     fun observeAll(): Flow<List<PriceEntity>>
 
+    @Query("SELECT * FROM prices WHERE vendorId = :vendorId ORDER BY effectiveFrom DESC LIMIT 1")
+    suspend fun latestForVendor(vendorId: String): PriceEntity?
+
     @Query("SELECT * FROM prices WHERE id IN (:ids)")
     suspend fun getByIds(ids: List<String>): List<PriceEntity>
 
@@ -170,4 +173,26 @@ interface OutboxDao {
 
     @Query("DELETE FROM outbox WHERE seq IN (:seqs)")
     suspend fun deleteBySeqs(seqs: List<Long>)
+}
+
+
+@Dao
+interface OrderDao {
+    @Query("SELECT * FROM orders ORDER BY updatedAt DESC")
+    fun observeAll(): Flow<List<OrderEntity>>
+
+    @Query("SELECT * FROM orders WHERE vendorId = :vendorId ORDER BY updatedAt DESC")
+    fun observeForVendor(vendorId: String): Flow<List<OrderEntity>>
+
+    @Query("SELECT * FROM orders WHERE id = :id")
+    fun observeById(id: String): Flow<OrderEntity?>
+
+    @Query("SELECT * FROM orders WHERE id = :id")
+    suspend fun getById(id: String): OrderEntity?
+
+    @Query("SELECT COUNT(*) FROM orders WHERE status = 'PLACED'")
+    fun observeNewCount(): Flow<Int>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(order: OrderEntity)
 }
