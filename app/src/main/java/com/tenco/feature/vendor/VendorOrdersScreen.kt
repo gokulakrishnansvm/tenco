@@ -41,6 +41,8 @@ import com.tenco.ui.components.TencoScaffold
 fun VendorOrdersScreen(vendorId: String, onBack: (() -> Unit)? = null, viewModel: VendorViewModel = hiltViewModel()) {
     LaunchedEffect(vendorId) { viewModel.setVendor(vendorId) }
     val orders by viewModel.orders.collectAsStateWithLifecycle()
+    val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
+    val context = androidx.compose.ui.platform.LocalContext.current
     var qty by remember { mutableStateOf("") }
     val coconuts = stringResource(R.string.coconuts)
 
@@ -85,14 +87,35 @@ fun VendorOrdersScreen(vendorId: String, onBack: (() -> Unit)? = null, viewModel
                             OrderStatusChip(o.status)
                         }
                         OrderTimeline(o.status)
-                        if (o.unitPricePaise != null && !o.paid && o.status != OrderStatus.DELIVERED) {
-                            Button(onClick = { viewModel.payOrder(o.id) }, modifier = Modifier.fillMaxWidth().height(48.dp)) {
+                        if (o.unitPricePaise != null && !o.paid && o.status != OrderStatus.DELIVERED && o.status != OrderStatus.CANCELLED) {
+                            Button(
+                                onClick = {
+                                    val amt = o.unitPricePaise * o.quantity / 100.0
+                                    val launched = com.tenco.core.UpiPayment.launch(
+                                        context,
+                                        dashboard?.supplierVpa ?: com.tenco.core.Demo.SUPPLIER_VPA,
+                                        com.tenco.core.Demo.SUPPLIER_NAME,
+                                        amt,
+                                        "TENCO order",
+                                    )
+                                    if (launched) viewModel.payOrder(o.id)
+                                    else android.widget.Toast.makeText(context, R.string.no_upi_app, android.widget.Toast.LENGTH_LONG).show()
+                                },
+                                modifier = Modifier.fillMaxWidth().height(48.dp),
+                            ) {
                                 Text("${stringResource(R.string.pay_now)} · ${Money.format(o.unitPricePaise * o.quantity)}")
                             }
                         } else if (o.paid) {
                             OutlinedButton(onClick = {}, enabled = false, modifier = Modifier.fillMaxWidth()) {
                                 Text(stringResource(R.string.status_completed))
                             }
+                        }
+                        if (OrderStatus.cancellable(o.status) && !o.paid) {
+                            OutlinedButton(
+                                onClick = { viewModel.cancelOrder(o.id) },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                            ) { Text(stringResource(R.string.cancel_order)) }
                         }
                     }
                 }

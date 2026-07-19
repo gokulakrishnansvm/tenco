@@ -191,4 +191,9 @@
     <string name="order_total">మొత్తం</string>
     <string name="new_label">కొత్త</string>
     <string name="order_label">ఆర్డర్</string>
+    <string name="cancel_order">ఆర్డర్ రద్దు చేయి</string>
+    <string name="ord_cancel_requested">రద్దు అభ్యర్థించబడింది</string>
+    <string name="ord_cancelled">రద్దు చేయబడింది</string>
+    <string name="confirm_cancellation">రద్దును నిర్ధారించు</string>
+    <string name="new_orders">కొత్త ఆర్డర్లు</string>
 </resources>

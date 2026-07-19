@@ -191,4 +191,9 @@
     <string name="order_total">மொத்தம்</string>
     <string name="new_label">புதியது</string>
     <string name="order_label">ஆர்டர்</string>
+    <string name="cancel_order">ஆர்டரை ரத்து செய்</string>
+    <string name="ord_cancel_requested">ரத்து கோரப்பட்டது</string>
+    <string name="ord_cancelled">ரத்து செய்யப்பட்டது</string>
+    <string name="confirm_cancellation">ரத்தை உறுதிப்படுத்து</string>
+    <string name="new_orders">புதிய ஆர்டர்கள்</string>
 </resources>

@@ -26,6 +26,7 @@ object OrderStatus {
     const val IN_PROGRESS = "IN_PROGRESS" // being prepared
     const val IN_TRANSIT = "IN_TRANSIT"  // out for delivery
     const val DELIVERED = "DELIVERED"
+    const val CANCEL_REQUESTED = "CANCEL_REQUESTED" // vendor asked to cancel, awaiting supplier
     const val CANCELLED = "CANCELLED"
 
     /** Ordered pipeline used for the timeline + advancing. */
@@ -35,6 +36,9 @@ object OrderStatus {
         val i = PIPELINE.indexOf(status)
         return if (i in 0 until PIPELINE.lastIndex) PIPELINE[i + 1] else null
     }
+
+    /** A vendor may request cancellation only before the order is dispatched. */
+    fun cancellable(status: String): Boolean = status in listOf(PLACED, CONFIRMED, IN_PROGRESS)
 }
 
 object ComplaintStatus {

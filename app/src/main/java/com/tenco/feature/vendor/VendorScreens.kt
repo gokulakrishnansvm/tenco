@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.padding
@@ -98,7 +99,7 @@ fun VendorDashboardScreen(
     var tab by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(0) }
     androidx.compose.material3.Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        bottomBar = { VendorBottomBar(tab) { tab = it } },
+        bottomBar = { VendorBottomBar(tab, onSelect = { tab = it }, onOrder = { onNavigate(Routes.VENDOR_ORDERS) }) },
     ) { padding ->
         androidx.compose.animation.AnimatedContent(
             targetState = tab,
@@ -170,18 +171,14 @@ private fun VendorHomeTab(
         }
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            com.tenco.ui.components.QuickActionTile(Icons.Rounded.ShoppingCart, stringResource(R.string.place_order), com.tenco.ui.theme.TileTeal, onOrders, Modifier.weight(1f))
             com.tenco.ui.components.QuickActionTile(Icons.Rounded.CheckCircle, stringResource(R.string.confirm_delivery), com.tenco.ui.theme.TileGreen, { viewModel.confirmLatestDelivery() }, Modifier.weight(1f))
-        }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             com.tenco.ui.components.QuickActionTile(Icons.Rounded.ReportProblem, stringResource(R.string.raise_complaint), com.tenco.ui.theme.TileRed, { onTab(3) }, Modifier.weight(1f))
-            com.tenco.ui.components.QuickActionTile(Icons.Rounded.History, stringResource(R.string.history), com.tenco.ui.theme.TileBlue, { onTab(2) }, Modifier.weight(1f))
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            com.tenco.ui.components.QuickActionTile(Icons.Rounded.History, stringResource(R.string.history), com.tenco.ui.theme.TileBlue, { onTab(2) }, Modifier.weight(1f))
             com.tenco.ui.components.QuickActionTile(Icons.Rounded.Chat, stringResource(R.string.contact_supplier), com.tenco.ui.theme.TileOrange, {
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/${Demo.SUPPLIER_PHONE.removePrefix("+")}")))
             }, Modifier.weight(1f))
-            androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
         }
     }
     }
@@ -228,18 +225,49 @@ private fun VendorHeaderBand(
 }
 
 @Composable
-private fun VendorBottomBar(selected: Int, onSelect: (Int) -> Unit) {
-    com.tenco.ui.components.TencoBottomNav(
-        items = listOf(
-            com.tenco.ui.components.NavItem(Icons.Rounded.Home, stringResource(R.string.nav_home)),
-            com.tenco.ui.components.NavItem(Icons.Rounded.CurrencyRupee, stringResource(R.string.pay)),
-            com.tenco.ui.components.NavItem(Icons.Rounded.History, stringResource(R.string.history)),
-            com.tenco.ui.components.NavItem(Icons.Rounded.ReportProblem, stringResource(R.string.raise_complaint)),
-            com.tenco.ui.components.NavItem(Icons.Rounded.Person, stringResource(R.string.menu_profile)),
-        ),
-        selected = selected,
-        onSelect = onSelect,
-    )
+private fun VendorBottomBar(selected: Int, onSelect: (Int) -> Unit, onOrder: () -> Unit) {
+    androidx.compose.foundation.layout.Box(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp)) {
+        androidx.compose.material3.Surface(
+            shape = RoundedCornerShape(30.dp),
+            color = MaterialTheme.colorScheme.surface,
+            shadowElevation = 12.dp,
+            modifier = Modifier.fillMaxWidth().height(66.dp).align(Alignment.BottomCenter),
+        ) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                VNavCell(Icons.Rounded.Home, stringResource(R.string.nav_home), selected == 0, Modifier.weight(1f)) { onSelect(0) }
+                VNavCell(Icons.Rounded.CurrencyRupee, stringResource(R.string.pay), selected == 1, Modifier.weight(1f)) { onSelect(1) }
+                androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
+                VNavCell(Icons.Rounded.History, stringResource(R.string.history), selected == 2, Modifier.weight(1f)) { onSelect(2) }
+                VNavCell(Icons.Rounded.Person, stringResource(R.string.menu_profile), selected == 4, Modifier.weight(1f)) { onSelect(4) }
+            }
+        }
+        Column(Modifier.align(Alignment.TopCenter).offset(y = (-14).dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            androidx.compose.material3.Surface(
+                shape = androidx.compose.foundation.shape.CircleShape,
+                color = MaterialTheme.colorScheme.primary,
+                shadowElevation = 16.dp,
+                modifier = Modifier.size(60.dp).clickable { onOrder() },
+            ) {
+                androidx.compose.foundation.layout.Box(contentAlignment = Alignment.Center) {
+                    Icon(Icons.Rounded.ShoppingCart, contentDescription = stringResource(R.string.place_order), tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(30.dp))
+                }
+            }
+            Text(stringResource(R.string.place_order), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
+        }
+    }
+}
+
+@Composable
+private fun VNavCell(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
+    val color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+    Column(
+        modifier.clickable { onClick() },
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Icon(icon, contentDescription = label, tint = color, modifier = Modifier.size(24.dp))
+        Text(label, style = MaterialTheme.typography.labelSmall, color = color, maxLines = 1)
+    }
 }
 
 @Composable
@@ -418,7 +446,7 @@ fun VendorHistoryScreen(
 
     TencoScaffold(title = stringResource(R.string.transaction_history), onBack = onBack) { padding ->
         if (payments.isEmpty() && complaints.isEmpty()) {
-            EmptyState(R.drawable.ic_tender_coconut, stringResource(R.string.empty_transactions))
+            EmptyState(R.drawable.ic_coconut, stringResource(R.string.empty_transactions))
         } else {
             LazyColumn(Modifier.padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(payments) { p ->

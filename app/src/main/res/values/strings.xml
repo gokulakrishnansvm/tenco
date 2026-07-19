@@ -215,4 +215,9 @@
     <string name="order_total">Total</string>
     <string name="new_label">New</string>
     <string name="order_label">Order</string>
+    <string name="cancel_order">Cancel order</string>
+    <string name="ord_cancel_requested">Cancel requested</string>
+    <string name="ord_cancelled">Cancelled</string>
+    <string name="confirm_cancellation">Confirm cancellation</string>
+    <string name="new_orders">New orders</string>
 </resources>

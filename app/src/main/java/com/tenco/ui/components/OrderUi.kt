@@ -30,6 +30,8 @@ fun orderStatusLabel(status: String): String = when (status) {
     OrderStatus.IN_PROGRESS -> stringResource(R.string.ord_in_progress)
     OrderStatus.IN_TRANSIT -> stringResource(R.string.ord_in_transit)
     OrderStatus.DELIVERED -> stringResource(R.string.ord_delivered)
+    OrderStatus.CANCEL_REQUESTED -> stringResource(R.string.ord_cancel_requested)
+    OrderStatus.CANCELLED -> stringResource(R.string.ord_cancelled)
     else -> status
 }
 
@@ -38,6 +40,8 @@ fun OrderStatusChip(status: String) {
     val color = when (status) {
         OrderStatus.DELIVERED -> StatusCompleted
         OrderStatus.PLACED -> StatusPending
+        OrderStatus.CANCEL_REQUESTED -> StatusPending
+        OrderStatus.CANCELLED -> MaterialTheme.colorScheme.error
         else -> MaterialTheme.colorScheme.primary
     }
     Surface(shape = RoundedCornerShape(50), color = color.copy(alpha = 0.15f)) {

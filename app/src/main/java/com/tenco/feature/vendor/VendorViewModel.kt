@@ -75,6 +75,7 @@ class VendorViewModel @Inject constructor(
     }
 
     fun payOrder(orderId: String) = viewModelScope.launch { repository.markOrderPaid(orderId) }
+    fun cancelOrder(orderId: String) = viewModelScope.launch { repository.requestOrderCancel(orderId) }
 
     fun confirmLatestDelivery() = viewModelScope.launch {
         deliveries.value.firstOrNull { it.confirmedAt == null }?.let {

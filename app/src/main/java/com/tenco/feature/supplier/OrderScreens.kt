@@ -94,7 +94,15 @@ fun SupplierOrderDetailScreen(orderId: String, onBack: () -> Unit, viewModel: Su
                     OrderTimeline(o.status, Modifier.padding(16.dp))
                 }
 
-                if (o.unitPricePaise == null) {
+                if (o.status == OrderStatus.CANCEL_REQUESTED) {
+                    Button(
+                        onClick = { viewModel.confirmOrderCancel(o.id) },
+                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                        modifier = Modifier.fillMaxWidth().height(52.dp),
+                    ) { Text(stringResource(R.string.confirm_cancellation)) }
+                } else if (o.status == OrderStatus.CANCELLED) {
+                    // Terminal state — no actions.
+                } else if (o.unitPricePaise == null) {
                     OutlinedTextField(
                         value = priceText,
                         onValueChange = { priceText = it.filter { c -> c.isDigit() || c == '.' } },

@@ -117,6 +117,7 @@ class SupplierViewModel @Inject constructor(
     fun observeOrder(id: String) = repository.observeOrder(id)
     fun setOrderPrice(orderId: String, unitPricePaise: Long) = viewModelScope.launch { repository.setOrderPrice(orderId, unitPricePaise) }
     fun advanceOrder(orderId: String, status: String) = viewModelScope.launch { repository.advanceOrderStatus(orderId, status) }
+    fun confirmOrderCancel(orderId: String) = viewModelScope.launch { repository.confirmOrderCancel(orderId) }
 
     /** Records a sale to a vendor (creates a delivery), which raises the vendor's dues. */
     fun sellToVendor(vendorId: String, quantity: Int, unitPricePaise: Long) = viewModelScope.launch {

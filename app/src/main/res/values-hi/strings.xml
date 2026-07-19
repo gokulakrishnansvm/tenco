@@ -191,4 +191,9 @@
     <string name="order_total">कुल</string>
     <string name="new_label">नया</string>
     <string name="order_label">ऑर्डर</string>
+    <string name="cancel_order">ऑर्डर रद्द करें</string>
+    <string name="ord_cancel_requested">रद्द करने का अनुरोध</string>
+    <string name="ord_cancelled">रद्द किया गया</string>
+    <string name="confirm_cancellation">रद्दीकरण की पुष्टि करें</string>
+    <string name="new_orders">नए ऑर्डर</string>
 </resources>

@@ -237,6 +237,20 @@ class TencoRepository @Inject constructor(
         orderDao.upsert(o.copy(paid = true, updatedAt = now()))
     }
 
+    /** Vendor requests cancellation (allowed only before dispatch). */
+    suspend fun requestOrderCancel(orderId: String) {
+        val o = orderDao.getById(orderId) ?: return
+        if (com.tenco.domain.OrderStatus.cancellable(o.status)) {
+            orderDao.upsert(o.copy(status = com.tenco.domain.OrderStatus.CANCEL_REQUESTED, updatedAt = now()))
+        }
+    }
+
+    /** Supplier confirms a cancellation request. */
+    suspend fun confirmOrderCancel(orderId: String) {
+        val o = orderDao.getById(orderId) ?: return
+        orderDao.upsert(o.copy(status = com.tenco.domain.OrderStatus.CANCELLED, updatedAt = now()))
+    }
+
     suspend fun addDelivery(vendorId: String, quantity: Int, unitPricePaise: Long) {
         val e = DeliveryEntity(newId(), vendorId, quantity, unitPricePaise, DeliveryStatus.DELIVERED, now(), null)
         deliveryDao.upsert(e); enqueue(OUT_DELIVERY, e.id)

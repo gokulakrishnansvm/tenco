@@ -322,7 +322,7 @@ fun TransactionsScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewMode
             }
 
             if (filtered.isEmpty()) {
-                EmptyState(R.drawable.ic_tender_coconut, stringResource(R.string.empty_transactions))
+                EmptyState(R.drawable.ic_coconut, stringResource(R.string.empty_transactions))
             } else {
                 LazyColumn(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(filtered) { r ->
