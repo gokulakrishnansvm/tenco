@@ -192,7 +192,14 @@ fun SectionHeader(title: String, modifier: Modifier = Modifier, trailing: (@Comp
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            androidx.compose.foundation.Image(
+                painter = androidx.compose.ui.res.painterResource(com.tenco.R.drawable.ic_palm_leaf),
+                contentDescription = null,
+                modifier = Modifier.size(22.dp).padding(end = 6.dp),
+            )
+            Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        }
         trailing?.invoke()
     }
 }

@@ -54,7 +54,7 @@ fun InventoryScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewModel =
 
     TencoScaffold(title = stringResource(R.string.menu_inventory), onBack = onBack) { padding ->
         if (purchases.isEmpty()) {
-            EmptyState(stringResource(R.string.no_data))
+            EmptyState(R.drawable.ic_coconut, stringResource(R.string.no_data))
         } else {
             LazyColumn(
                 Modifier.padding(padding).padding(horizontal = 16.dp),
