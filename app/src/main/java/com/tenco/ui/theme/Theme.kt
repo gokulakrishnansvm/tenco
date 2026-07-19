@@ -1,31 +1,67 @@
 package com.tenco.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 private val LightColors = lightColorScheme(
-    primary = CoconutGreen,
+    primary = DeepCoconutGreen,
     onPrimary = Color.White,
-    primaryContainer = CoconutLight,
-    onPrimaryContainer = CoconutGreenDark,
-    secondary = TenderYellow,
-    onSecondary = Color.Black,
-    background = Cream,
+    primaryContainer = Color(0xFFDDF3DC),
+    onPrimaryContainer = DeepCoconutGreen,
+    secondary = FreshCoconutGreen,
+    onSecondary = Color.White,
+    secondaryContainer = Color(0xFFE9F7E3),
+    onSecondaryContainer = DeepCoconutGreen,
+    tertiary = CoconutHusk,
+    background = AppBackground,
+    onBackground = Color(0xFF10201A),
     surface = Color.White,
+    onSurface = Color(0xFF13211C),
+    surfaceVariant = Color(0xFFEFF3F0),
+    onSurfaceVariant = Color(0xFF56635C),
+    outline = Color(0xFFD5DED8),
 )
 
 private val DarkColors = darkColorScheme(
-    primary = CoconutLight,
-    onPrimary = CoconutGreenDark,
-    primaryContainer = CoconutGreenDark,
-    onPrimaryContainer = CoconutLight,
-    secondary = TenderYellow,
-    onSecondary = Color.Black,
+    primary = FreshCoconutGreen,
+    onPrimary = Color(0xFF03210B),
+    primaryContainer = Color(0xFF1F3A26),
+    onPrimaryContainer = FreshLime,
+    secondary = FreshLime,
+    onSecondary = Color(0xFF12210A),
+    tertiary = CoconutHusk,
+    background = DarkBg,
+    onBackground = DarkOnSurface,
+    surface = DarkSurface,
+    onSurface = DarkOnSurface,
+    surfaceVariant = DarkSurfaceElevated,
+    onSurfaceVariant = Color(0xFF9FB0A6),
+    outline = Color(0xFF33403A),
 )
+
+private val TencoShapes = Shapes(
+    extraSmall = RoundedCornerShape(10.dp),
+    small = RoundedCornerShape(14.dp),
+    medium = RoundedCornerShape(20.dp),
+    large = RoundedCornerShape(26.dp),
+    extraLarge = RoundedCornerShape(32.dp),
+)
+
+/** Brand gradients (usable outside composition). */
+object Gradients {
+    val hero = Brush.linearGradient(listOf(Color(0xFF1B5E20), Color(0xFF388E3C), Color(0xFF43A047)))
+    val lime = Brush.linearGradient(listOf(FreshCoconutGreen, FreshLime))
+    val heroDark = Brush.linearGradient(listOf(Color(0xFF13351C), Color(0xFF1E4D28)))
+    fun tile(accent: Color) = Brush.linearGradient(listOf(accent.copy(alpha = 0.16f), accent.copy(alpha = 0.06f)))
+}
 
 @Composable
 fun TencoTheme(
@@ -35,6 +71,7 @@ fun TencoTheme(
     MaterialTheme(
         colorScheme = if (darkTheme) DarkColors else LightColors,
         typography = TencoTypography,
+        shapes = TencoShapes,
         content = content,
     )
 }
