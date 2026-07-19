@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -322,6 +323,19 @@ fun ReportsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewMod
                     onClick = { viewModel.setPeriod(ReportPeriod.THIS_MONTH) },
                     label = { Text(stringResource(R.string.this_month)) },
                 )
+            }
+            Spacer(Modifier.height(8.dp))
+            com.tenco.ui.components.TencoCard(Modifier.fillMaxWidth()) {
+                val slices = listOf(
+                    com.tenco.ui.components.ChartSlice(stringResource(R.string.revenue), pnl.revenuePaise.toFloat(), com.tenco.ui.theme.TileGreen),
+                    com.tenco.ui.components.ChartSlice(stringResource(R.string.purchase_cost), pnl.purchaseCostPaise.toFloat(), com.tenco.ui.theme.TileOrange),
+                    com.tenco.ui.components.ChartSlice(stringResource(R.string.complaint_losses), pnl.complaintLossesPaise.toFloat().coerceAtLeast(1f), StatusFailed),
+                )
+                Row(Modifier.padding(16.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                    com.tenco.ui.components.DonutChart(slices, stringResource(R.string.net_profit), Money.formatShort(pnl.netProfitPaise))
+                    Spacer(Modifier.width(16.dp))
+                    com.tenco.ui.components.ChartLegend(slices, Modifier.weight(1f))
+                }
             }
             Spacer(Modifier.height(8.dp))
             PnlRow(stringResource(R.string.revenue), Money.format(pnl.revenuePaise))
