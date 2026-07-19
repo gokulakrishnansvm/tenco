@@ -47,17 +47,17 @@ private data class Confetto(
     val color: Color, val spin: Float, val wobbleAmp: Float, val wobbleFreq: Float,
 )
 
-/** Lightweight confetti burst (no external lib). Draws falling, spinning particles once. */
+/** Lightweight celebration burst themed as coconut-water drops + leaves. */
 @Composable
 fun Confetti(modifier: Modifier = Modifier, particleCount: Int = 90) {
-    val colors = listOf(SuccessGreen, FreshLime, Color(0xFF2E86DE), Color(0xFFF57C00), Color(0xFF7E57C2))
+    val colors = listOf(SuccessGreen, FreshLime, com.tenco.ui.theme.FreshCoconutGreen, Color(0xFFF8FFF4), Color(0xFFFB8C00))
     val particles = remember {
         List(particleCount) {
             Confetto(
                 x = Random.nextFloat(),
                 startY = -Random.nextFloat() * 0.3f,
                 fall = 0.8f + Random.nextFloat() * 0.6f,
-                w = 10f + Random.nextFloat() * 14f,
+                w = 10f + Random.nextFloat() * 12f,
                 color = colors[Random.nextInt(colors.size)],
                 spin = Random.nextFloat() * 720f,
                 wobbleAmp = 20f + Random.nextFloat() * 40f,
@@ -75,7 +75,8 @@ fun Confetti(modifier: Modifier = Modifier, particleCount: Int = 90) {
             val x = size.width * c.x + sin(p * c.wobbleFreq) * c.wobbleAmp
             val alpha = (1f - p).coerceIn(0f, 1f)
             rotate(degrees = p * c.spin, pivot = Offset(x, y)) {
-                drawRect(color = c.color.copy(alpha = alpha), topLeft = Offset(x, y), size = Size(c.w, c.w * 1.6f))
+                // Leaf/drop shape: an elongated oval.
+                drawOval(color = c.color.copy(alpha = alpha), topLeft = Offset(x, y), size = Size(c.w, c.w * 1.9f))
             }
         }
     }
