@@ -1,0 +1,23 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Green disc background (matches launcher) -->
+    <path android:fillColor="#2E7D32"
+        android:pathData="M4,54 a50,50 0 1,0 100,0 a50,50 0 1,0 -100,0 Z" />
+
+    <!-- Letter "T" (cream) -->
+    <path android:fillColor="#F8FFF4" android:pathData="M18,36 L54,36 L54,46 L18,46 Z" />
+    <path android:fillColor="#F8FFF4" android:pathData="M31,46 L41,46 L41,80 L31,80 Z" />
+
+    <!-- "C" formed by a tender coconut crescent -->
+    <path android:fillColor="#8BD46A"
+        android:pathData="M88,44 C82,37 73,33 65,36 C55,39 49,49 49,60 C49,71 55,81 65,84 C73,87 82,83 88,76 C82,79 74,78 69,72 C64,67 62,63 62,60 C62,57 64,53 69,48 C74,42 82,41 88,44 Z" />
+    <path android:fillColor="#66BB6A"
+        android:pathData="M84,47 C79,42 72,40 66,42 C58,45 54,52 54,60 C54,68 58,75 66,78 C72,80 79,78 84,73 C79,74 73,72 69,67 C66,63 65,61 65,60 C65,59 66,57 69,53 C73,48 79,46 84,47 Z" />
+    <!-- Trimmed faceted top -->
+    <path android:fillColor="#C5E86C" android:pathData="M60,40 L72,37 L69,27 L62,30 Z" />
+    <!-- Straw -->
+    <path android:fillColor="#EF6C00" android:pathData="M67,29 L72,16 L76,17 L71,31 Z" />
+</vector>

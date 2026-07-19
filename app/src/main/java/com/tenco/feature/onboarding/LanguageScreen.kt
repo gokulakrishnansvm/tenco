@@ -34,19 +34,11 @@ fun LanguageScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        androidx.compose.material3.Surface(
-            shape = androidx.compose.foundation.shape.CircleShape,
-            color = MaterialTheme.colorScheme.primaryContainer,
-            modifier = Modifier.padding(bottom = 16.dp).size(104.dp),
-        ) {
-            androidx.compose.foundation.layout.Box(contentAlignment = Alignment.Center) {
-                androidx.compose.foundation.Image(
-                    painter = androidx.compose.ui.res.painterResource(R.drawable.ic_tender_coconut),
-                    contentDescription = null,
-                    modifier = Modifier.size(62.dp),
-                )
-            }
-        }
+        androidx.compose.foundation.Image(
+            painter = androidx.compose.ui.res.painterResource(R.drawable.ic_tc_logo),
+            contentDescription = null,
+            modifier = Modifier.padding(bottom = 16.dp).size(112.dp),
+        )
         Text(
             text = stringResource(R.string.app_name),
             style = MaterialTheme.typography.headlineLarge,

@@ -47,15 +47,11 @@ fun SplashScreen() {
 
     Box(Modifier.fillMaxSize().background(Gradients.hero), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Surface(shape = CircleShape, color = Color.White.copy(alpha = 0.92f), modifier = Modifier.size(120.dp).scale(scale * pulse)) {
-                Box(contentAlignment = Alignment.Center) {
-                    androidx.compose.foundation.Image(
-                        painter = androidx.compose.ui.res.painterResource(R.drawable.ic_tender_coconut),
-                        contentDescription = null,
-                        modifier = Modifier.size(74.dp),
-                    )
-                }
-            }
+            androidx.compose.foundation.Image(
+                painter = androidx.compose.ui.res.painterResource(R.drawable.ic_tc_logo),
+                contentDescription = null,
+                modifier = Modifier.size(132.dp).scale(scale * pulse),
+            )
             Text(
                 stringResource(R.string.app_name),
                 color = Color.White,

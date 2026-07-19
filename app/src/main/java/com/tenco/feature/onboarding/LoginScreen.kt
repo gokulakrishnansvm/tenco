@@ -63,19 +63,11 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        androidx.compose.material3.Surface(
-            shape = androidx.compose.foundation.shape.CircleShape,
-            color = MaterialTheme.colorScheme.primaryContainer,
-            modifier = Modifier.padding(bottom = 20.dp).size(96.dp),
-        ) {
-            androidx.compose.foundation.layout.Box(contentAlignment = Alignment.Center) {
-                androidx.compose.foundation.Image(
-                    painter = androidx.compose.ui.res.painterResource(R.drawable.ic_tender_coconut),
-                    contentDescription = null,
-                    modifier = Modifier.size(56.dp),
-                )
-            }
-        }
+        androidx.compose.foundation.Image(
+            painter = androidx.compose.ui.res.painterResource(R.drawable.ic_tc_logo),
+            contentDescription = null,
+            modifier = Modifier.padding(bottom = 20.dp).size(104.dp),
+        )
         Text(
             text = stringResource(R.string.login_title),
             style = MaterialTheme.typography.headlineMedium,
