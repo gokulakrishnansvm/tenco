@@ -138,48 +138,22 @@ private fun VendorHomeTab(
     val coconutsLabel = stringResource(R.string.coconuts)
     val pendingLabel = stringResource(R.string.pending_dues)
 
-    androidx.compose.foundation.layout.Box(Modifier.fillMaxSize()) {
-        androidx.compose.foundation.layout.Box(
-            Modifier.fillMaxWidth().height(240.dp)
-                .clip(RoundedCornerShape(bottomStart = 44.dp, bottomEnd = 44.dp))
-                .background(
-                    androidx.compose.ui.graphics.Brush.verticalGradient(
-                        listOf(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f), MaterialTheme.colorScheme.background),
-                    ),
-                ),
-        ) {
-            androidx.compose.foundation.Image(
-                painter = androidx.compose.ui.res.painterResource(com.tenco.R.drawable.ic_palm_leaf),
-                contentDescription = null,
-                modifier = Modifier.align(Alignment.TopEnd).size(140.dp).padding(6.dp),
-                alpha = 0.16f,
-            )
-        }
-        Column(
-            Modifier.fillMaxSize().padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-        ) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Column {
-                Text("${stringResource(R.string.namaste)} 👋", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text(d?.vendorName?.ifBlank { stringResource(R.string.role_vendor) } ?: stringResource(R.string.role_vendor),
-                    style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-            }
-            Row {
-                IconButton(onClick = {
-                    val rupees = (d?.pendingDuesPaise ?: 0L) / 100
-                    viewModel.speak(langTag, "$receivedLabel ${d?.receivedQty ?: 0} $coconutsLabel. $pendingLabel ₹$rupees")
-                }) { Icon(Icons.Rounded.VolumeUp, contentDescription = stringResource(R.string.speak)) }
-                IconButton(onClick = onChangeLanguage) { Icon(Icons.Rounded.Translate, contentDescription = stringResource(R.string.change_language)) }
-                IconButton(onClick = onLogout) { Icon(Icons.AutoMirrored.Rounded.Logout, contentDescription = stringResource(R.string.logout)) }
-            }
-        }
-
-        com.tenco.ui.components.HeroEarningsCard(
-            label = pendingLabel,
-            paise = d?.pendingDuesPaise ?: 0L,
+    Column(Modifier.fillMaxSize()) {
+        VendorHeaderBand(
+            name = d?.vendorName?.ifBlank { stringResource(R.string.role_vendor) } ?: stringResource(R.string.role_vendor),
+            duesPaise = d?.pendingDuesPaise ?: 0L,
             caption = "$receivedLabel ${d?.receivedQty ?: 0} @ ${Money.formatShort(d?.lastUnitPricePaise ?: 0L)}",
+            onSpeak = {
+                val rupees = (d?.pendingDuesPaise ?: 0L) / 100
+                viewModel.speak(langTag, "$receivedLabel ${d?.receivedQty ?: 0} $coconutsLabel. $pendingLabel ₹$rupees")
+            },
+            onChangeLanguage = onChangeLanguage,
+            onLogout = onLogout,
         )
+        Column(
+            Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
 
         Box(
             Modifier.fillMaxWidth().height(66.dp).clip(MaterialTheme.shapes.extraLarge)
@@ -208,6 +182,45 @@ private fun VendorHomeTab(
 }
 
 // ---------------- Pay (UPI) ----------------
+@Composable
+private fun VendorHeaderBand(
+    name: String,
+    duesPaise: Long,
+    caption: String,
+    onSpeak: () -> Unit,
+    onChangeLanguage: () -> Unit,
+    onLogout: () -> Unit,
+) {
+    val white = Color.White
+    Box(
+        Modifier.fillMaxWidth()
+            .clip(RoundedCornerShape(bottomStart = 40.dp, bottomEnd = 40.dp))
+            .background(com.tenco.ui.theme.Gradients.hero),
+    ) {
+        androidx.compose.foundation.Image(
+            painter = androidx.compose.ui.res.painterResource(com.tenco.R.drawable.ic_palm_leaf),
+            contentDescription = null,
+            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(white),
+            alpha = 0.10f,
+            modifier = Modifier.align(Alignment.TopEnd).size(210.dp),
+        )
+        Column(Modifier.fillMaxWidth().padding(start = 22.dp, end = 10.dp, top = 22.dp, bottom = 30.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text("${stringResource(R.string.namaste)} 👋", style = MaterialTheme.typography.bodyMedium, color = white.copy(alpha = 0.85f))
+                    Text(name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = white, maxLines = 1)
+                }
+                IconButton(onClick = onSpeak) { Icon(Icons.Rounded.VolumeUp, contentDescription = stringResource(R.string.speak), tint = white) }
+                IconButton(onClick = onChangeLanguage) { Icon(Icons.Rounded.Translate, contentDescription = stringResource(R.string.change_language), tint = white) }
+                IconButton(onClick = onLogout) { Icon(Icons.AutoMirrored.Rounded.Logout, contentDescription = stringResource(R.string.logout), tint = white) }
+            }
+            Text(stringResource(R.string.pending_dues), style = MaterialTheme.typography.bodyMedium, color = white.copy(alpha = 0.85f), modifier = Modifier.padding(top = 24.dp))
+            com.tenco.ui.components.AnimatedRupees(paise = duesPaise, style = MaterialTheme.typography.displaySmall, color = white)
+            Text(caption, style = MaterialTheme.typography.bodyMedium, color = white.copy(alpha = 0.85f), modifier = Modifier.padding(top = 4.dp))
+        }
+    }
+}
+
 @Composable
 private fun VendorBottomBar(selected: Int, onSelect: (Int) -> Unit) {
     com.tenco.ui.components.TencoBottomNav(
