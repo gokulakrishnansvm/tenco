@@ -125,6 +125,13 @@
     <string name="quantity">அளவு</string>
     <string name="unit_cost">அலகு விலை (₹)</string>
     <string name="add_purchase">கொள்முதல் சேர்</string>
+    <string name="sell_to_vendor">விற்பனையாளருக்கு விற்க</string>
+    <string name="buy_stock">சரக்கு வாங்க</string>
+    <string name="add_dealer">டீலரை சேர்</string>
+    <string name="market">சந்தை</string>
+    <string name="total">மொத்தம்</string>
+    <string name="not_enough_stock">போதுமான சரக்கு இல்லை</string>
+    <string name="sale_recorded">விற்பனை பதிவு செய்யப்பட்டது</string>
 
     <string name="vendors">விற்பனையாளர்கள்</string>
     <string name="vendor_name">விற்பனையாளர் பெயர்</string>

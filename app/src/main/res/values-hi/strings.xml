@@ -125,6 +125,13 @@
     <string name="quantity">मात्रा</string>
     <string name="unit_cost">इकाई लागत (₹)</string>
     <string name="add_purchase">खरीद जोड़ें</string>
+    <string name="sell_to_vendor">विक्रेता को बेचें</string>
+    <string name="buy_stock">स्टॉक खरीदें</string>
+    <string name="add_dealer">डीलर जोड़ें</string>
+    <string name="market">बाज़ार</string>
+    <string name="total">कुल</string>
+    <string name="not_enough_stock">पर्याप्त स्टॉक उपलब्ध नहीं</string>
+    <string name="sale_recorded">बिक्री दर्ज की गई</string>
 
     <string name="vendors">विक्रेता</string>
     <string name="vendor_name">विक्रेता का नाम</string>

@@ -91,6 +91,7 @@ fun TencoNavHost(
         composable(Routes.SUPPLIER_COMPLAINTS) { ComplaintsScreen(onBack = navController::popBackStack) }
         composable(Routes.SUPPLIER_INSIGHTS) { com.tenco.feature.supplier.InsightsScreen(onBack = navController::popBackStack) }
         composable(Routes.SUPPLIER_INVENTORY) { com.tenco.feature.supplier.InventoryScreen(onBack = navController::popBackStack) }
+        composable(Routes.SUPPLIER_SELL) { com.tenco.feature.supplier.SellScreen(onBack = navController::popBackStack) }
 
         composable(Routes.PROFILE) {
             com.tenco.feature.profile.ProfileScreen(

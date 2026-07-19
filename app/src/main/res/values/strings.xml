@@ -144,6 +144,13 @@
     <string name="quantity">Quantity</string>
     <string name="unit_cost">Unit cost (₹)</string>
     <string name="add_purchase">Add purchase</string>
+    <string name="sell_to_vendor">Sell to Vendor</string>
+    <string name="buy_stock">Buy Stock</string>
+    <string name="add_dealer">Add dealer</string>
+    <string name="market">Market</string>
+    <string name="total">Total</string>
+    <string name="not_enough_stock">Not enough stock available</string>
+    <string name="sale_recorded">Sale recorded</string>
 
     <!-- Vendors -->
     <string name="vendors">Vendors</string>

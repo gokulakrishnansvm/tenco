@@ -125,6 +125,13 @@
     <string name="quantity">పరిమాణం</string>
     <string name="unit_cost">యూనిట్ ధర (₹)</string>
     <string name="add_purchase">కొనుగోలు జోడించు</string>
+    <string name="sell_to_vendor">విక్రేతకు అమ్ము</string>
+    <string name="buy_stock">నిల్వ కొను</string>
+    <string name="add_dealer">డీలర్‌ను జోడించు</string>
+    <string name="market">మార్కెట్</string>
+    <string name="total">మొత్తం</string>
+    <string name="not_enough_stock">తగినంత నిల్వ లేదు</string>
+    <string name="sale_recorded">అమ్మకం నమోదైంది</string>
 
     <string name="vendors">విక్రేతలు</string>
     <string name="vendor_name">విక్రేత పేరు</string>

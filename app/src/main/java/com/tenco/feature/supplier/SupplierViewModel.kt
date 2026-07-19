@@ -94,6 +94,15 @@ class SupplierViewModel @Inject constructor(
         repository.addPurchase(dealerId, quantity, unitCostPaise)
     }
 
+    fun addDealer(name: String, location: String) = viewModelScope.launch {
+        repository.addDealer(name, location)
+    }
+
+    /** Records a sale to a vendor (creates a delivery), which raises the vendor's dues. */
+    fun sellToVendor(vendorId: String, quantity: Int, unitPricePaise: Long) = viewModelScope.launch {
+        repository.addDelivery(vendorId, quantity, unitPricePaise)
+    }
+
     fun addVendor(name: String, phone: String, upiVpa: String?) = viewModelScope.launch {
         repository.addVendor(name, phone, upiVpa, languageTag = "en")
     }

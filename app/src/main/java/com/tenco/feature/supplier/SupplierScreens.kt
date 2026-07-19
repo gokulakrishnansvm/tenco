@@ -63,14 +63,22 @@ fun DealersScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewMod
     val dealers by viewModel.dealers.collectAsStateWithLifecycle()
     val purchases by viewModel.purchases.collectAsStateWithLifecycle()
     var showDialog by remember { mutableStateOf(false) }
+    var showDealer by remember { mutableStateOf(false) }
 
     TencoScaffold(
-        title = stringResource(R.string.dealers),
+        title = stringResource(R.string.buy_stock),
         onBack = onBack,
-        floatingActionButton = {
-            FloatingActionButton(onClick = { showDialog = true }) {
-                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add))
+        actions = {
+            androidx.compose.material3.TextButton(onClick = { showDealer = true }) {
+                Text(stringResource(R.string.add_dealer), color = MaterialTheme.colorScheme.onPrimary)
             }
+        },
+        floatingActionButton = {
+            androidx.compose.material3.ExtendedFloatingActionButton(
+                onClick = { showDialog = true },
+                icon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                text = { Text(stringResource(R.string.add_purchase)) },
+            )
         },
     ) { padding ->
         Column(Modifier.padding(padding)) {
@@ -92,6 +100,27 @@ fun DealersScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewMod
                 }
             }
         }
+    }
+
+    if (showDealer) {
+        var name by remember { mutableStateOf("") }
+        var market by remember { mutableStateOf("") }
+        AlertDialog(
+            onDismissRequest = { showDealer = false },
+            title = { Text(stringResource(R.string.add_dealer)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    OutlinedTextField(name, { name = it }, label = { Text(stringResource(R.string.dealers)) }, modifier = Modifier.fillMaxWidth())
+                    OutlinedTextField(market, { market = it }, label = { Text(stringResource(R.string.market)) }, modifier = Modifier.fillMaxWidth())
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    if (name.isNotBlank()) { viewModel.addDealer(name, market); showDealer = false }
+                }) { Text(stringResource(R.string.save)) }
+            },
+            dismissButton = { TextButton(onClick = { showDealer = false }) { Text(stringResource(R.string.cancel)) } },
+        )
     }
 
     if (showDialog) {
@@ -255,11 +284,16 @@ fun PricingScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewMod
 fun TransactionsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel()) {
     val deliveries by viewModel.deliveries.collectAsStateWithLifecycle()
     val payments by viewModel.payments.collectAsStateWithLifecycle()
+    val purchases by viewModel.purchases.collectAsStateWithLifecycle()
     val vendors by viewModel.vendors.collectAsStateWithLifecycle()
+    val dealers by viewModel.dealers.collectAsStateWithLifecycle()
     val names = vendors.associate { it.id to it.name }
+    val dealerNames = dealers.associate { it.id to it.name }
 
     TencoScaffold(title = stringResource(R.string.transaction_history), onBack = onBack) { padding ->
+        val purchaseLabel = stringResource(R.string.buy_stock)
         val rows = buildList {
+            purchases.forEach { add(Row4(it.createdAt, dealerNames[it.dealerId] ?: "-", "$purchaseLabel · ${it.quantity} @ ${Money.formatShort(it.unitCostPaise)}", "PURCHASE")) }
             deliveries.forEach { add(Row4(it.createdAt, names[it.vendorId] ?: "-", "${it.quantity} ${'@'} ${Money.formatShort(it.unitPricePaise)}", it.status)) }
             payments.forEach { add(Row4(it.createdAt, names[it.vendorId] ?: "-", Money.format(it.amountPaise), it.status)) }
         }.sortedByDescending { it.time }
@@ -464,5 +498,6 @@ private fun statusLabel(status: String): String = when (status) {
     ComplaintStatus.UNDER_REVIEW -> stringResource(R.string.status_under_review)
     ComplaintStatus.REJECTED -> stringResource(R.string.status_rejected)
     ComplaintStatus.RESOLVED -> stringResource(R.string.status_resolved)
+    "PURCHASE" -> stringResource(R.string.buy_stock)
     else -> stringResource(R.string.status_pending)
 }

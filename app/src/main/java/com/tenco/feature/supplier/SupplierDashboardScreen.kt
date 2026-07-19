@@ -25,6 +25,7 @@ import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PriceChange
 import androidx.compose.material.icons.rounded.ReceiptLong
 import androidx.compose.material.icons.rounded.ReportProblem
+import androidx.compose.material.icons.rounded.Sell
 import androidx.compose.material.icons.rounded.Storefront
 import androidx.compose.material.icons.rounded.TrendingDown
 import androidx.compose.material.icons.rounded.Insights
@@ -113,15 +114,15 @@ fun SupplierDashboardScreen(
             item { SectionHeader(stringResource(R.string.quick_actions)) }
             item {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    QuickActionTile(Icons.Rounded.Storefront, stringResource(R.string.menu_dealers), TileGreen, { onNavigate(Routes.SUPPLIER_DEALERS) }, Modifier.weight(1f))
-                    QuickActionTile(Icons.Rounded.Groups, stringResource(R.string.menu_vendors), TileBlue, { onNavigate(Routes.SUPPLIER_VENDORS) }, Modifier.weight(1f))
-                    QuickActionTile(Icons.Rounded.PriceChange, stringResource(R.string.menu_pricing), TilePurple, { onNavigate(Routes.SUPPLIER_PRICING) }, Modifier.weight(1f))
+                    QuickActionTile(Icons.Rounded.Storefront, stringResource(R.string.buy_stock), TileGreen, { onNavigate(Routes.SUPPLIER_DEALERS) }, Modifier.weight(1f))
+                    QuickActionTile(Icons.Rounded.Sell, stringResource(R.string.sell_to_vendor), TileBlue, { onNavigate(Routes.SUPPLIER_SELL) }, Modifier.weight(1f))
+                    QuickActionTile(Icons.Rounded.Groups, stringResource(R.string.menu_vendors), TilePurple, { onNavigate(Routes.SUPPLIER_VENDORS) }, Modifier.weight(1f))
                 }
             }
             item {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    QuickActionTile(Icons.Rounded.Insights, stringResource(R.string.menu_insights), TileTeal, { onNavigate(Routes.SUPPLIER_INSIGHTS) }, Modifier.weight(1f))
-                    QuickActionTile(Icons.Rounded.Assessment, stringResource(R.string.menu_reports), TileOrange, { onNavigate(Routes.SUPPLIER_REPORTS) }, Modifier.weight(1f))
+                    QuickActionTile(Icons.Rounded.PriceChange, stringResource(R.string.menu_pricing), TileOrange, { onNavigate(Routes.SUPPLIER_PRICING) }, Modifier.weight(1f))
+                    QuickActionTile(Icons.Rounded.Assessment, stringResource(R.string.menu_reports), TileTeal, { onNavigate(Routes.SUPPLIER_REPORTS) }, Modifier.weight(1f))
                     QuickActionTile(Icons.Rounded.ReportProblem, stringResource(R.string.menu_complaints), TileRed, { onNavigate(Routes.SUPPLIER_COMPLAINTS) }, Modifier.weight(1f))
                 }
             }
