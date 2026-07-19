@@ -20,15 +20,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.CurrencyRupee
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Chat
-import androidx.compose.material.icons.filled.ReportProblem
-import androidx.compose.material.icons.filled.Translate
-import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material.icons.automirrored.rounded.Logout
+import androidx.compose.material.icons.rounded.Call
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.CurrencyRupee
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Chat
+import androidx.compose.material.icons.rounded.ReportProblem
+import androidx.compose.material.icons.rounded.Translate
+import androidx.compose.material.icons.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.AlertDialog
@@ -150,9 +150,9 @@ private fun VendorHomeTab(
                 IconButton(onClick = {
                     val rupees = (d?.pendingDuesPaise ?: 0L) / 100
                     viewModel.speak(langTag, "$receivedLabel ${d?.receivedQty ?: 0} $coconutsLabel. $pendingLabel ₹$rupees")
-                }) { Icon(Icons.Filled.VolumeUp, contentDescription = stringResource(R.string.speak)) }
-                IconButton(onClick = onChangeLanguage) { Icon(Icons.Filled.Translate, contentDescription = stringResource(R.string.change_language)) }
-                IconButton(onClick = onLogout) { Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = stringResource(R.string.logout)) }
+                }) { Icon(Icons.Rounded.VolumeUp, contentDescription = stringResource(R.string.speak)) }
+                IconButton(onClick = onChangeLanguage) { Icon(Icons.Rounded.Translate, contentDescription = stringResource(R.string.change_language)) }
+                IconButton(onClick = onLogout) { Icon(Icons.AutoMirrored.Rounded.Logout, contentDescription = stringResource(R.string.logout)) }
             }
         }
 
@@ -169,18 +169,18 @@ private fun VendorHomeTab(
             contentAlignment = Alignment.Center,
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Filled.CurrencyRupee, contentDescription = null, tint = Color.White)
+                Icon(Icons.Rounded.CurrencyRupee, contentDescription = null, tint = Color.White)
                 Text("  " + stringResource(R.string.pay_now), style = MaterialTheme.typography.titleLarge, color = Color.White, fontWeight = FontWeight.Bold)
             }
         }
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            com.tenco.ui.components.QuickActionTile(Icons.Filled.CheckCircle, stringResource(R.string.confirm_delivery), com.tenco.ui.theme.TileGreen, { viewModel.confirmLatestDelivery() }, Modifier.weight(1f))
-            com.tenco.ui.components.QuickActionTile(Icons.Filled.ReportProblem, stringResource(R.string.raise_complaint), com.tenco.ui.theme.TileRed, { onTab(3) }, Modifier.weight(1f))
+            com.tenco.ui.components.QuickActionTile(Icons.Rounded.CheckCircle, stringResource(R.string.confirm_delivery), com.tenco.ui.theme.TileGreen, { viewModel.confirmLatestDelivery() }, Modifier.weight(1f))
+            com.tenco.ui.components.QuickActionTile(Icons.Rounded.ReportProblem, stringResource(R.string.raise_complaint), com.tenco.ui.theme.TileRed, { onTab(3) }, Modifier.weight(1f))
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            com.tenco.ui.components.QuickActionTile(Icons.Filled.History, stringResource(R.string.history), com.tenco.ui.theme.TileBlue, { onTab(2) }, Modifier.weight(1f))
-            com.tenco.ui.components.QuickActionTile(Icons.Filled.Chat, stringResource(R.string.contact_supplier), com.tenco.ui.theme.TileOrange, {
+            com.tenco.ui.components.QuickActionTile(Icons.Rounded.History, stringResource(R.string.history), com.tenco.ui.theme.TileBlue, { onTab(2) }, Modifier.weight(1f))
+            com.tenco.ui.components.QuickActionTile(Icons.Rounded.Chat, stringResource(R.string.contact_supplier), com.tenco.ui.theme.TileOrange, {
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/${Demo.SUPPLIER_PHONE.removePrefix("+")}")))
             }, Modifier.weight(1f))
         }
@@ -193,9 +193,9 @@ private fun VendorBottomBar(selected: Int, onSelect: (Int) -> Unit) {
     com.tenco.ui.components.TencoBottomNav(
         items = listOf(
             com.tenco.ui.components.NavItem(Icons.Rounded.Home, stringResource(R.string.nav_home)),
-            com.tenco.ui.components.NavItem(Icons.Filled.CurrencyRupee, stringResource(R.string.pay)),
-            com.tenco.ui.components.NavItem(Icons.Filled.History, stringResource(R.string.history)),
-            com.tenco.ui.components.NavItem(Icons.Filled.ReportProblem, stringResource(R.string.raise_complaint)),
+            com.tenco.ui.components.NavItem(Icons.Rounded.CurrencyRupee, stringResource(R.string.pay)),
+            com.tenco.ui.components.NavItem(Icons.Rounded.History, stringResource(R.string.history)),
+            com.tenco.ui.components.NavItem(Icons.Rounded.ReportProblem, stringResource(R.string.raise_complaint)),
             com.tenco.ui.components.NavItem(Icons.Rounded.Person, stringResource(R.string.menu_profile)),
         ),
         selected = selected,

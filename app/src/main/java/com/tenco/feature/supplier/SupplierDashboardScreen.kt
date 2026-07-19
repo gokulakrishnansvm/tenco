@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.animation.togetherWith
 import androidx.compose.material.icons.rounded.AccountBalanceWallet
@@ -46,6 +47,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -119,11 +121,13 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
 
     androidx.compose.foundation.layout.Box(Modifier.fillMaxSize()) {
         androidx.compose.foundation.layout.Box(
-            Modifier.fillMaxWidth().height(260.dp).background(
-                androidx.compose.ui.graphics.Brush.verticalGradient(
-                    listOf(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f), MaterialTheme.colorScheme.background),
+            Modifier.fillMaxWidth().height(260.dp)
+                .clip(RoundedCornerShape(bottomStart = 48.dp, bottomEnd = 48.dp))
+                .background(
+                    androidx.compose.ui.graphics.Brush.verticalGradient(
+                        listOf(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f), MaterialTheme.colorScheme.background),
+                    ),
                 ),
-            ),
         )
         androidx.compose.material3.pulltorefresh.PullToRefreshBox(
             isRefreshing = refreshing,

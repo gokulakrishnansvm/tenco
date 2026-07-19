@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.material.icons.rounded.ReceiptLong
 import androidx.compose.material.icons.rounded.ReportProblem
@@ -81,7 +81,7 @@ fun DealersScreen(onBack: () -> Unit, onOpenDealer: (String) -> Unit = {}, viewM
         floatingActionButton = {
             androidx.compose.material3.ExtendedFloatingActionButton(
                 onClick = { showDialog = true },
-                icon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
                 text = { Text(stringResource(R.string.add_purchase)) },
             )
         },
@@ -201,7 +201,7 @@ fun VendorsScreen(onBack: () -> Unit, onOpenVendor: (String) -> Unit = {}, viewM
         onBack = onBack,
         floatingActionButton = {
             FloatingActionButton(onClick = { showDialog = true }) {
-                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add))
+                Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.add))
             }
         },
     ) { padding ->
@@ -350,7 +350,7 @@ fun ReportsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewMod
                 val csv = com.tenco.core.export.CsvExporter.buildReport(pnl, deliveries, payments, names)
                 com.tenco.core.export.CsvExporter.share(context, csv)
             }) {
-                Icon(androidx.compose.material.icons.Icons.Filled.Share, contentDescription = stringResource(R.string.export_csv))
+                Icon(androidx.compose.material.icons.Icons.Rounded.Share, contentDescription = stringResource(R.string.export_csv))
             }
         },
     ) { padding ->
@@ -509,7 +509,7 @@ private fun NumberField(value: String, onValueChange: (String) -> Unit, label: S
 @Composable
 private fun Fab(onClick: () -> Unit) {
     Column(Modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = androidx.compose.ui.Alignment.End) {
-        FloatingActionButton(onClick = onClick) { Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add)) }
+        FloatingActionButton(onClick = onClick) { Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.add)) }
     }
 }
 
