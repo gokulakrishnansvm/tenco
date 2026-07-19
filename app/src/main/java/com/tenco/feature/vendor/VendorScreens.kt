@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -80,6 +81,7 @@ import java.util.Locale
 private val dateFmt = SimpleDateFormat("dd MMM, HH:mm", Locale.getDefault())
 
 // ---------------- Dashboard ----------------
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun VendorDashboardScreen(
     vendorId: String,
@@ -89,6 +91,34 @@ fun VendorDashboardScreen(
     viewModel: VendorViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(vendorId) { viewModel.setVendor(vendorId) }
+    var tab by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(0) }
+    androidx.compose.material3.Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        bottomBar = { VendorBottomBar(tab) { tab = it } },
+    ) { padding ->
+        Box(Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding())) {
+            when (tab) {
+                0 -> VendorHomeTab(onChangeLanguage, onLogout, { tab = it }, viewModel)
+                1 -> VendorPayScreen(vendorId, onBack = { tab = 0 })
+                2 -> VendorHistoryScreen(vendorId, onBack = { tab = 0 })
+                3 -> VendorComplaintScreen(vendorId, onBack = { tab = 0 })
+                else -> com.tenco.feature.profile.ProfileScreen(
+                    onChangeLanguage = onChangeLanguage,
+                    onNotifications = { onNavigate(Routes.NOTIFICATIONS) },
+                    onLogout = onLogout,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun VendorHomeTab(
+    onChangeLanguage: () -> Unit,
+    onLogout: () -> Unit,
+    onTab: (Int) -> Unit,
+    viewModel: VendorViewModel,
+) {
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val d = dashboard
@@ -97,86 +127,77 @@ fun VendorDashboardScreen(
     val coconutsLabel = stringResource(R.string.coconuts)
     val pendingLabel = stringResource(R.string.pending_dues)
 
-    androidx.compose.material3.Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        bottomBar = { VendorBottomBar(onNavigate) },
-    ) { padding ->
-        Column(
-            Modifier.padding(padding).padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
+    Column(
+        Modifier.fillMaxSize().padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+    ) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Column {
+                Text("Namaste 👋", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(d?.vendorName?.ifBlank { stringResource(R.string.role_vendor) } ?: stringResource(R.string.role_vendor),
+                    style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+            }
+            Row {
+                IconButton(onClick = {
+                    val rupees = (d?.pendingDuesPaise ?: 0L) / 100
+                    viewModel.speak(langTag, "$receivedLabel ${d?.receivedQty ?: 0} $coconutsLabel. $pendingLabel ₹$rupees")
+                }) { Icon(Icons.Filled.VolumeUp, contentDescription = stringResource(R.string.speak)) }
+                IconButton(onClick = onChangeLanguage) { Icon(Icons.Filled.Translate, contentDescription = stringResource(R.string.change_language)) }
+                IconButton(onClick = onLogout) { Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = stringResource(R.string.logout)) }
+            }
+        }
+
+        com.tenco.ui.components.HeroEarningsCard(
+            label = pendingLabel,
+            paise = d?.pendingDuesPaise ?: 0L,
+            caption = "$receivedLabel ${d?.receivedQty ?: 0} @ ${Money.formatShort(d?.lastUnitPricePaise ?: 0L)}",
+        )
+
+        Box(
+            Modifier.fillMaxWidth().height(66.dp).clip(MaterialTheme.shapes.extraLarge)
+                .background(com.tenco.ui.theme.Gradients.lime)
+                .clickable { onTab(1) },
+            contentAlignment = Alignment.Center,
         ) {
-            // Header
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Column {
-                    Text("Namaste 👋", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(d?.vendorName?.ifBlank { stringResource(R.string.role_vendor) } ?: stringResource(R.string.role_vendor),
-                        style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-                }
-                Row {
-                    IconButton(onClick = {
-                        val rupees = (d?.pendingDuesPaise ?: 0L) / 100
-                        viewModel.speak(langTag, "$receivedLabel ${d?.receivedQty ?: 0} $coconutsLabel. $pendingLabel ₹$rupees")
-                    }) { Icon(Icons.Filled.VolumeUp, contentDescription = stringResource(R.string.speak)) }
-                    IconButton(onClick = onChangeLanguage) { Icon(Icons.Filled.Translate, contentDescription = stringResource(R.string.change_language)) }
-                    IconButton(onClick = onLogout) { Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = stringResource(R.string.logout)) }
-                }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Filled.CurrencyRupee, contentDescription = null, tint = Color.White)
+                Text("  " + stringResource(R.string.pay_now), style = MaterialTheme.typography.titleLarge, color = Color.White, fontWeight = FontWeight.Bold)
             }
+        }
 
-            // Hero: pending dues
-            com.tenco.ui.components.HeroEarningsCard(
-                label = pendingLabel,
-                paise = d?.pendingDuesPaise ?: 0L,
-                caption = "$receivedLabel ${d?.receivedQty ?: 0} @ ${Money.formatShort(d?.lastUnitPricePaise ?: 0L)}",
-            )
-
-            // Massive Pay button
-            Box(
-                Modifier.fillMaxWidth().height(66.dp).clip(MaterialTheme.shapes.extraLarge)
-                    .background(com.tenco.ui.theme.Gradients.lime)
-                    .clickable { onNavigate(Routes.VENDOR_PAY) },
-                contentAlignment = Alignment.Center,
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Filled.CurrencyRupee, contentDescription = null, tint = Color.White)
-                    Text("  " + stringResource(R.string.pay_now), style = MaterialTheme.typography.titleLarge, color = Color.White, fontWeight = FontWeight.Bold)
-                }
-            }
-
-            // Action tiles (2 x 2)
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                com.tenco.ui.components.QuickActionTile(Icons.Filled.CheckCircle, stringResource(R.string.confirm_delivery), com.tenco.ui.theme.TileGreen, { viewModel.confirmLatestDelivery() }, Modifier.weight(1f))
-                com.tenco.ui.components.QuickActionTile(Icons.Filled.ReportProblem, stringResource(R.string.raise_complaint), com.tenco.ui.theme.TileRed, { onNavigate(Routes.VENDOR_COMPLAINT) }, Modifier.weight(1f))
-            }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                com.tenco.ui.components.QuickActionTile(Icons.Filled.History, stringResource(R.string.history), com.tenco.ui.theme.TileBlue, { onNavigate(Routes.VENDOR_HISTORY) }, Modifier.weight(1f))
-                com.tenco.ui.components.QuickActionTile(Icons.Filled.Chat, stringResource(R.string.contact_supplier), com.tenco.ui.theme.TileOrange, {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/${Demo.SUPPLIER_PHONE.removePrefix("+")}")))
-                }, Modifier.weight(1f))
-            }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            com.tenco.ui.components.QuickActionTile(Icons.Filled.CheckCircle, stringResource(R.string.confirm_delivery), com.tenco.ui.theme.TileGreen, { viewModel.confirmLatestDelivery() }, Modifier.weight(1f))
+            com.tenco.ui.components.QuickActionTile(Icons.Filled.ReportProblem, stringResource(R.string.raise_complaint), com.tenco.ui.theme.TileRed, { onTab(3) }, Modifier.weight(1f))
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            com.tenco.ui.components.QuickActionTile(Icons.Filled.History, stringResource(R.string.history), com.tenco.ui.theme.TileBlue, { onTab(2) }, Modifier.weight(1f))
+            com.tenco.ui.components.QuickActionTile(Icons.Filled.Chat, stringResource(R.string.contact_supplier), com.tenco.ui.theme.TileOrange, {
+                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/${Demo.SUPPLIER_PHONE.removePrefix("+")}")))
+            }, Modifier.weight(1f))
         }
     }
 }
 
 // ---------------- Pay (UPI) ----------------
 @Composable
-private fun VendorBottomBar(onNavigate: (String) -> Unit) {
+private fun VendorBottomBar(selected: Int, onSelect: (Int) -> Unit) {
     NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 8.dp) {
         val c = NavigationBarItemDefaults.colors(
             selectedIconColor = MaterialTheme.colorScheme.primary,
             indicatorColor = MaterialTheme.colorScheme.primaryContainer,
         )
-        NavigationBarItem(selected = true, onClick = {}, icon = { Icon(Icons.Rounded.Home, null) }, label = { Text("Home") }, colors = c)
-        NavigationBarItem(selected = false, onClick = { onNavigate(Routes.VENDOR_PAY) }, icon = { Icon(Icons.Filled.CurrencyRupee, null) }, label = { Text(stringResource(R.string.pay)) }, colors = c)
-        NavigationBarItem(selected = false, onClick = { onNavigate(Routes.VENDOR_HISTORY) }, icon = { Icon(Icons.Filled.History, null) }, label = { Text(stringResource(R.string.history)) }, colors = c)
-        NavigationBarItem(selected = false, onClick = { onNavigate(Routes.VENDOR_COMPLAINT) }, icon = { Icon(Icons.Filled.ReportProblem, null) }, label = { Text(stringResource(R.string.raise_complaint)) }, colors = c)
-        NavigationBarItem(selected = false, onClick = { onNavigate(Routes.PROFILE) }, icon = { Icon(Icons.Rounded.Person, null) }, label = { Text(stringResource(R.string.menu_profile)) }, colors = c)
+        NavigationBarItem(selected = selected == 0, onClick = { onSelect(0) }, icon = { Icon(Icons.Rounded.Home, null) }, label = { Text("Home") }, colors = c)
+        NavigationBarItem(selected = selected == 1, onClick = { onSelect(1) }, icon = { Icon(Icons.Filled.CurrencyRupee, null) }, label = { Text(stringResource(R.string.pay)) }, colors = c)
+        NavigationBarItem(selected = selected == 2, onClick = { onSelect(2) }, icon = { Icon(Icons.Filled.History, null) }, label = { Text(stringResource(R.string.history)) }, colors = c)
+        NavigationBarItem(selected = selected == 3, onClick = { onSelect(3) }, icon = { Icon(Icons.Filled.ReportProblem, null) }, label = { Text(stringResource(R.string.raise_complaint)) }, colors = c)
+        NavigationBarItem(selected = selected == 4, onClick = { onSelect(4) }, icon = { Icon(Icons.Rounded.Person, null) }, label = { Text(stringResource(R.string.menu_profile)) }, colors = c)
     }
 }
 
 @Composable
 fun VendorPayScreen(
     vendorId: String,
-    onBack: () -> Unit,
+    onBack: (() -> Unit)? = null,
     viewModel: VendorViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(vendorId) { viewModel.setVendor(vendorId) }
@@ -275,7 +296,7 @@ fun VendorPayScreen(
             success = ok,
             amountText = Money.format(paise),
             title = if (ok) stringResource(R.string.payment_recorded) else stringResource(R.string.status_failed),
-            onDone = onBack,
+            onDone = { onBack?.invoke() },
         )
     }
 }
@@ -284,7 +305,7 @@ fun VendorPayScreen(
 @Composable
 fun VendorComplaintScreen(
     vendorId: String,
-    onBack: () -> Unit,
+    onBack: (() -> Unit)? = null,
     viewModel: VendorViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(vendorId) { viewModel.setVendor(vendorId) }
@@ -324,7 +345,7 @@ fun VendorComplaintScreen(
                 onClick = {
                     viewModel.raiseComplaint(context.getString(selected), photoUri)
                     Toast.makeText(context, R.string.complaint_submitted, Toast.LENGTH_SHORT).show()
-                    onBack()
+                    onBack?.invoke()
                 },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
             ) {
@@ -338,7 +359,7 @@ fun VendorComplaintScreen(
 @Composable
 fun VendorHistoryScreen(
     vendorId: String,
-    onBack: () -> Unit,
+    onBack: (() -> Unit)? = null,
     viewModel: VendorViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(vendorId) { viewModel.setVendor(vendorId) }

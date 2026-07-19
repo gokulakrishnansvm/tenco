@@ -283,7 +283,7 @@ fun PricingScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewMod
 
 // ---------------- Transactions ----------------
 @Composable
-fun TransactionsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel()) {
+fun TransactionsScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewModel = hiltViewModel()) {
     val deliveries by viewModel.deliveries.collectAsStateWithLifecycle()
     val payments by viewModel.payments.collectAsStateWithLifecycle()
     val purchases by viewModel.purchases.collectAsStateWithLifecycle()

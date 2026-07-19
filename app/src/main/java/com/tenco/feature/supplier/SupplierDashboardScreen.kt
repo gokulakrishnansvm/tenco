@@ -40,6 +40,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -75,21 +77,41 @@ fun SupplierDashboardScreen(
     onLogout: () -> Unit,
     viewModel: SupplierViewModel = hiltViewModel(),
 ) {
+    var tab by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(0) }
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        bottomBar = { SupplierBottomBar(tab) { tab = it } },
+    ) { padding ->
+        Box(Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding())) {
+            when (tab) {
+                0 -> SupplierHomeTab(onNavigate, viewModel)
+                1 -> InventoryScreen()
+                2 -> TransactionsScreen()
+                3 -> InsightsScreen()
+                else -> com.tenco.feature.profile.ProfileScreen(
+                    onChangeLanguage = onChangeLanguage,
+                    onNotifications = { onNavigate(Routes.NOTIFICATIONS) },
+                    onLogout = onLogout,
+                )
+            }
+        }
+    }
+}
+
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierViewModel) {
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
     val payments by viewModel.payments.collectAsStateWithLifecycle()
     val vendors by viewModel.vendors.collectAsStateWithLifecycle()
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
     val names = vendors.associate { it.id to it.name }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        bottomBar = { SupplierBottomBar(onNavigate) },
-    ) { padding ->
-        androidx.compose.material3.pulltorefresh.PullToRefreshBox(
-            isRefreshing = refreshing,
-            onRefresh = { viewModel.refresh() },
-            modifier = Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding()),
-        ) {
+    androidx.compose.material3.pulltorefresh.PullToRefreshBox(
+        isRefreshing = refreshing,
+        onRefresh = { viewModel.refresh() },
+        modifier = Modifier.fillMaxSize(),
+    ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
             contentPadding = PaddingValues(top = 20.dp, bottom = 16.dp),
@@ -139,7 +161,6 @@ fun SupplierDashboardScreen(
                     )
                 }
             }
-        }
         }
     }
 }
@@ -200,16 +221,16 @@ private fun TransactionRow(name: String, amount: String, status: String) {
 }
 
 @Composable
-private fun SupplierBottomBar(onNavigate: (String) -> Unit) {
+private fun SupplierBottomBar(selected: Int, onSelect: (Int) -> Unit) {
     NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 8.dp) {
         val itemColors = NavigationBarItemDefaults.colors(
             selectedIconColor = MaterialTheme.colorScheme.primary,
             indicatorColor = MaterialTheme.colorScheme.primaryContainer,
         )
-        NavigationBarItem(selected = true, onClick = {}, icon = { Icon(Icons.Rounded.Home, null) }, label = { Text("Home") }, colors = itemColors)
-        NavigationBarItem(selected = false, onClick = { onNavigate(Routes.SUPPLIER_INVENTORY) }, icon = { Icon(Icons.Rounded.Inventory2, null) }, label = { Text("Stock") }, colors = itemColors)
-        NavigationBarItem(selected = false, onClick = { onNavigate(Routes.SUPPLIER_TRANSACTIONS) }, icon = { Icon(Icons.Rounded.ReceiptLong, null) }, label = { Text("Txns") }, colors = itemColors)
-        NavigationBarItem(selected = false, onClick = { onNavigate(Routes.SUPPLIER_INSIGHTS) }, icon = { Icon(Icons.Rounded.AccountBalanceWallet, null) }, label = { Text("Money") }, colors = itemColors)
-        NavigationBarItem(selected = false, onClick = { onNavigate(Routes.PROFILE) }, icon = { Icon(Icons.Rounded.Person, null) }, label = { Text("Profile") }, colors = itemColors)
+        NavigationBarItem(selected = selected == 0, onClick = { onSelect(0) }, icon = { Icon(Icons.Rounded.Home, null) }, label = { Text("Home") }, colors = itemColors)
+        NavigationBarItem(selected = selected == 1, onClick = { onSelect(1) }, icon = { Icon(Icons.Rounded.Inventory2, null) }, label = { Text("Stock") }, colors = itemColors)
+        NavigationBarItem(selected = selected == 2, onClick = { onSelect(2) }, icon = { Icon(Icons.Rounded.ReceiptLong, null) }, label = { Text("Txns") }, colors = itemColors)
+        NavigationBarItem(selected = selected == 3, onClick = { onSelect(3) }, icon = { Icon(Icons.Rounded.AccountBalanceWallet, null) }, label = { Text("Money") }, colors = itemColors)
+        NavigationBarItem(selected = selected == 4, onClick = { onSelect(4) }, icon = { Icon(Icons.Rounded.Person, null) }, label = { Text("Profile") }, colors = itemColors)
     }
 }

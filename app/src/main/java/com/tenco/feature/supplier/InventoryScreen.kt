@@ -42,7 +42,7 @@ import java.util.Locale
 private val invDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
 
 @Composable
-fun InventoryScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel()) {
+fun InventoryScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewModel = hiltViewModel()) {
     val purchases by viewModel.purchases.collectAsStateWithLifecycle()
     val dealers by viewModel.dealers.collectAsStateWithLifecycle()
     val deliveries by viewModel.deliveries.collectAsStateWithLifecycle()

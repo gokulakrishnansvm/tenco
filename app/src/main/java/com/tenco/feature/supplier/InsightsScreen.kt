@@ -34,7 +34,7 @@ import com.tenco.ui.components.StatCard
 import com.tenco.ui.components.TencoScaffold
 
 @Composable
-fun InsightsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel()) {
+fun InsightsScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewModel = hiltViewModel()) {
     val insights by viewModel.insights.collectAsStateWithLifecycle()
 
     TencoScaffold(title = stringResource(R.string.insights), onBack = onBack) { padding ->

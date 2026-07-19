@@ -39,7 +39,7 @@ import com.tenco.ui.theme.StatusFailed
 
 @Composable
 fun ProfileScreen(
-    onBack: () -> Unit,
+    onBack: (() -> Unit)? = null,
     onChangeLanguage: () -> Unit,
     onNotifications: () -> Unit,
     onLogout: () -> Unit,
