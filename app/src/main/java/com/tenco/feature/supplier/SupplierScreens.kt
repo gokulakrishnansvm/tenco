@@ -294,19 +294,17 @@ fun TransactionsScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewMode
     val deliveries by viewModel.deliveries.collectAsStateWithLifecycle()
     val payments by viewModel.payments.collectAsStateWithLifecycle()
     val purchases by viewModel.purchases.collectAsStateWithLifecycle()
-    val vendors by viewModel.vendors.collectAsStateWithLifecycle()
-    val dealers by viewModel.dealers.collectAsStateWithLifecycle()
+    val vendors by viewModel.allVendors.collectAsStateWithLifecycle()
+    val dealers by viewModel.allDealers.collectAsStateWithLifecycle()
     val names = vendors.associate { it.id to it.name }
     val dealerNames = dealers.associate { it.id to it.name }
 
     TencoScaffold(title = stringResource(R.string.transaction_history), onBack = onBack) { padding ->
         val purchaseLabel = stringResource(R.string.buy_stock)
-        val vendorLabel = stringResource(R.string.role_vendor)
-        val dealerLabel = stringResource(R.string.dealers)
         val rows = buildList {
-            purchases.forEach { add(Row4(it.createdAt, dealerNames[it.dealerId] ?: dealerLabel, "$purchaseLabel · ${it.quantity} @ ${Money.formatShort(it.unitCostPaise)}", "PURCHASE")) }
-            deliveries.forEach { add(Row4(it.createdAt, names[it.vendorId] ?: vendorLabel, "${it.quantity} ${'@'} ${Money.formatShort(it.unitPricePaise)}", it.status)) }
-            payments.forEach { add(Row4(it.createdAt, names[it.vendorId] ?: vendorLabel, Money.format(it.amountPaise), it.status)) }
+            purchases.forEach { add(Row4(it.createdAt, dealerNames[it.dealerId] ?: "-", "$purchaseLabel · ${it.quantity} @ ${Money.formatShort(it.unitCostPaise)}", "PURCHASE")) }
+            deliveries.forEach { add(Row4(it.createdAt, names[it.vendorId] ?: "-", "${it.quantity} ${'@'} ${Money.formatShort(it.unitPricePaise)}", it.status)) }
+            payments.forEach { add(Row4(it.createdAt, names[it.vendorId] ?: "-", Money.format(it.amountPaise), it.status)) }
         }.sortedByDescending { it.time }
 
         if (rows.isEmpty()) {

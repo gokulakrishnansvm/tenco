@@ -116,8 +116,9 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
     val payments by viewModel.payments.collectAsStateWithLifecycle()
     val vendors by viewModel.vendors.collectAsStateWithLifecycle()
+    val allVendors by viewModel.allVendors.collectAsStateWithLifecycle()
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
-    val names = vendors.associate { it.id to it.name }
+    val names = allVendors.associate { it.id to it.name }
 
     androidx.compose.foundation.layout.Box(Modifier.fillMaxSize()) {
         androidx.compose.foundation.layout.Box(
@@ -191,7 +192,7 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
             } else {
                 items(payments.take(6)) { p ->
                     TransactionRow(
-                        name = names[p.vendorId] ?: stringResource(R.string.role_vendor),
+                        name = names[p.vendorId] ?: "-",
                         amount = Money.format(p.amountPaise),
                         status = p.status,
                     )

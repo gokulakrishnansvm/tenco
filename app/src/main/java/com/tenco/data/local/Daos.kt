@@ -12,6 +12,9 @@ interface DealerDao {
     @Query("SELECT * FROM dealers ORDER BY name")
     fun observeAll(): Flow<List<DealerEntity>>
 
+    @Query("SELECT * FROM dealers WHERE archived = 0 ORDER BY name")
+    fun observeActive(): Flow<List<DealerEntity>>
+
     @Query("SELECT * FROM dealers WHERE id IN (:ids)")
     suspend fun getByIds(ids: List<String>): List<DealerEntity>
 
@@ -20,6 +23,9 @@ interface DealerDao {
 
     @Query("SELECT COUNT(*) FROM dealers")
     suspend fun count(): Int
+
+    @Query("UPDATE dealers SET archived = :archived WHERE id = :id")
+    suspend fun setArchived(id: String, archived: Boolean)
 
     @Query("DELETE FROM dealers WHERE id = :id")
     suspend fun deleteById(id: String)
@@ -45,6 +51,9 @@ interface VendorDao {
     @Query("SELECT * FROM vendors ORDER BY name")
     fun observeAll(): Flow<List<VendorEntity>>
 
+    @Query("SELECT * FROM vendors WHERE archived = 0 ORDER BY name")
+    fun observeActive(): Flow<List<VendorEntity>>
+
     @Query("SELECT * FROM vendors WHERE id = :id")
     fun observeById(id: String): Flow<VendorEntity?>
 
@@ -54,7 +63,7 @@ interface VendorDao {
     @Query("SELECT * FROM vendors WHERE id IN (:ids)")
     suspend fun getByIds(ids: List<String>): List<VendorEntity>
 
-    @Query("SELECT * FROM vendors ORDER BY name LIMIT 1")
+    @Query("SELECT * FROM vendors WHERE archived = 0 ORDER BY name LIMIT 1")
     suspend fun firstVendor(): VendorEntity?
 
     @Query("SELECT * FROM vendors WHERE phone LIKE '%' || :suffix LIMIT 1")
@@ -62,6 +71,9 @@ interface VendorDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(vendor: VendorEntity)
+
+    @Query("UPDATE vendors SET archived = :archived WHERE id = :id")
+    suspend fun setArchived(id: String, archived: Boolean)
 
     @Query("DELETE FROM vendors WHERE id = :id")
     suspend fun deleteById(id: String)

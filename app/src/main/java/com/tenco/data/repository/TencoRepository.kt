@@ -39,9 +39,11 @@ class TencoRepository @Inject constructor(
     private val outboxDao = db.outboxDao()
 
     // --- Raw observers ---
-    fun observeDealers(): Flow<List<DealerEntity>> = dealerDao.observeAll()
+    fun observeDealers(): Flow<List<DealerEntity>> = dealerDao.observeActive()
+    fun observeAllDealers(): Flow<List<DealerEntity>> = dealerDao.observeAll()
     fun observePurchases(): Flow<List<PurchaseEntity>> = purchaseDao.observeAll()
-    fun observeVendors(): Flow<List<VendorEntity>> = vendorDao.observeAll()
+    fun observeVendors(): Flow<List<VendorEntity>> = vendorDao.observeActive()
+    fun observeAllVendors(): Flow<List<VendorEntity>> = vendorDao.observeAll()
     fun observePrices(): Flow<List<PriceEntity>> = priceDao.observeAll()
     fun observeDeliveries(): Flow<List<DeliveryEntity>> = deliveryDao.observeAll()
     fun observePayments(): Flow<List<PaymentEntity>> = paymentDao.observeAll()
@@ -227,19 +229,17 @@ class TencoRepository @Inject constructor(
     private suspend fun enqueue(type: String, id: String) =
         outboxDao.insert(com.tenco.data.local.OutboxEntity(entityType = type, entityId = id, createdAt = now()))
 
-    /** Deletes a vendor and all their sales/payments/complaints/prices (local). */
+    /**
+     * Archives a vendor: removes them from active lists but preserves ALL their
+     * transactions (sales/payments/complaints/prices) so ledger history stays intact.
+     */
     suspend fun deleteVendor(vendorId: String) {
-        deliveryDao.deleteByVendor(vendorId)
-        paymentDao.deleteByVendor(vendorId)
-        complaintDao.deleteByVendor(vendorId)
-        priceDao.deleteByVendor(vendorId)
-        vendorDao.deleteById(vendorId)
+        vendorDao.setArchived(vendorId, true)
     }
 
-    /** Deletes a dealer and all their purchases (local). */
+    /** Archives a dealer: removes from active lists but preserves all purchase history. */
     suspend fun deleteDealer(dealerId: String) {
-        purchaseDao.deleteByDealer(dealerId)
-        dealerDao.deleteById(dealerId)
+        dealerDao.setArchived(dealerId, true)
     }
 
     private fun newId() = UUID.randomUUID().toString()

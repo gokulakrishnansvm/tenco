@@ -138,7 +138,7 @@
     <string name="upi">UPI</string>
     <string name="payment_saved">भुगतान सहेजा गया</string>
     <string name="delete">हटाएं</string>
-    <string name="delete_confirm">इसे और इसके सभी रिकॉर्ड हटाएं? इसे पूर्ववत नहीं किया जा सकता।</string>
+    <string name="delete_confirm">अपनी सूची से हटाएँ? पिछले लेन-देन इतिहास में बने रहेंगे।</string>
 
     <string name="vendor_exists">इस फ़ोन नंबर वाला विक्रेता पहले से मौजूद है</string>
     <string name="dealer_exists">इस नाम वाला डीलर पहले से मौजूद है</string>

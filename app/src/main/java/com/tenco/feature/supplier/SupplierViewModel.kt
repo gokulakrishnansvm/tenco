@@ -59,11 +59,19 @@ class SupplierViewModel @Inject constructor(
     val dealers: StateFlow<List<DealerEntity>> =
         repository.observeDealers().stateInVm(emptyList())
 
+    /** Includes archived dealers — used to resolve names on immutable ledger history. */
+    val allDealers: StateFlow<List<DealerEntity>> =
+        repository.observeAllDealers().stateInVm(emptyList())
+
     val purchases: StateFlow<List<PurchaseEntity>> =
         repository.observePurchases().stateInVm(emptyList())
 
     val vendors: StateFlow<List<VendorEntity>> =
         repository.observeVendors().stateInVm(emptyList())
+
+    /** Includes archived vendors — used to resolve names on immutable ledger history. */
+    val allVendors: StateFlow<List<VendorEntity>> =
+        repository.observeAllVendors().stateInVm(emptyList())
 
     val prices: StateFlow<List<PriceEntity>> =
         repository.observePrices().stateInVm(emptyList())

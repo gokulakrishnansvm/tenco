@@ -138,7 +138,7 @@
     <string name="upi">UPI</string>
     <string name="payment_saved">பணம் சேமிக்கப்பட்டது</string>
     <string name="delete">நீக்கு</string>
-    <string name="delete_confirm">இதையும் அதன் அனைத்து பதிவுகளையும் நீக்கவா? மீட்க முடியாது.</string>
+    <string name="delete_confirm">உங்கள் பட்டியலில் இருந்து நீக்கவா? கடந்த பரிவர்த்தனைகள் வரலாற்றில் இருக்கும்.</string>
 
     <string name="vendor_exists">இந்த தொலைபேசி எண்ணுடன் விற்பனையாளர் ஏற்கனவே உள்ளார்</string>
     <string name="dealer_exists">இந்த பெயருடன் டீலர் ஏற்கனவே உள்ளார்</string>

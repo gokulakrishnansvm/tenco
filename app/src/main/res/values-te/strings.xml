@@ -138,7 +138,7 @@
     <string name="upi">UPI</string>
     <string name="payment_saved">చెల్లింపు సేవ్ అయింది</string>
     <string name="delete">తొలగించు</string>
-    <string name="delete_confirm">దీన్ని మరియు దాని అన్ని రికార్డులను తొలగించాలా? దీన్ని రద్దు చేయలేరు.</string>
+    <string name="delete_confirm">మీ జాబితా నుండి తీసివేయాలా? గత లావాదేవీలు చరిత్రలో ఉంటాయి.</string>
 
     <string name="vendor_exists">ఈ ఫోన్ నంబర్‌తో విక్రేత ఇప్పటికే ఉన్నారు</string>
     <string name="dealer_exists">ఈ పేరుతో డీలర్ ఇప్పటికే ఉన్నారు</string>

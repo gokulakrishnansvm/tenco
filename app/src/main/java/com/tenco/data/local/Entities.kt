@@ -9,6 +9,7 @@ data class DealerEntity(
     @PrimaryKey val id: String,
     val name: String,
     val location: String,
+    val archived: Boolean = false,
 )
 
 @Entity(tableName = "purchases", indices = [Index("dealerId")])
@@ -27,6 +28,7 @@ data class VendorEntity(
     val phone: String,
     val upiVpa: String?,
     val languageTag: String,
+    val archived: Boolean = false,
 )
 
 @Entity(tableName = "prices", indices = [Index("vendorId")])

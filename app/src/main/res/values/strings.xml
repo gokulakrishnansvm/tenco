@@ -157,7 +157,7 @@
     <string name="upi">UPI</string>
     <string name="payment_saved">Payment saved</string>
     <string name="delete">Delete</string>
-    <string name="delete_confirm">Delete this and all its records? This cannot be undone.</string>
+    <string name="delete_confirm">Remove from your list? Past transactions stay in your history.</string>
 
     <!-- Duplicates -->
     <string name="vendor_exists">A vendor with this phone number already exists</string>
