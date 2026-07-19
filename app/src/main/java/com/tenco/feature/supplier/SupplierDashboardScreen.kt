@@ -116,46 +116,26 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
 
-    androidx.compose.foundation.layout.Box(Modifier.fillMaxSize()) {
-        androidx.compose.foundation.layout.Box(
-            Modifier.fillMaxWidth().height(260.dp)
-                .clip(RoundedCornerShape(bottomStart = 48.dp, bottomEnd = 48.dp))
-                .background(
-                    androidx.compose.ui.graphics.Brush.verticalGradient(
-                        listOf(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f), MaterialTheme.colorScheme.background),
-                    ),
-                ),
-        ) {
-            androidx.compose.foundation.Image(
-                painter = androidx.compose.ui.res.painterResource(com.tenco.R.drawable.ic_palm_leaf),
-                contentDescription = null,
-                modifier = Modifier.align(androidx.compose.ui.Alignment.TopEnd).size(150.dp).padding(6.dp),
-                alpha = 0.16f,
-            )
-        }
-        androidx.compose.material3.pulltorefresh.PullToRefreshBox(
-            isRefreshing = refreshing,
-            onRefresh = { viewModel.refresh() },
-            modifier = Modifier.fillMaxSize(),
-        ) {
+    androidx.compose.material3.pulltorefresh.PullToRefreshBox(
+        isRefreshing = refreshing,
+        onRefresh = { viewModel.refresh() },
+        modifier = Modifier.fillMaxSize(),
+    ) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
-            contentPadding = PaddingValues(top = 20.dp, bottom = 16.dp),
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            item { com.tenco.ui.components.EntranceItem(0) { GreetingHeader(onNotifications = { onNavigate(Routes.NOTIFICATIONS) }, onProfile = { onNavigate(Routes.PROFILE) }) } }
             item {
-                com.tenco.ui.components.EntranceItem(1) {
-                    HeroEarningsCard(
-                        label = stringResource(R.string.total_earnings),
-                        paise = dashboard.totalEarningsPaise,
-                        caption = "▲ ${stringResource(R.string.this_month)}",
-                    )
-                }
+                HomeHeaderBand(
+                    earningsPaise = dashboard.totalEarningsPaise,
+                    onNotifications = { onNavigate(Routes.NOTIFICATIONS) },
+                    onProfile = { onNavigate(Routes.PROFILE) },
+                )
             }
             item {
                 com.tenco.ui.components.EntranceItem(2) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         SummaryChip(Icons.Rounded.Inventory2, stringResource(R.string.stock_on_hand), TileGreen, Modifier.weight(1f)) {
                             com.tenco.ui.components.AnimatedCount(dashboard.stockOnHand)
                         }
@@ -169,10 +149,10 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
                 }
             }
 
-            item { com.tenco.ui.components.EntranceItem(3) { SectionHeader(stringResource(R.string.quick_actions)) } }
+            item { com.tenco.ui.components.EntranceItem(3) { Box(Modifier.padding(horizontal = 20.dp)) { SectionHeader(stringResource(R.string.quick_actions)) } } }
             item {
                 com.tenco.ui.components.EntranceItem(4) {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         QuickActionTile(Icons.Rounded.Storefront, stringResource(R.string.buy_stock), TileGreen, { onNavigate(Routes.SUPPLIER_DEALERS) }, Modifier.weight(1f))
                         QuickActionTile(Icons.Rounded.Sell, stringResource(R.string.sell_to_vendor), TileBlue, { onNavigate(Routes.SUPPLIER_SELL) }, Modifier.weight(1f))
                         QuickActionTile(Icons.Rounded.Groups, stringResource(R.string.menu_vendors), TilePurple, { onNavigate(Routes.SUPPLIER_VENDORS) }, Modifier.weight(1f))
@@ -181,7 +161,7 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
             }
             item {
                 com.tenco.ui.components.EntranceItem(5) {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         QuickActionTile(Icons.Rounded.PriceChange, stringResource(R.string.menu_pricing), TileOrange, { onNavigate(Routes.SUPPLIER_PRICING) }, Modifier.weight(1f))
                         QuickActionTile(Icons.Rounded.Assessment, stringResource(R.string.menu_reports), TileTeal, { onNavigate(Routes.SUPPLIER_REPORTS) }, Modifier.weight(1f))
                         QuickActionTile(Icons.Rounded.ReportProblem, stringResource(R.string.menu_complaints), TileRed, { onNavigate(Routes.SUPPLIER_COMPLAINTS) }, Modifier.weight(1f))
@@ -191,6 +171,56 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
 
         }
     }
+}
+
+@Composable
+private fun HomeHeaderBand(earningsPaise: Long, onNotifications: () -> Unit, onProfile: () -> Unit) {
+    val white = androidx.compose.ui.graphics.Color.White
+    val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+    val greeting = when {
+        hour < 12 -> stringResource(R.string.greeting_morning)
+        hour < 17 -> stringResource(R.string.greeting_afternoon)
+        else -> stringResource(R.string.greeting_evening)
+    }
+    Box(
+        Modifier.fillMaxWidth()
+            .clip(RoundedCornerShape(bottomStart = 40.dp, bottomEnd = 40.dp))
+            .background(com.tenco.ui.theme.Gradients.hero),
+    ) {
+        androidx.compose.foundation.Image(
+            painter = androidx.compose.ui.res.painterResource(com.tenco.R.drawable.ic_palm_leaf),
+            contentDescription = null,
+            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(white),
+            alpha = 0.10f,
+            modifier = Modifier.align(androidx.compose.ui.Alignment.TopEnd).size(210.dp),
+        )
+        Column(Modifier.fillMaxWidth().padding(start = 22.dp, end = 16.dp, top = 22.dp, bottom = 30.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Column {
+                    Text("$greeting 👋", style = MaterialTheme.typography.bodyMedium, color = white.copy(alpha = 0.85f))
+                    Text(stringResource(R.string.role_supplier), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = white)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    androidx.compose.material3.IconButton(onClick = onNotifications) {
+                        Icon(androidx.compose.material.icons.Icons.Rounded.Notifications, contentDescription = stringResource(R.string.menu_notifications), tint = white)
+                    }
+                    Surface(shape = CircleShape, color = white.copy(alpha = 0.22f), modifier = Modifier.size(46.dp).clickable { onProfile() }) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(Icons.Rounded.Person, contentDescription = stringResource(R.string.menu_profile), tint = white)
+                        }
+                    }
+                }
+            }
+            Text(stringResource(R.string.total_earnings), style = MaterialTheme.typography.bodyMedium, color = white.copy(alpha = 0.85f), modifier = Modifier.padding(top = 28.dp))
+            com.tenco.ui.components.AnimatedRupees(
+                paise = earningsPaise,
+                style = MaterialTheme.typography.displaySmall,
+                color = white,
+            )
+            Surface(shape = MaterialTheme.shapes.small, color = white.copy(alpha = 0.18f), modifier = Modifier.padding(top = 8.dp)) {
+                Text("▲ ${stringResource(R.string.this_month)}", style = MaterialTheme.typography.labelMedium, color = white, modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp))
+            }
+        }
     }
 }
 
