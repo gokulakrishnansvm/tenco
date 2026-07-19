@@ -187,7 +187,7 @@ private fun SupplierBottomBar(onNavigate: (String) -> Unit, onProfile: () -> Uni
             indicatorColor = MaterialTheme.colorScheme.primaryContainer,
         )
         NavigationBarItem(selected = true, onClick = {}, icon = { Icon(Icons.Rounded.Home, null) }, label = { Text("Home") }, colors = itemColors)
-        NavigationBarItem(selected = false, onClick = { onNavigate(Routes.SUPPLIER_DEALERS) }, icon = { Icon(Icons.Rounded.Inventory2, null) }, label = { Text("Stock") }, colors = itemColors)
+        NavigationBarItem(selected = false, onClick = { onNavigate(Routes.SUPPLIER_INVENTORY) }, icon = { Icon(Icons.Rounded.Inventory2, null) }, label = { Text("Stock") }, colors = itemColors)
         NavigationBarItem(selected = false, onClick = { onNavigate(Routes.SUPPLIER_TRANSACTIONS) }, icon = { Icon(Icons.Rounded.ReceiptLong, null) }, label = { Text("Txns") }, colors = itemColors)
         NavigationBarItem(selected = false, onClick = { onNavigate(Routes.SUPPLIER_INSIGHTS) }, icon = { Icon(Icons.Rounded.AccountBalanceWallet, null) }, label = { Text("Money") }, colors = itemColors)
         NavigationBarItem(selected = false, onClick = onProfile, icon = { Icon(Icons.Rounded.Person, null) }, label = { Text("Profile") }, colors = itemColors)

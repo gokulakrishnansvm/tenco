@@ -30,6 +30,7 @@
 
     <!-- Analytics / insights -->
     <string name="menu_insights">Insights</string>
+    <string name="menu_inventory">Inventory</string>
     <string name="insights">Insights</string>
     <string name="collection_rate">Collection rate</string>
     <string name="total_billed">Total billed</string>
