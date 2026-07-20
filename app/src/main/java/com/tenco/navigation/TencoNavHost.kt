@@ -83,7 +83,8 @@ fun TencoNavHost(
                 onLogout = logout,
             )
         }
-        composable(Routes.SUPPLIER_DEALERS) { DealersScreen(onBack = navController::popBackStack, onOpenDealer = { navController.navigate(Routes.dealerDetail(it)) }) }
+        composable(Routes.SUPPLIER_DEALERS) { com.tenco.feature.supplier.BuyStockScreen(onBack = navController::popBackStack) }
+        composable(Routes.SUPPLIER_DEALERS_LIST) { DealersScreen(onBack = navController::popBackStack, onOpenDealer = { navController.navigate(Routes.dealerDetail(it)) }) }
         composable(Routes.SUPPLIER_VENDORS) { VendorsScreen(onBack = navController::popBackStack, onOpenVendor = { navController.navigate(Routes.vendorDetail(it)) }) }
         composable(
             Routes.SUPPLIER_VENDOR_DETAIL,

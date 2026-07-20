@@ -70,49 +70,56 @@ import java.util.Locale
 private val dateFmt = SimpleDateFormat("dd MMM, HH:mm", Locale.getDefault())
 private fun ts(millis: Long) = dateFmt.format(Date(millis))
 
+// ---------------- Buy stock (add purchase directly) ----------------
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BuyStockScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel()) {
+    val dealers by viewModel.dealers.collectAsStateWithLifecycle()
+    var showTruck by remember { mutableStateOf(false) }
+    AddPurchaseDialog(
+        dealers = dealers.map { it.id to it.name },
+        onDismiss = onBack,
+        onConfirm = { dealerId, lines ->
+            viewModel.addPurchaseBatch(dealerId, lines)
+            showTruck = true
+        },
+    )
+    if (showTruck) {
+        com.tenco.ui.components.CoconutEventOverlay(com.tenco.ui.components.CoconutEvent.TRUCK) { showTruck = false; onBack() }
+    }
+}
+
 // ---------------- Dealers ----------------
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DealersScreen(onBack: () -> Unit, onOpenDealer: (String) -> Unit = {}, viewModel: SupplierViewModel = hiltViewModel()) {
     val dealers by viewModel.dealers.collectAsStateWithLifecycle()
     val purchases by viewModel.purchases.collectAsStateWithLifecycle()
-    var showDialog by remember { mutableStateOf(false) }
     var showDealer by remember { mutableStateOf(false) }
-    var showTruck by remember { mutableStateOf(false) }
 
     TencoScaffold(
-        title = stringResource(R.string.buy_stock),
+        title = stringResource(R.string.dealers),
         onBack = onBack,
-        actions = {
-            androidx.compose.material3.TextButton(onClick = { showDealer = true }) {
-                Text(stringResource(R.string.add_dealer), color = MaterialTheme.colorScheme.primary)
-            }
-        },
         floatingActionButton = {
             androidx.compose.material3.ExtendedFloatingActionButton(
-                onClick = { showDialog = true },
+                onClick = { showDealer = true },
                 icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
-                text = { Text(stringResource(R.string.add_purchase)) },
+                text = { Text(stringResource(R.string.add_dealer)) },
             )
         },
     ) { padding ->
-        Column(Modifier.padding(padding)) {
-            if (purchases.isEmpty()) {
-                EmptyState(R.drawable.ic_coconut, stringResource(R.string.empty_purchases), stringResource(R.string.empty_purchases_sub))
-            } else {
-                val dealerNames = dealers.associate { it.id to it.name }
-                LazyColumn(
-                    Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    items(purchases) { p ->
-                        InfoCard(
-                            title = dealerNames[p.dealerId] ?: "-",
-                            subtitle = "${p.quantity} ${stringResource(R.string.coconuts)} · ${ts(p.createdAt)}",
-                            trailing = Money.format(p.quantity * p.unitCostPaise),
-                            onClick = { onOpenDealer(p.dealerId) },
-                        )
-                    }
+        if (dealers.isEmpty()) {
+            EmptyState(R.drawable.ic_coconut, stringResource(R.string.empty_purchases), stringResource(R.string.empty_purchases_sub))
+        } else {
+            val spentByDealer = purchases.groupBy { it.dealerId }.mapValues { e -> e.value.sumOf { it.quantity * it.unitCostPaise } }
+            LazyColumn(Modifier.padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(dealers, key = { it.id }) { d ->
+                    InfoCard(
+                        title = d.name,
+                        subtitle = d.location,
+                        trailing = Money.format(spentByDealer[d.id] ?: 0L),
+                        onClick = { onOpenDealer(d.id) },
+                    )
                 }
             }
         }
@@ -140,21 +147,6 @@ fun DealersScreen(onBack: () -> Unit, onOpenDealer: (String) -> Unit = {}, viewM
                 )
             }
         }
-    }
-
-    if (showDialog) {
-        AddPurchaseDialog(
-            dealers = dealers.map { it.id to it.name },
-            onDismiss = { showDialog = false },
-            onConfirm = { dealerId, lines ->
-                viewModel.addPurchaseBatch(dealerId, lines)
-                showDialog = false
-                showTruck = true
-            },
-        )
-    }
-    if (showTruck) {
-        com.tenco.ui.components.CoconutEventOverlay(com.tenco.ui.components.CoconutEvent.TRUCK) { showTruck = false }
     }
 }
 

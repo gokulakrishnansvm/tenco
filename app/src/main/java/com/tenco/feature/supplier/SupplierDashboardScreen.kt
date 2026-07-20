@@ -24,6 +24,7 @@ import androidx.compose.material.icons.rounded.CurrencyRupee
 import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Inventory2
+import androidx.compose.material.icons.rounded.LocalShipping
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Payments
 import androidx.compose.material.icons.rounded.PriceChange
@@ -171,12 +172,13 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
                     val ordersLabel = stringResource(R.string.orders) + if (newOrders > 0) " ($newOrders)" else ""
                     val approvalsLabel = stringResource(R.string.approvals) + if (pendingCash.isNotEmpty()) " (${pendingCash.size})" else ""
                     val complaintsLabel = stringResource(R.string.menu_complaints) + if (openComplaints > 0) " ($openComplaints)" else ""
-                    val defaultKeys = listOf("orders", "buy_stock", "sell", "vendors", "pricing", "reports", "complaints", "inventory", "losses", "approvals")
+                    val defaultKeys = listOf("orders", "buy_stock", "dealers", "sell", "vendors", "pricing", "reports", "complaints", "inventory", "losses", "approvals")
                     // Freeze the order once per screen entry (less aggressive: re-sorts only on revisit, not per tap).
                     val keyOrder = remember { defaultKeys.sortedByDescending { actionUsage[it] ?: 0 } }
                     val actions = listOf(
                         QuickAction("orders", Icons.Rounded.ShoppingCart, ordersLabel, TileBlue, Routes.SUPPLIER_ORDERS),
                         QuickAction("buy_stock", Icons.Rounded.Storefront, stringResource(R.string.buy_stock), TileGreen, Routes.SUPPLIER_DEALERS),
+                        QuickAction("dealers", Icons.Rounded.LocalShipping, stringResource(R.string.dealers), TilePurple, Routes.SUPPLIER_DEALERS_LIST),
                         QuickAction("sell", Icons.Rounded.Sell, stringResource(R.string.sell_to_vendor), TileTeal, Routes.SUPPLIER_SELL),
                         QuickAction("vendors", Icons.Rounded.Groups, stringResource(R.string.menu_vendors), TilePurple, Routes.SUPPLIER_VENDORS),
                         QuickAction("pricing", Icons.Rounded.PriceChange, stringResource(R.string.menu_pricing), TileOrange, Routes.SUPPLIER_PRICING),

@@ -8,6 +8,7 @@ object Routes {
     // Supplier
     const val SUPPLIER_HOME = "supplier"
     const val SUPPLIER_DEALERS = "supplier/dealers"
+    const val SUPPLIER_DEALERS_LIST = "supplier/dealers-list"
     const val SUPPLIER_VENDORS = "supplier/vendors"
     const val SUPPLIER_PRICING = "supplier/pricing"
     const val SUPPLIER_TRANSACTIONS = "supplier/transactions"
