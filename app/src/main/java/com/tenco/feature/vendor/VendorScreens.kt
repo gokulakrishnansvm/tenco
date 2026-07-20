@@ -496,6 +496,7 @@ fun VendorComplaintScreen(
                     Toast.makeText(context, R.string.complaint_submitted, Toast.LENGTH_SHORT).show()
                     onBack?.invoke()
                 },
+                enabled = (shortQty.toIntOrNull() ?: 0) > 0,
                 modifier = Modifier.fillMaxWidth().height(56.dp),
             ) {
                 Text(stringResource(R.string.submit))

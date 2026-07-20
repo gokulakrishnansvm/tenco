@@ -53,7 +53,7 @@ fun SupplierOrdersScreen(onBack: () -> Unit, onOpenOrder: (String) -> Unit, view
                         Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                             Column {
                                 Text(names[o.vendorId] ?: "", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                                Text("${o.quantity} $coconuts", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text("${com.tenco.ui.components.coconutColorLabel(o.color)} ${com.tenco.ui.components.coconutGradeLabel(o.grade)} · ${o.quantity} $coconuts", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                 OrderStatusChip(o.status)
@@ -84,7 +84,7 @@ fun SupplierOrderDetailScreen(orderId: String, onBack: () -> Unit, viewModel: Su
                 TencoCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(names[o.vendorId] ?: "", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                        Text("${o.quantity} $coconuts", style = MaterialTheme.typography.bodyLarge)
+                        Text("${com.tenco.ui.components.coconutColorLabel(o.color)} ${com.tenco.ui.components.coconutGradeLabel(o.grade)} · ${o.quantity} $coconuts", style = MaterialTheme.typography.bodyLarge)
                         o.unitPricePaise?.let {
                             Text("${stringResource(R.string.order_total)}: ${Money.format(it * o.quantity)}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                         }

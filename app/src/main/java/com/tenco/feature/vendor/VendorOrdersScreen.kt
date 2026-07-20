@@ -44,6 +44,8 @@ fun VendorOrdersScreen(vendorId: String, onBack: (() -> Unit)? = null, viewModel
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
     val context = androidx.compose.ui.platform.LocalContext.current
     var qty by remember { mutableStateOf("") }
+    var orderColor by remember { mutableStateOf(com.tenco.domain.CoconutColor.GREEN) }
+    var orderGrade by remember { mutableStateOf(com.tenco.domain.CoconutGrade.MEDIUM) }
     var showOrderAnim by remember { mutableStateOf(false) }
     val coconuts = stringResource(R.string.coconuts)
 
@@ -56,6 +58,16 @@ fun VendorOrdersScreen(vendorId: String, onBack: (() -> Unit)? = null, viewModel
                 TencoCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Text(stringResource(R.string.place_order), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            com.tenco.domain.CoconutColor.ALL.forEach { c ->
+                                androidx.compose.material3.FilterChip(selected = orderColor == c, onClick = { orderColor = c }, label = { Text(com.tenco.ui.components.coconutColorLabel(c)) })
+                            }
+                        }
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            com.tenco.domain.CoconutGrade.ALL.forEach { g ->
+                                androidx.compose.material3.FilterChip(selected = orderGrade == g, onClick = { orderGrade = g }, label = { Text(com.tenco.ui.components.coconutGradeLabel(g)) })
+                            }
+                        }
                         OutlinedTextField(
                             value = qty,
                             onValueChange = { qty = it.filter(Char::isDigit) },
@@ -64,7 +76,7 @@ fun VendorOrdersScreen(vendorId: String, onBack: (() -> Unit)? = null, viewModel
                             modifier = Modifier.fillMaxWidth(),
                         )
                         Button(
-                            onClick = { qty.toIntOrNull()?.let { viewModel.placeOrder(it); qty = ""; showOrderAnim = true } },
+                            onClick = { qty.toIntOrNull()?.let { viewModel.placeOrder(it, orderColor, orderGrade); qty = ""; showOrderAnim = true } },
                             enabled = (qty.toIntOrNull() ?: 0) > 0,
                             modifier = Modifier.fillMaxWidth().height(52.dp),
                         ) { Text(stringResource(R.string.place_order)) }
@@ -77,7 +89,7 @@ fun VendorOrdersScreen(vendorId: String, onBack: (() -> Unit)? = null, viewModel
                     Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                             Column {
-                                Text("${o.quantity} $coconuts", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                                Text("${com.tenco.ui.components.coconutColorLabel(o.color)} ${com.tenco.ui.components.coconutGradeLabel(o.grade)} · ${o.quantity} $coconuts", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                                 Text(
                                     o.unitPricePaise?.let { "${stringResource(R.string.order_total)}: ${Money.format(it * o.quantity)}" }
                                         ?: stringResource(R.string.awaiting_price),

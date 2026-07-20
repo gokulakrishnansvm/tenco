@@ -222,12 +222,12 @@ class TencoRepository @Inject constructor(
     // ----------------- Vendor orders -----------------
 
     /** Vendor places an order; prefills the last agreed unit price (if any) so they can pre-pay. */
-    suspend fun placeOrder(vendorId: String, quantity: Int) {
+    suspend fun placeOrder(vendorId: String, quantity: Int, color: String = "GREEN", grade: String = "MEDIUM") {
         val lastPrice = priceDao.latestForVendor(vendorId)?.unitPricePaise
         val e = OrderEntity(
             id = newId(), vendorId = vendorId, quantity = quantity,
             unitPricePaise = lastPrice, status = com.tenco.domain.OrderStatus.PLACED,
-            paid = false, createdAt = now(), updatedAt = now(),
+            paid = false, createdAt = now(), updatedAt = now(), color = color, grade = grade,
         )
         orderDao.upsert(e)
     }
@@ -243,7 +243,7 @@ class TencoRepository @Inject constructor(
         val o = orderDao.getById(orderId) ?: return
         orderDao.upsert(o.copy(status = status, updatedAt = now()))
         if (status == com.tenco.domain.OrderStatus.DELIVERED && o.unitPricePaise != null) {
-            val d = DeliveryEntity(newId(), o.vendorId, o.quantity, o.unitPricePaise, DeliveryStatus.DELIVERED, now(), now())
+            val d = DeliveryEntity(newId(), o.vendorId, o.quantity, o.unitPricePaise, DeliveryStatus.DELIVERED, now(), now(), color = o.color, grade = o.grade)
             deliveryDao.upsert(d); enqueue(OUT_DELIVERY, d.id)
         }
     }

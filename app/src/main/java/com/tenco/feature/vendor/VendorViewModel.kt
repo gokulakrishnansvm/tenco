@@ -69,9 +69,9 @@ class VendorViewModel @Inject constructor(
             .flatMapLatest { repository.observeOrdersForVendor(it) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    fun placeOrder(quantity: Int) = viewModelScope.launch {
+    fun placeOrder(quantity: Int, color: String = "GREEN", grade: String = "MEDIUM") = viewModelScope.launch {
         val id = vendorId.value ?: return@launch
-        if (quantity > 0) repository.placeOrder(id, quantity)
+        if (quantity > 0) repository.placeOrder(id, quantity, color, grade)
     }
 
     fun payOrder(orderId: String) = viewModelScope.launch { repository.markOrderPaid(orderId) }
