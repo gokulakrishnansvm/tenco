@@ -118,6 +118,7 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
     val newOrders by viewModel.newOrderCount.collectAsStateWithLifecycle()
     val pendingCash by viewModel.pendingCashPayments.collectAsStateWithLifecycle()
+    val actionUsage by viewModel.actionUsage.collectAsStateWithLifecycle()
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
 
     androidx.compose.material3.pulltorefresh.PullToRefreshBox(
@@ -156,30 +157,28 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
             item { com.tenco.ui.components.EntranceItem(3) { Box(Modifier.padding(horizontal = 20.dp)) { SectionHeader(stringResource(R.string.quick_actions)) } } }
             item {
                 com.tenco.ui.components.EntranceItem(4) {
-                    Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        val ordersLabel = stringResource(R.string.orders) + if (newOrders > 0) " ($newOrders)" else ""
-                        QuickActionTile(Icons.Rounded.ShoppingCart, ordersLabel, TileBlue, { onNavigate(Routes.SUPPLIER_ORDERS) }, Modifier.weight(1f))
-                        QuickActionTile(Icons.Rounded.Storefront, stringResource(R.string.buy_stock), TileGreen, { onNavigate(Routes.SUPPLIER_DEALERS) }, Modifier.weight(1f))
-                        QuickActionTile(Icons.Rounded.Sell, stringResource(R.string.sell_to_vendor), TileTeal, { onNavigate(Routes.SUPPLIER_SELL) }, Modifier.weight(1f))
-                    }
-                }
-            }
-            item {
-                com.tenco.ui.components.EntranceItem(5) {
-                    Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        QuickActionTile(Icons.Rounded.Groups, stringResource(R.string.menu_vendors), TilePurple, { onNavigate(Routes.SUPPLIER_VENDORS) }, Modifier.weight(1f))
-                        QuickActionTile(Icons.Rounded.PriceChange, stringResource(R.string.menu_pricing), TileOrange, { onNavigate(Routes.SUPPLIER_PRICING) }, Modifier.weight(1f))
-                        QuickActionTile(Icons.Rounded.Assessment, stringResource(R.string.menu_reports), TileTeal, { onNavigate(Routes.SUPPLIER_REPORTS) }, Modifier.weight(1f))
-                    }
-                }
-            }
-            item {
-                com.tenco.ui.components.EntranceItem(6) {
-                    Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        QuickActionTile(Icons.Rounded.ReportProblem, stringResource(R.string.menu_complaints), TileRed, { onNavigate(Routes.SUPPLIER_COMPLAINTS) }, Modifier.weight(1f))
-                        QuickActionTile(Icons.Rounded.Inventory2, stringResource(R.string.menu_inventory), TileGreen, { onNavigate(Routes.SUPPLIER_INVENTORY) }, Modifier.weight(1f))
-                        val approvalsLabel = stringResource(R.string.approvals) + if (pendingCash.isNotEmpty()) " (${pendingCash.size})" else ""
-                        QuickActionTile(Icons.Rounded.Payments, approvalsLabel, TileOrange, { onNavigate(Routes.SUPPLIER_CASH_APPROVALS) }, Modifier.weight(1f))
+                    val ordersLabel = stringResource(R.string.orders) + if (newOrders > 0) " ($newOrders)" else ""
+                    val approvalsLabel = stringResource(R.string.approvals) + if (pendingCash.isNotEmpty()) " (${pendingCash.size})" else ""
+                    val actions = listOf(
+                        QuickAction("orders", Icons.Rounded.ShoppingCart, ordersLabel, TileBlue, Routes.SUPPLIER_ORDERS),
+                        QuickAction("buy_stock", Icons.Rounded.Storefront, stringResource(R.string.buy_stock), TileGreen, Routes.SUPPLIER_DEALERS),
+                        QuickAction("sell", Icons.Rounded.Sell, stringResource(R.string.sell_to_vendor), TileTeal, Routes.SUPPLIER_SELL),
+                        QuickAction("vendors", Icons.Rounded.Groups, stringResource(R.string.menu_vendors), TilePurple, Routes.SUPPLIER_VENDORS),
+                        QuickAction("pricing", Icons.Rounded.PriceChange, stringResource(R.string.menu_pricing), TileOrange, Routes.SUPPLIER_PRICING),
+                        QuickAction("reports", Icons.Rounded.Assessment, stringResource(R.string.menu_reports), TileTeal, Routes.SUPPLIER_REPORTS),
+                        QuickAction("complaints", Icons.Rounded.ReportProblem, stringResource(R.string.menu_complaints), TileRed, Routes.SUPPLIER_COMPLAINTS),
+                        QuickAction("inventory", Icons.Rounded.Inventory2, stringResource(R.string.menu_inventory), TileGreen, Routes.SUPPLIER_INVENTORY),
+                        QuickAction("approvals", Icons.Rounded.Payments, approvalsLabel, TileOrange, Routes.SUPPLIER_CASH_APPROVALS),
+                    ).sortedByDescending { actionUsage[it.key] ?: 0 }
+                    Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        actions.chunked(3).forEach { rowItems ->
+                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                rowItems.forEach { qa ->
+                                    QuickActionTile(qa.icon, qa.label, qa.color, { viewModel.recordActionUse(qa.key); onNavigate(qa.route) }, Modifier.weight(1f))
+                                }
+                                repeat(3 - rowItems.size) { androidx.compose.foundation.layout.Spacer(Modifier.weight(1f)) }
+                            }
+                        }
                     }
                 }
             }
@@ -187,6 +186,14 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
         }
     }
 }
+
+private data class QuickAction(
+    val key: String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+    val label: String,
+    val color: androidx.compose.ui.graphics.Color,
+    val route: String,
+)
 
 @Composable
 private fun HomeHeaderBand(earningsPaise: Long, onNotifications: () -> Unit, onProfile: () -> Unit) {

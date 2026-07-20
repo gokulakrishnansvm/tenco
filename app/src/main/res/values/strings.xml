@@ -228,4 +228,9 @@
     <string name="in_review">In review</string>
     <string name="pending_cash">Pending cash approvals</string>
     <string name="approvals">Approvals</string>
+    <string name="city">City</string>
+    <string name="short_quantity">Short quantity (optional)</string>
+    <string name="set_price_selected">Set price for selected</string>
+    <string name="no_city">No city</string>
+    <string name="select_all">Select all</string>
 </resources>

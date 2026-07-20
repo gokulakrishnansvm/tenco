@@ -190,8 +190,17 @@ class TencoRepository @Inject constructor(
         val e = PurchaseEntity(newId(), dealerId, quantity, unitCostPaise, now()); purchaseDao.upsert(e); enqueue(OUT_PURCHASE, e.id)
     }
 
-    suspend fun addVendor(name: String, phone: String, upiVpa: String?, languageTag: String) {
-        val e = VendorEntity(newId(), name, phone, upiVpa, languageTag); vendorDao.upsert(e); enqueue(OUT_VENDOR, e.id)
+    suspend fun addVendor(name: String, phone: String, upiVpa: String?, languageTag: String, city: String = "") {
+        val e = VendorEntity(newId(), name, phone, upiVpa, languageTag, city = city); vendorDao.upsert(e); enqueue(OUT_VENDOR, e.id)
+    }
+
+    /** Sets one price for many vendors at once; skips any whose latest price already equals it. */
+    suspend fun setPriceForVendors(vendorIds: List<String>, unitPricePaise: Long) {
+        vendorIds.forEach { vid ->
+            if (priceDao.latestForVendor(vid)?.unitPricePaise != unitPricePaise) {
+                val e = PriceEntity(newId(), vid, unitPricePaise, now()); priceDao.upsert(e); enqueue(OUT_PRICE, e.id)
+            }
+        }
     }
 
     suspend fun setPrice(vendorId: String, unitPricePaise: Long) {
@@ -279,8 +288,8 @@ class TencoRepository @Inject constructor(
         paymentDao.upsert(p.copy(status = PaymentStatus.REJECTED)); enqueue(OUT_PAYMENT, paymentId)
     }
 
-    suspend fun raiseComplaint(vendorId: String, deliveryId: String, reason: String, photoUri: String?) {
-        val e = ComplaintEntity(newId(), deliveryId, vendorId, reason, photoUri, 0, ComplaintStatus.OPEN, now())
+    suspend fun raiseComplaint(vendorId: String, deliveryId: String, reason: String, photoUri: String?, shortQuantity: Int = 0) {
+        val e = ComplaintEntity(newId(), deliveryId, vendorId, reason, photoUri, 0, ComplaintStatus.OPEN, now(), shortQuantity = shortQuantity)
         complaintDao.upsert(e); enqueue(OUT_COMPLAINT, e.id)
     }
 

@@ -42,6 +42,7 @@ enum class ReportPeriod {
 class SupplierViewModel @Inject constructor(
     private val repository: TencoRepository,
     private val syncManager: com.tenco.data.sync.SyncManager,
+    private val prefs: com.tenco.core.prefs.AppPreferences,
 ) : ViewModel() {
 
     private val _refreshing = kotlinx.coroutines.flow.MutableStateFlow(false)
@@ -120,6 +121,10 @@ class SupplierViewModel @Inject constructor(
     fun advanceOrder(orderId: String, status: String) = viewModelScope.launch { repository.advanceOrderStatus(orderId, status) }
     fun confirmOrderCancel(orderId: String) = viewModelScope.launch { repository.confirmOrderCancel(orderId) }
 
+    // Quick-action usage ordering
+    val actionUsage: StateFlow<Map<String, Int>> = prefs.actionUsageFlow
+    fun recordActionUse(key: String) = prefs.incrementActionUsage(key)
+
     /** Cash payments from vendors awaiting the supplier's approval. */
     val pendingCashPayments: StateFlow<List<com.tenco.data.local.PaymentEntity>> =
         repository.observePayments()
@@ -143,12 +148,16 @@ class SupplierViewModel @Inject constructor(
         )
     }
 
-    fun addVendor(name: String, phone: String, upiVpa: String?) = viewModelScope.launch {
-        repository.addVendor(name, phone, upiVpa, languageTag = "en")
+    fun addVendor(name: String, phone: String, upiVpa: String?, city: String = "") = viewModelScope.launch {
+        repository.addVendor(name, phone, upiVpa, languageTag = "en", city = city)
     }
 
     fun setPrice(vendorId: String, unitPricePaise: Long) = viewModelScope.launch {
         repository.setPrice(vendorId, unitPricePaise)
+    }
+
+    fun setPriceForVendors(vendorIds: List<String>, unitPricePaise: Long) = viewModelScope.launch {
+        repository.setPriceForVendors(vendorIds, unitPricePaise)
     }
 
     fun resolveComplaint(complaintId: String, adjustmentPaise: Long) = viewModelScope.launch {

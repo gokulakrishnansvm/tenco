@@ -204,4 +204,9 @@
     <string name="in_review">समीक्षा में</string>
     <string name="pending_cash">लंबित नकद अनुमोदन</string>
     <string name="approvals">अनुमोदन</string>
+    <string name="city">शहर</string>
+    <string name="short_quantity">कम मात्रा (वैकल्पिक)</string>
+    <string name="set_price_selected">चयनित के लिए मूल्य सेट करें</string>
+    <string name="no_city">कोई शहर नहीं</string>
+    <string name="select_all">सभी चुनें</string>
 </resources>

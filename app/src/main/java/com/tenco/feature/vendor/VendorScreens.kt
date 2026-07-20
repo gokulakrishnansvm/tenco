@@ -449,6 +449,7 @@ fun VendorComplaintScreen(
     )
     var selected by remember { mutableStateOf(reasons.first()) }
     var photoUri by remember { mutableStateOf<String?>(null) }
+    var shortQty by remember { mutableStateOf("") }
 
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         photoUri = uri?.toString()
@@ -469,12 +470,20 @@ fun VendorComplaintScreen(
                     Text(stringResource(res), style = MaterialTheme.typography.bodyLarge)
                 }
             }
+            OutlinedTextField(
+                value = shortQty,
+                onValueChange = { shortQty = it.filter(Char::isDigit) },
+                label = { Text(stringResource(R.string.short_quantity)) },
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number),
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
             OutlinedButton(onClick = { picker.launch("image/*") }, modifier = Modifier.fillMaxWidth()) {
                 Text(if (photoUri == null) stringResource(R.string.attach_photo) else "✓ " + stringResource(R.string.attach_photo))
             }
             Button(
                 onClick = {
-                    viewModel.raiseComplaint(context.getString(selected), photoUri)
+                    viewModel.raiseComplaint(context.getString(selected), photoUri, shortQty.toIntOrNull() ?: 0)
                     Toast.makeText(context, R.string.complaint_submitted, Toast.LENGTH_SHORT).show()
                     onBack?.invoke()
                 },

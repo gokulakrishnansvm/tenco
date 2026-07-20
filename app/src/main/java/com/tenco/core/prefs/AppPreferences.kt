@@ -73,6 +73,23 @@ class AppPreferences @Inject constructor(@ApplicationContext context: Context) {
             _themeMode.value = value
         }
 
+    private val _usage = kotlinx.coroutines.flow.MutableStateFlow(loadUsage())
+
+    /** Observable per-action usage counts, used to order quick actions by most-used. */
+    val actionUsageFlow: kotlinx.coroutines.flow.StateFlow<Map<String, Int>> = _usage
+
+    fun incrementActionUsage(key: String) {
+        val m = _usage.value.toMutableMap()
+        m[key] = (m[key] ?: 0) + 1
+        prefs.edit().putString(KEY_USAGE, m.entries.joinToString(",") { "${it.key}:${it.value}" }).apply()
+        _usage.value = m
+    }
+
+    private fun loadUsage(): Map<String, Int> =
+        (prefs.getString(KEY_USAGE, "") ?: "").split(",").mapNotNull {
+            val parts = it.split(":"); if (parts.size == 2) parts[0] to (parts[1].toIntOrNull() ?: 0) else null
+        }.toMap()
+
     val isLoggedIn: Boolean get() = !userPhone.isNullOrBlank()
 
     /** Clears the session (login + tokens + role + vendor) but keeps the chosen language. */
@@ -100,6 +117,7 @@ class AppPreferences @Inject constructor(@ApplicationContext context: Context) {
         private const val KEY_USER_ID = "user_id"
         private const val KEY_SYNC_CURSOR = "last_sync_cursor"
         private const val KEY_THEME = "theme_mode"
+        private const val KEY_USAGE = "action_usage"
         const val THEME_SYSTEM = "system"
         const val THEME_LIGHT = "light"
         const val THEME_DARK = "dark"

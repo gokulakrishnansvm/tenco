@@ -120,9 +120,9 @@ class VendorViewModel @Inject constructor(
         }
     }
 
-    fun raiseComplaint(reason: String, photoUri: String?) = viewModelScope.launch {
+    fun raiseComplaint(reason: String, photoUri: String?, shortQuantity: Int = 0) = viewModelScope.launch {
         val id = vendorId.value ?: return@launch
         val deliveryId = deliveries.value.firstOrNull()?.id ?: ""
-        repository.raiseComplaint(id, deliveryId, reason, photoUri)
+        repository.raiseComplaint(id, deliveryId, reason, photoUri, shortQuantity)
     }
 }

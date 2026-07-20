@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,6 +21,7 @@ import androidx.compose.material.icons.rounded.ReceiptLong
 import androidx.compose.material.icons.rounded.ReportProblem
 import androidx.compose.material.icons.rounded.Storefront
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,6 +42,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -210,9 +214,16 @@ fun VendorsScreen(onBack: () -> Unit, onOpenVendor: (String) -> Unit = {}, viewM
             if (vendors.isEmpty()) {
                 EmptyState(R.drawable.ic_palm_tree, stringResource(R.string.empty_vendors), stringResource(R.string.empty_vendors_sub))
             } else {
+                val noCity = stringResource(R.string.no_city)
+                val grouped = vendors.groupBy { it.city.ifBlank { noCity } }.toSortedMap()
                 LazyColumn(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(vendors) { v ->
-                        InfoCard(title = v.name, subtitle = v.phone, trailing = v.upiVpa ?: "", onClick = { onOpenVendor(v.id) })
+                    grouped.forEach { (cityName, cityVendors) ->
+                        item(key = "city-$cityName") {
+                            com.tenco.ui.components.SectionHeader("$cityName (${cityVendors.size})")
+                        }
+                        items(cityVendors, key = { it.id }) { v ->
+                            InfoCard(title = v.name, subtitle = v.phone, trailing = v.upiVpa ?: "", onClick = { onOpenVendor(v.id) })
+                        }
                     }
                 }
             }
@@ -222,6 +233,7 @@ fun VendorsScreen(onBack: () -> Unit, onOpenVendor: (String) -> Unit = {}, viewM
         var name by remember { mutableStateOf("") }
         var phone by remember { mutableStateOf("") }
         var vpa by remember { mutableStateOf("") }
+        var city by remember { mutableStateOf("") }
         val phoneKey = phone.filter(Char::isDigit).takeLast(10)
         val duplicate = phoneKey.length >= 10 && vendors.any { it.phone.filter(Char::isDigit).takeLast(10) == phoneKey }
         com.tenco.ui.components.TencoBottomSheet(title = stringResource(R.string.add), onDismiss = { showDialog = false }) {
@@ -235,10 +247,11 @@ fun VendorsScreen(onBack: () -> Unit, onOpenVendor: (String) -> Unit = {}, viewM
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     modifier = Modifier.fillMaxWidth(),
                 )
+                OutlinedTextField(city, { city = it }, label = { Text(stringResource(R.string.city)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(vpa, { vpa = it }, label = { Text("UPI VPA") }, modifier = Modifier.fillMaxWidth())
                 com.tenco.ui.components.SheetActions(
                     onCancel = { showDialog = false },
-                    onSave = { viewModel.addVendor(name, phone, vpa.ifBlank { null }); showDialog = false },
+                    onSave = { viewModel.addVendor(name, phone, vpa.ifBlank { null }, city.trim()); showDialog = false },
                     saveEnabled = name.isNotBlank() && !duplicate,
                     saveText = stringResource(R.string.save),
                 )
@@ -252,38 +265,70 @@ fun VendorsScreen(onBack: () -> Unit, onOpenVendor: (String) -> Unit = {}, viewM
 fun PricingScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel()) {
     val vendors by viewModel.vendors.collectAsStateWithLifecycle()
     val prices by viewModel.prices.collectAsStateWithLifecycle()
-    var editing by remember { mutableStateOf<VendorEntity?>(null) }
+    val latest = prices.groupBy { it.vendorId }.mapValues { e -> e.value.maxByOrNull { it.effectiveFrom }?.unitPricePaise ?: 0L }
+    val selected = remember { androidx.compose.runtime.mutableStateListOf<String>() }
+    var price by remember { mutableStateOf("") }
+    val noCity = stringResource(R.string.no_city)
+    val grouped = vendors.groupBy { it.city.ifBlank { noCity } }.toSortedMap()
 
     TencoScaffold(title = stringResource(R.string.pricing), onBack = onBack) { padding ->
-        Column(Modifier.padding(padding)) {
-            val latest = prices.groupBy { it.vendorId }.mapValues { e -> e.value.maxByOrNull { it.effectiveFrom }?.unitPricePaise ?: 0L }
-            LazyColumn(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(vendors) { v ->
-                    Card(
-                        onClick = { editing = v },
-                        Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    ) {
-                        Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(v.name, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleMedium)
-                            Text(Money.format(latest[v.id] ?: 0L), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+        Column(Modifier.padding(padding).fillMaxSize()) {
+            LazyColumn(Modifier.weight(1f).padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                grouped.forEach { (cityName, cityVendors) ->
+                    val cityIds = cityVendors.map { it.id }
+                    val allSelected = cityIds.all { it in selected }
+                    item(key = "city-$cityName") {
+                        Row(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                            com.tenco.ui.components.SectionHeader("$cityName (${cityVendors.size})", Modifier.weight(1f))
+                            androidx.compose.material3.TextButton(onClick = {
+                                if (allSelected) selected.removeAll(cityIds) else { cityIds.forEach { if (it !in selected) selected.add(it) } }
+                            }) { Text(stringResource(R.string.select_all)) }
+                        }
+                    }
+                    items(cityVendors, key = { it.id }) { v ->
+                        val checked = v.id in selected
+                        Card(
+                            onClick = { if (checked) selected.remove(v.id) else selected.add(v.id) },
+                            Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        ) {
+                            Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    androidx.compose.material3.Checkbox(checked = checked, onCheckedChange = { if (checked) selected.remove(v.id) else selected.add(v.id) })
+                                    Text(v.name, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleMedium)
+                                }
+                                Text(Money.format(latest[v.id] ?: 0L), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                            }
                         }
                     }
                 }
             }
-        }
-    }
-    editing?.let { vendor ->
-        var price by remember { mutableStateOf("") }
-        com.tenco.ui.components.TencoBottomSheet(title = "${stringResource(R.string.set_price)} · ${vendor.name}", onDismiss = { editing = null }) {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                NumberField(price, { price = it }, stringResource(R.string.unit_price))
-                com.tenco.ui.components.SheetActions(
-                    onCancel = { editing = null },
-                    onSave = { price.toDoubleOrNull()?.let { viewModel.setPrice(vendor.id, Money.rupeesToPaise(it)); editing = null } },
-                    saveEnabled = price.toDoubleOrNull() != null,
-                    saveText = stringResource(R.string.save),
-                )
+            // Bulk price bar
+            Surface(tonalElevation = 3.dp, shadowElevation = 8.dp, color = MaterialTheme.colorScheme.surface) {
+                Row(
+                    Modifier.fillMaxWidth().navigationBarsPadding().padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    OutlinedTextField(
+                        value = price,
+                        onValueChange = { price = it.filter { c -> c.isDigit() || c == '.' } },
+                        label = { Text(stringResource(R.string.unit_price)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        singleLine = true,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Button(
+                        onClick = {
+                            price.toDoubleOrNull()?.let { p ->
+                                viewModel.setPriceForVendors(selected.toList(), Money.rupeesToPaise(p))
+                                selected.clear(); price = ""
+                            }
+                        },
+                        enabled = price.toDoubleOrNull() != null && selected.isNotEmpty(),
+                        modifier = Modifier.height(56.dp),
+                    ) { Text("${stringResource(R.string.set_price_selected)} (${selected.size})") }
+                }
             }
         }
     }
@@ -463,7 +508,10 @@ fun ComplaintsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltView
                                 Text(names[c.vendorId] ?: "-", fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleMedium)
                                 StatusChip(c.status, statusLabel(c.status))
                             }
-                            Text(c.reason, style = MaterialTheme.typography.bodyMedium)
+                            Text(
+                                c.reason + if (c.shortQuantity > 0) " · ${c.shortQuantity} ${stringResource(R.string.coconuts)}" else "",
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
                             when (c.status) {
                                 ComplaintStatus.RESOLVED ->
                                     Text("${stringResource(R.string.price_adjustments)}: ${Money.format(c.adjustmentPaise)}", style = MaterialTheme.typography.bodyMedium)

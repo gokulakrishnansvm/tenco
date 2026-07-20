@@ -15,7 +15,7 @@ import androidx.room.RoomDatabase
         OrderEntity::class,
         OutboxEntity::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = false,
 )
 abstract class TencoDatabase : RoomDatabase() {

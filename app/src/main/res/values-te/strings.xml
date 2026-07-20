@@ -204,4 +204,9 @@
     <string name="in_review">సమీక్షలో</string>
     <string name="pending_cash">పెండింగ్ నగదు ఆమోదాలు</string>
     <string name="approvals">ఆమోదాలు</string>
+    <string name="city">నగరం</string>
+    <string name="short_quantity">తక్కువ పరిమాణం (ఐచ్ఛికం)</string>
+    <string name="set_price_selected">ఎంచుకున్నవాటికి ధర</string>
+    <string name="no_city">నగరం లేదు</string>
+    <string name="select_all">అన్నీ ఎంచుకో</string>
 </resources>

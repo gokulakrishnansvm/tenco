@@ -35,9 +35,9 @@ object SeedData {
         purchaseDao.upsert(PurchaseEntity(id(), theni.id, 200, 2200, now - 1 * day))    // ₹22
 
         // Vendors
-        val ravi = VendorEntity(id(), "Ravi Stall", "+919876543210", "ravi@upi", "ta")
-        val lakshmi = VendorEntity(id(), "Lakshmi Cart", "+919812345678", "lakshmi@upi", "te")
-        val kumar = VendorEntity(id(), "Kumar Shop", "+919800011122", "kumar@upi", "hi")
+        val ravi = VendorEntity(id(), "Ravi Stall", "+919876543210", "ravi@upi", "ta", city = "Chennai")
+        val lakshmi = VendorEntity(id(), "Lakshmi Cart", "+919812345678", "lakshmi@upi", "te", city = "Hyderabad")
+        val kumar = VendorEntity(id(), "Kumar Shop", "+919800011122", "kumar@upi", "hi", city = "Chennai")
         listOf(ravi, lakshmi, kumar).forEach { vendorDao.upsert(it) }
 
         // Vendor-specific prices (paise)

@@ -28,6 +28,7 @@ data class VendorEntity(
     val phone: String,
     val upiVpa: String?,
     val languageTag: String,
+    val city: String = "",
     val archived: Boolean = false,
 )
 
@@ -60,6 +61,7 @@ data class ComplaintEntity(
     val adjustmentPaise: Long,
     val status: String,
     val createdAt: Long,
+    val shortQuantity: Int = 0,
 )
 
 @Entity(tableName = "payments", indices = [Index("vendorId")])
