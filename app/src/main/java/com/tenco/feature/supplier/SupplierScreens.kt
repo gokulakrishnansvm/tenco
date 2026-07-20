@@ -552,9 +552,17 @@ fun ComplaintsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltView
                                 StatusChip(c.status, statusLabel(c.status))
                             }
                             Text(
-                                com.tenco.ui.components.complaintReasonLabel(c.reason) + if (c.shortQuantity > 0) " · ${c.shortQuantity} ${stringResource(R.string.coconuts)}" else "",
+                                com.tenco.ui.components.complaintReasonLabel(c.reason),
                                 style = MaterialTheme.typography.bodyMedium,
                             )
+                            if (c.shortQuantity > 0) {
+                                Text(
+                                    "${stringResource(R.string.affected_qty)}: ${c.shortQuantity} ${stringResource(R.string.coconuts)}",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                            }
                             when (c.status) {
                                 ComplaintStatus.RESOLVED ->
                                     Text("${stringResource(R.string.price_adjustments)}: ${Money.format(c.adjustmentPaise)}", style = MaterialTheme.typography.bodyMedium)

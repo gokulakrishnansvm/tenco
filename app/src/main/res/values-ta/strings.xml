@@ -205,7 +205,7 @@
     <string name="pending_cash">நிலுவையில் உள்ள பண அனுமதிகள்</string>
     <string name="approvals">அனுமதிகள்</string>
     <string name="city">நகரம்</string>
-    <string name="short_quantity">குறைந்த அளவு (விருப்பம்)</string>
+    <string name="short_quantity">எத்தனை தேங்காய் பாதிக்கப்பட்டது? (விருப்பம்)</string>
     <string name="set_price_selected">தேர்ந்தெடுத்தவற்றுக்கு விலை</string>
     <string name="no_city">நகரம் இல்லை</string>
     <string name="select_all">அனைத்தையும் தேர்வு</string>
