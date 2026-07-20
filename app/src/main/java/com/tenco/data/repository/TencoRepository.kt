@@ -272,8 +272,8 @@ class TencoRepository @Inject constructor(
         orderDao.upsert(o.copy(status = com.tenco.domain.OrderStatus.CANCELLED, updatedAt = now()))
     }
 
-    suspend fun addDelivery(vendorId: String, quantity: Int, unitPricePaise: Long) {
-        val e = DeliveryEntity(newId(), vendorId, quantity, unitPricePaise, DeliveryStatus.DELIVERED, now(), null)
+    suspend fun addDelivery(vendorId: String, quantity: Int, unitPricePaise: Long, color: String = "GREEN", grade: String = "MEDIUM") {
+        val e = DeliveryEntity(newId(), vendorId, quantity, unitPricePaise, DeliveryStatus.DELIVERED, now(), null, color = color, grade = grade)
         deliveryDao.upsert(e); enqueue(OUT_DELIVERY, e.id)
     }
 

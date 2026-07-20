@@ -43,8 +43,15 @@ fun CoconutEventOverlay(event: CoconutEvent, onEnd: () -> Unit) {
                 Text("🚚", fontSize = 88.sp, modifier = Modifier.offset(x = x).graphicsLayer(scaleX = -1f))
             }
             CoconutEvent.HARVEST -> {
-                // Smooth coconut-drop shower only — no popping emoji.
-                Confetti(particleCount = 80)
+                // A single coconut drops in from the top and gently settles (no confetti).
+                val fall = 1f - (1f - p) * (1f - p)          // ease-out drop
+                val y = (-300 * (1f - fall)).dp
+                val settle = if (p > 0.8f) (sin((p - 0.8f) * 31.4f) * 10f * (1f - p) / 0.2f) else 0f
+                Text(
+                    "🥥",
+                    fontSize = 104.sp,
+                    modifier = Modifier.offset(y = y + settle.dp).alpha((p * 3f).coerceAtMost(1f)),
+                )
             }
             CoconutEvent.SPOILED -> {
                 // One gentle sway + tilt while fading out (no red tint).

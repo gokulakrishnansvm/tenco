@@ -121,6 +121,7 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
     val pendingCash by viewModel.pendingCashPayments.collectAsStateWithLifecycle()
     val actionUsage by viewModel.actionUsage.collectAsStateWithLifecycle()
     val purchases by viewModel.purchases.collectAsStateWithLifecycle()
+    val stockDeliveries by viewModel.deliveries.collectAsStateWithLifecycle()
     var stockExpanded by remember { mutableStateOf(false) }
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
 
@@ -143,7 +144,7 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
             }
             item {
                 com.tenco.ui.components.EntranceItem(2) {
-                    val stockGross = purchases.sumOf { it.quantity }
+                    val stockGross = purchases.sumOf { it.quantity } - stockDeliveries.sumOf { it.quantity }
                     Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             SummaryChip(Icons.Rounded.Inventory2, stringResource(R.string.stock_on_hand), TileGreen, Modifier.weight(1f), onClick = { stockExpanded = !stockExpanded }) {
@@ -157,7 +158,7 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
                             }
                         }
                         androidx.compose.animation.AnimatedVisibility(visible = stockExpanded) {
-                            StockSummaryPanel(purchases)
+                            StockSummaryPanel(purchases, stockDeliveries)
                         }
                     }
                 }
@@ -209,20 +210,26 @@ private data class QuickAction(
 )
 
 @Composable
-private fun StockSummaryPanel(purchases: List<com.tenco.data.local.PurchaseEntity>) {
+private fun StockSummaryPanel(
+    purchases: List<com.tenco.data.local.PurchaseEntity>,
+    deliveries: List<com.tenco.data.local.DeliveryEntity>,
+) {
+    fun net(color: String, grade: String) =
+        purchases.filter { it.color == color && it.grade == grade }.sumOf { it.quantity } -
+            deliveries.filter { it.color == color && it.grade == grade }.sumOf { it.quantity }
     com.tenco.ui.components.TencoCard(Modifier.fillMaxWidth()) {
         Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             SectionHeader(stringResource(R.string.stock_summary))
             com.tenco.domain.CoconutColor.ALL.forEach { color ->
-                val forColor = purchases.filter { it.color == color }
-                if (forColor.isNotEmpty()) {
+                val colorTotal = com.tenco.domain.CoconutGrade.ALL.sumOf { net(color, it) }
+                if (colorTotal > 0) {
                     Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
                         Box(Modifier.size(12.dp).background(com.tenco.ui.components.coconutColorSwatch(color), androidx.compose.foundation.shape.CircleShape))
                         Text("  ${com.tenco.ui.components.coconutColorLabel(color)}", fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-                        Text("${forColor.sumOf { it.quantity }}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                        Text("$colorTotal", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                     }
                     com.tenco.domain.CoconutGrade.ALL.forEach { grade ->
-                        val q = forColor.filter { it.grade == grade }.sumOf { it.quantity }
+                        val q = net(color, grade)
                         if (q > 0) {
                             Row(Modifier.padding(start = 20.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                                 Text(com.tenco.ui.components.coconutGradeLabel(grade), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))

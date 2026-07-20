@@ -138,8 +138,8 @@ class SupplierViewModel @Inject constructor(
     fun rejectPayment(paymentId: String) = viewModelScope.launch { repository.rejectPayment(paymentId) }
 
     /** Records a sale to a vendor (creates a delivery), which raises the vendor's dues. */
-    fun sellToVendor(vendorId: String, quantity: Int, unitPricePaise: Long) = viewModelScope.launch {
-        repository.addDelivery(vendorId, quantity, unitPricePaise)
+    fun sellToVendor(vendorId: String, quantity: Int, unitPricePaise: Long, color: String = "GREEN", grade: String = "MEDIUM") = viewModelScope.launch {
+        repository.addDelivery(vendorId, quantity, unitPricePaise, color, grade)
     }
 
     /** Records an in-person cash collection from a vendor (reduces their dues). */

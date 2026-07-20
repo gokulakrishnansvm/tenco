@@ -52,6 +52,8 @@ data class DeliveryEntity(
     val status: String,
     val createdAt: Long,
     val confirmedAt: Long?,
+    val color: String = "GREEN",
+    val grade: String = "MEDIUM",
 )
 
 @Entity(tableName = "complaints", indices = [Index("vendorId"), Index("deliveryId")])

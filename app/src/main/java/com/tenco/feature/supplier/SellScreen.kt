@@ -40,8 +40,12 @@ fun SellScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel(
     val vendors by viewModel.vendors.collectAsStateWithLifecycle()
     val prices by viewModel.prices.collectAsStateWithLifecycle()
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
+    val purchases by viewModel.purchases.collectAsStateWithLifecycle()
+    val deliveries by viewModel.deliveries.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var showHarvest by remember { mutableStateOf(false) }
+    var color by remember { mutableStateOf(com.tenco.domain.CoconutColor.GREEN) }
+    var grade by remember { mutableStateOf(com.tenco.domain.CoconutGrade.MEDIUM) }
 
     val latestPrice = prices.groupBy { it.vendorId }
         .mapValues { e -> e.value.maxByOrNull { it.effectiveFrom }?.unitPricePaise ?: 0L }
@@ -58,7 +62,8 @@ fun SellScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel(
     val qtyInt = qty.toIntOrNull() ?: 0
     val priceRupees = price.toDoubleOrNull() ?: 0.0
     val totalPaise = (qtyInt * Money.rupeesToPaise(priceRupees))
-    val stock = dashboard.stockOnHand
+    val stock = purchases.filter { it.color == color && it.grade == grade }.sumOf { it.quantity } -
+        deliveries.filter { it.color == color && it.grade == grade }.sumOf { it.quantity }
     val overStock = qtyInt > stock
 
     TencoScaffold(title = stringResource(R.string.sell_to_vendor), onBack = onBack) { padding ->
@@ -68,8 +73,19 @@ fun SellScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel(
         ) {
             TencoCard(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(stringResource(R.string.stock_on_hand), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text("$stock ${stringResource(R.string.coconuts)}", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                    Text("${com.tenco.ui.components.coconutColorLabel(color)} ${com.tenco.ui.components.coconutGradeLabel(grade)} · ${stringResource(R.string.stock_on_hand)}", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("$stock ${stringResource(R.string.coconuts)}", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = if (stock <= 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
+                }
+            }
+
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                com.tenco.domain.CoconutColor.ALL.forEach { c ->
+                    androidx.compose.material3.FilterChip(selected = color == c, onClick = { color = c }, label = { Text(com.tenco.ui.components.coconutColorLabel(c)) })
+                }
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                com.tenco.domain.CoconutGrade.ALL.forEach { g ->
+                    androidx.compose.material3.FilterChip(selected = grade == g, onClick = { grade = g }, label = { Text(com.tenco.ui.components.coconutGradeLabel(g)) })
                 }
             }
 
@@ -103,12 +119,12 @@ fun SellScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel(
                 onClick = {
                     val id = selected?.id
                     if (id != null && qtyInt > 0 && priceRupees > 0 && !overStock) {
-                        viewModel.sellToVendor(id, qtyInt, Money.rupeesToPaise(priceRupees))
+                        viewModel.sellToVendor(id, qtyInt, Money.rupeesToPaise(priceRupees), color, grade)
                         Toast.makeText(context, R.string.sale_recorded, Toast.LENGTH_SHORT).show()
                         showHarvest = true
                     }
                 },
-                enabled = !overStock,
+                enabled = !overStock && stock > 0,
                 modifier = Modifier.fillMaxWidth().height(56.dp),
             ) {
                 Text(stringResource(R.string.sell_to_vendor), style = MaterialTheme.typography.titleMedium)
