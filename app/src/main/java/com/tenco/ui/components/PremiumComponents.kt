@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -160,6 +162,7 @@ fun QuickActionTile(
     accent: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    badgeCount: Int = 0,
 ) {
     val interaction = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
     val pressed by interaction.collectIsPressedAsState()
@@ -168,20 +171,38 @@ fun QuickActionTile(
         animationSpec = androidx.compose.animation.core.spring(dampingRatio = androidx.compose.animation.core.Spring.DampingRatioMediumBouncy),
         label = "tilePress",
     )
-    Column(
-        modifier
-            .scale(scale)
-            .clip(MaterialTheme.shapes.large)
-            .background(Gradients.tile(accent))
-            .clickable(interactionSource = interaction, indication = androidx.compose.material3.ripple()) { onClick() }
-            .padding(16.dp),
-        horizontalAlignment = Alignment.Start,
-    ) {
-        Surface(shape = RoundedCornerShape(14.dp), color = accent, modifier = Modifier.size(44.dp)) {
-            Box(contentAlignment = Alignment.Center) { Icon(icon, null, tint = Color.White, modifier = Modifier.size(24.dp)) }
+    Box(modifier.scale(scale)) {
+        Column(
+            Modifier.fillMaxWidth()
+                .clip(MaterialTheme.shapes.large)
+                .background(Gradients.tile(accent))
+                .clickable(interactionSource = interaction, indication = androidx.compose.material3.ripple()) { onClick() }
+                .padding(16.dp),
+            horizontalAlignment = Alignment.Start,
+        ) {
+            Surface(shape = RoundedCornerShape(14.dp), color = accent, modifier = Modifier.size(44.dp)) {
+                Box(contentAlignment = Alignment.Center) { Icon(icon, null, tint = Color.White, modifier = Modifier.size(24.dp)) }
+            }
+            Spacer(Modifier.height(12.dp))
+            Text(label, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold)
         }
-        Spacer(Modifier.height(12.dp))
-        Text(label, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold)
+        if (badgeCount > 0) {
+            Surface(
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).defaultMinSize(20.dp, 20.dp),
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        "$badgeCount",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onError,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp),
+                    )
+                }
+            }
+        }
     }
 }
 

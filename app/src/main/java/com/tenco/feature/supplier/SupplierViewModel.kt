@@ -133,6 +133,7 @@ class SupplierViewModel @Inject constructor(
     // Quick-action usage ordering
     val actionUsage: StateFlow<Map<String, Int>> = prefs.actionUsageFlow
     fun recordActionUse(key: String) = prefs.incrementActionUsage(key)
+    val supplierName: String = prefs.userName?.ifBlank { null } ?: ""
 
     /** Cash payments from vendors awaiting the supplier's approval. */
     val pendingCashPayments: StateFlow<List<com.tenco.data.local.PaymentEntity>> =

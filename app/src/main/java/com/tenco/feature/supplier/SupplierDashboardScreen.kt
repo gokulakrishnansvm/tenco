@@ -142,6 +142,7 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
             item {
                 HomeHeaderBand(
                     earningsPaise = dashboard.totalEarningsPaise,
+                    name = viewModel.supplierName,
                     onNotifications = { onNavigate(Routes.NOTIFICATIONS) },
                     onProfile = { onNavigate(Routes.PROFILE) },
                 )
@@ -170,23 +171,20 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
 
             item {
                 com.tenco.ui.components.EntranceItem(3) {
-                    val ordersLabel = stringResource(R.string.orders) + if (newOrders > 0) " ($newOrders)" else ""
-                    val approvalsLabel = stringResource(R.string.approvals) + if (pendingCash.isNotEmpty()) " (${pendingCash.size})" else ""
-                    val complaintsLabel = stringResource(R.string.menu_complaints) + if (openComplaints > 0) " ($openComplaints)" else ""
-                    val orders = QuickAction("orders", Icons.Rounded.ShoppingCart, ordersLabel, TileBlue, Routes.SUPPLIER_ORDERS)
+                    val orders = QuickAction("orders", Icons.Rounded.ShoppingCart, stringResource(R.string.orders), TileBlue, Routes.SUPPLIER_ORDERS, badge = newOrders)
                     val vendorsA = QuickAction("vendors", Icons.Rounded.Groups, stringResource(R.string.menu_vendors), TilePurple, Routes.SUPPLIER_VENDORS)
                     val sell = QuickAction("sell", Icons.Rounded.Sell, stringResource(R.string.sell_to_vendor), TileTeal, Routes.SUPPLIER_SELL)
                     val pricing = QuickAction("pricing", Icons.Rounded.PriceChange, stringResource(R.string.menu_pricing), TileOrange, Routes.SUPPLIER_PRICING)
-                    val approvals = QuickAction("approvals", Icons.Rounded.Payments, approvalsLabel, TileOrange, Routes.SUPPLIER_CASH_APPROVALS)
-                    val complaints = QuickAction("complaints", Icons.Rounded.ReportProblem, complaintsLabel, TileRed, Routes.SUPPLIER_COMPLAINTS)
+                    val approvals = QuickAction("approvals", Icons.Rounded.Payments, stringResource(R.string.approvals), TileOrange, Routes.SUPPLIER_CASH_APPROVALS, badge = pendingCash.size)
+                    val complaints = QuickAction("complaints", Icons.Rounded.ReportProblem, stringResource(R.string.menu_complaints), TileRed, Routes.SUPPLIER_COMPLAINTS, badge = openComplaints)
                     val dealers = QuickAction("dealers", Icons.Rounded.LocalShipping, stringResource(R.string.dealers), TilePurple, Routes.SUPPLIER_DEALERS_LIST)
                     val reports = QuickAction("reports", Icons.Rounded.Assessment, stringResource(R.string.menu_reports), TileTeal, Routes.SUPPLIER_REPORTS)
                     val insights = QuickAction("insights", Icons.Rounded.Insights, stringResource(R.string.insights), TileBlue, Routes.SUPPLIER_INSIGHTS)
                     val onTap: (QuickAction) -> Unit = { qa -> viewModel.recordActionUse(qa.key); onNavigate(qa.route) }
                     Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        com.tenco.ui.components.LeafDivider()
+                        androidx.compose.material3.HorizontalDivider(Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
                         ActionGroup(listOf(orders, vendorsA, sell, pricing, approvals, complaints), onTap)
-                        com.tenco.ui.components.LeafDivider()
+                        androidx.compose.material3.HorizontalDivider(Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
                         ActionGroup(listOf(dealers, reports, insights), onTap)
                     }
                 }
@@ -202,6 +200,7 @@ private data class QuickAction(
     val label: String,
     val color: androidx.compose.ui.graphics.Color,
     val route: String,
+    val badge: Int = 0,
 )
 
 @Composable
@@ -209,7 +208,7 @@ private fun ActionGroup(actions: List<QuickAction>, onTap: (QuickAction) -> Unit
     actions.chunked(3).forEach { rowItems ->
         Row(Modifier.fillMaxWidth().padding(bottom = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             rowItems.forEach { qa ->
-                QuickActionTile(qa.icon, qa.label, qa.color, { onTap(qa) }, Modifier.weight(1f))
+                QuickActionTile(qa.icon, qa.label, qa.color, { onTap(qa) }, Modifier.weight(1f), badgeCount = qa.badge)
             }
             repeat(3 - rowItems.size) { androidx.compose.foundation.layout.Spacer(Modifier.weight(1f)) }
         }
@@ -251,7 +250,7 @@ private fun StockSummaryPanel(
 }
 
 @Composable
-private fun HomeHeaderBand(earningsPaise: Long, onNotifications: () -> Unit, onProfile: () -> Unit) {
+private fun HomeHeaderBand(earningsPaise: Long, name: String, onNotifications: () -> Unit, onProfile: () -> Unit) {
     val white = androidx.compose.ui.graphics.Color.White
     val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
     val greeting = when {
@@ -275,7 +274,7 @@ private fun HomeHeaderBand(earningsPaise: Long, onNotifications: () -> Unit, onP
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Column {
                     Text("$greeting 👋", style = MaterialTheme.typography.bodyMedium, color = white.copy(alpha = 0.85f))
-                    Text(stringResource(R.string.role_supplier), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = white)
+                    Text(name.ifBlank { stringResource(R.string.role_supplier) }, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = white)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     androidx.compose.material3.IconButton(onClick = onNotifications) {
