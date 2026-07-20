@@ -211,22 +211,23 @@ private fun VendorHomeTab(
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedTextField(
                         value = amt,
-                        onValueChange = { amt = it.filter { c -> c.isDigit() || c == '.' } },
+                        onValueChange = { amt = it.filter { c -> c.isDigit() } },
                         label = { Text(stringResource(R.string.amount_hint)) },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                     )
                     com.tenco.ui.components.SheetActions(
                         onCancel = { showCashSheet = false },
                         onSave = {
-                            val v = amt.toDoubleOrNull() ?: 0.0
-                            if (v > 0) {
-                                viewModel.payCash(Money.rupeesToPaise(v))
+                            val rupees = amt.toIntOrNull() ?: 0
+                            if (rupees >= 1) {
+                                viewModel.payCash(Money.rupeesToPaise(rupees.toDouble()))
                                 showCashSheet = false
                                 Toast.makeText(context, R.string.cash_sent_review, Toast.LENGTH_LONG).show()
                             }
                         },
-                        saveEnabled = (amt.toDoubleOrNull() ?: 0.0) > 0.0,
+                        saveEnabled = (amt.toIntOrNull() ?: 0) >= 1,
                         saveText = stringResource(R.string.pay_via_cash),
                     )
                 }
