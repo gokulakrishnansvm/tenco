@@ -45,6 +45,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -159,6 +160,9 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
                 com.tenco.ui.components.EntranceItem(4) {
                     val ordersLabel = stringResource(R.string.orders) + if (newOrders > 0) " ($newOrders)" else ""
                     val approvalsLabel = stringResource(R.string.approvals) + if (pendingCash.isNotEmpty()) " (${pendingCash.size})" else ""
+                    val defaultKeys = listOf("orders", "buy_stock", "sell", "vendors", "pricing", "reports", "complaints", "inventory", "losses", "approvals")
+                    // Freeze the order once per screen entry (less aggressive: re-sorts only on revisit, not per tap).
+                    val keyOrder = remember { defaultKeys.sortedByDescending { actionUsage[it] ?: 0 } }
                     val actions = listOf(
                         QuickAction("orders", Icons.Rounded.ShoppingCart, ordersLabel, TileBlue, Routes.SUPPLIER_ORDERS),
                         QuickAction("buy_stock", Icons.Rounded.Storefront, stringResource(R.string.buy_stock), TileGreen, Routes.SUPPLIER_DEALERS),
@@ -168,8 +172,9 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
                         QuickAction("reports", Icons.Rounded.Assessment, stringResource(R.string.menu_reports), TileTeal, Routes.SUPPLIER_REPORTS),
                         QuickAction("complaints", Icons.Rounded.ReportProblem, stringResource(R.string.menu_complaints), TileRed, Routes.SUPPLIER_COMPLAINTS),
                         QuickAction("inventory", Icons.Rounded.Inventory2, stringResource(R.string.menu_inventory), TileGreen, Routes.SUPPLIER_INVENTORY),
+                        QuickAction("losses", Icons.Rounded.TrendingDown, stringResource(R.string.adjustments), TileRed, Routes.SUPPLIER_ADJUSTMENTS),
                         QuickAction("approvals", Icons.Rounded.Payments, approvalsLabel, TileOrange, Routes.SUPPLIER_CASH_APPROVALS),
-                    ).sortedByDescending { actionUsage[it.key] ?: 0 }
+                    ).sortedBy { keyOrder.indexOf(it.key).let { i -> if (i < 0) Int.MAX_VALUE else i } }
                     Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         actions.chunked(3).forEach { rowItems ->
                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {

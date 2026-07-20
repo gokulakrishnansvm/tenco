@@ -233,4 +233,8 @@
     <string name="set_price_selected">Set price for selected</string>
     <string name="no_city">No city</string>
     <string name="select_all">Select all</string>
+    <string name="adjustments">Losses</string>
+    <string name="total_adjusted">Total adjusted</string>
+    <string name="affected_qty">Qty affected</string>
+    <string name="reduces_dues">Adjustments reduce vendor dues</string>
 </resources>

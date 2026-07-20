@@ -62,7 +62,7 @@ object SeedData {
 
         // Complaint (open)
         complaintDao.upsert(
-            ComplaintEntity(id(), d2.id, ravi.id, "Spoiled coconuts", null, 0, ComplaintStatus.OPEN, now - 12 * 60 * 60 * 1000L)
+            ComplaintEntity(id(), d2.id, ravi.id, "spoiled", null, 0, ComplaintStatus.OPEN, now - 12 * 60 * 60 * 1000L, shortQuantity = 8)
         )
     }
 

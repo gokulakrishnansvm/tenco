@@ -509,7 +509,7 @@ fun ComplaintsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltView
                                 StatusChip(c.status, statusLabel(c.status))
                             }
                             Text(
-                                c.reason + if (c.shortQuantity > 0) " · ${c.shortQuantity} ${stringResource(R.string.coconuts)}" else "",
+                                com.tenco.ui.components.complaintReasonLabel(c.reason) + if (c.shortQuantity > 0) " · ${c.shortQuantity} ${stringResource(R.string.coconuts)}" else "",
                                 style = MaterialTheme.typography.bodyMedium,
                             )
                             when (c.status) {

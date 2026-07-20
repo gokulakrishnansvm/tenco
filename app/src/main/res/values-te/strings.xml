@@ -209,4 +209,8 @@
     <string name="set_price_selected">ఎంచుకున్నవాటికి ధర</string>
     <string name="no_city">నగరం లేదు</string>
     <string name="select_all">అన్నీ ఎంచుకో</string>
+    <string name="adjustments">నష్టాలు</string>
+    <string name="total_adjusted">మొత్తం సర్దుబాటు</string>
+    <string name="affected_qty">ప్రభావిత పరిమాణం</string>
+    <string name="reduces_dues">సర్దుబాట్లు వెండర్ బకాయిలను తగ్గిస్తాయి</string>
 </resources>

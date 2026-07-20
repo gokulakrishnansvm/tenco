@@ -483,7 +483,13 @@ fun VendorComplaintScreen(
             }
             Button(
                 onClick = {
-                    viewModel.raiseComplaint(context.getString(selected), photoUri, shortQty.toIntOrNull() ?: 0)
+                    val reasonKey = when (selected) {
+                        R.string.reason_spoiled -> "spoiled"
+                        R.string.reason_damaged -> "damaged"
+                        R.string.reason_short -> "short"
+                        else -> "other"
+                    }
+                    viewModel.raiseComplaint(reasonKey, photoUri, shortQty.toIntOrNull() ?: 0)
                     Toast.makeText(context, R.string.complaint_submitted, Toast.LENGTH_SHORT).show()
                     onBack?.invoke()
                 },
@@ -535,7 +541,10 @@ fun VendorHistoryScreen(
                         Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                             Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                                 Column {
-                                    Text(c.reason, fontWeight = FontWeight.SemiBold)
+                                    Text(
+                                        com.tenco.ui.components.complaintReasonLabel(c.reason) + if (c.shortQuantity > 0) " · ${c.shortQuantity} ${stringResource(R.string.coconuts)}" else "",
+                                        fontWeight = FontWeight.SemiBold,
+                                    )
                                     Text(dateFmt.format(Date(c.createdAt)), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                                 }
                                 StatusChip(c.status, complaintStatusLabel(c.status))

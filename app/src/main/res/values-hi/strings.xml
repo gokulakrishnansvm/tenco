@@ -209,4 +209,8 @@
     <string name="set_price_selected">चयनित के लिए मूल्य सेट करें</string>
     <string name="no_city">कोई शहर नहीं</string>
     <string name="select_all">सभी चुनें</string>
+    <string name="adjustments">हानि</string>
+    <string name="total_adjusted">कुल समायोजन</string>
+    <string name="affected_qty">प्रभावित मात्रा</string>
+    <string name="reduces_dues">समायोजन विक्रेता बकाया घटाते हैं</string>
 </resources>
