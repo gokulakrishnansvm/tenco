@@ -46,6 +46,7 @@ fun SellScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel(
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
     val purchases by viewModel.purchases.collectAsStateWithLifecycle()
     val deliveries by viewModel.deliveries.collectAsStateWithLifecycle()
+    val dealers by viewModel.dealers.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var showHarvest by remember { mutableStateOf(false) }
     var color by remember { mutableStateOf(com.tenco.domain.CoconutColor.GREEN) }
@@ -59,6 +60,7 @@ fun SellScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel(
     var qty by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
     var source by remember { mutableStateOf("") }
+    var sourceExpanded by remember { mutableStateOf(false) }
 
     // Prefill price from the selected vendor's latest price.
     val selectedId = selected?.id
@@ -109,13 +111,27 @@ fun SellScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel(
                     androidx.compose.material3.FilterChip(selected = grade == g, onClick = { grade = g }, label = { Text(com.tenco.ui.components.coconutGradeLabel(g)) })
                 }
             }
-            OutlinedTextField(
-                source,
-                { source = it },
-                label = { Text(stringResource(R.string.source_location)) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            val sourceOptions = remember(dealers) {
+                dealers.map { it.location }.filter { it.isNotBlank() }.distinct().sorted()
+            }
+            ExposedDropdownMenuBox(expanded = sourceExpanded, onExpandedChange = { sourceExpanded = it }) {
+                OutlinedTextField(
+                    value = source,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.source_location)) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = sourceExpanded) },
+                    modifier = Modifier.fillMaxWidth().menuAnchor(),
+                )
+                ExposedDropdownMenu(expanded = sourceExpanded, onDismissRequest = { sourceExpanded = false }) {
+                    if (sourceOptions.isEmpty()) {
+                        DropdownMenuItem(text = { Text(stringResource(R.string.no_dealers)) }, onClick = { sourceExpanded = false })
+                    }
+                    sourceOptions.forEach { loc ->
+                        DropdownMenuItem(text = { Text(loc) }, onClick = { source = loc; sourceExpanded = false })
+                    }
+                }
+            }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(qty, { qty = it.filter(Char::isDigit) }, label = { Text(stringResource(R.string.quantity)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), singleLine = true, modifier = Modifier.weight(1f))
                 OutlinedTextField(price, { price = it }, label = { Text(stringResource(R.string.unit_price)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), singleLine = true, modifier = Modifier.weight(1f))

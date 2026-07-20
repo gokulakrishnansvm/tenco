@@ -268,4 +268,5 @@
     <string name="note_optional">Note (optional)</string>
     <string name="deliveries">Deliveries</string>
     <string name="no_stock">No stock yet</string>
+    <string name="no_dealers">No dealers yet</string>
 </resources>

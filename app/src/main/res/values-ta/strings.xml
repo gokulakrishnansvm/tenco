@@ -244,4 +244,5 @@
     <string name="note_optional">குறிப்பு (விருப்பம்)</string>
     <string name="deliveries">டெலிவரிகள்</string>
     <string name="no_stock">இருப்பு இல்லை</string>
+    <string name="no_dealers">டீலர்கள் இல்லை</string>
 </resources>

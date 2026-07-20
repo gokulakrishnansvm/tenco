@@ -244,4 +244,5 @@
     <string name="note_optional">नोट (वैकल्पिक)</string>
     <string name="deliveries">डिलीवरी</string>
     <string name="no_stock">कोई स्टॉक नहीं</string>
+    <string name="no_dealers">कोई डीलर नहीं</string>
 </resources>
