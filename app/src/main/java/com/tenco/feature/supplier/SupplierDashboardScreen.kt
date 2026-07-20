@@ -182,12 +182,11 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
                     val dealers = QuickAction("dealers", Icons.Rounded.LocalShipping, stringResource(R.string.dealers), TilePurple, Routes.SUPPLIER_DEALERS_LIST)
                     val reports = QuickAction("reports", Icons.Rounded.Assessment, stringResource(R.string.menu_reports), TileTeal, Routes.SUPPLIER_REPORTS)
                     val insights = QuickAction("insights", Icons.Rounded.Insights, stringResource(R.string.insights), TileBlue, Routes.SUPPLIER_INSIGHTS)
-                    val losses = QuickAction("losses", Icons.Rounded.TrendingDown, stringResource(R.string.adjustments), TileRed, Routes.SUPPLIER_ADJUSTMENTS)
                     val onTap: (QuickAction) -> Unit = { qa -> viewModel.recordActionUse(qa.key); onNavigate(qa.route) }
                     Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        ActionGroup(stringResource(R.string.menu_vendors), listOf(orders, vendorsA, sell, pricing, approvals, complaints), onTap)
-                        ActionGroup(stringResource(R.string.dealers), listOf(dealers), onTap)
-                        ActionGroup(stringResource(R.string.analytics), listOf(reports, insights, losses), onTap)
+                        ActionGroup(listOf(orders, vendorsA, sell, pricing, approvals, complaints), onTap)
+                        androidx.compose.material3.HorizontalDivider(Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
+                        ActionGroup(listOf(dealers, reports, insights), onTap)
                     }
                 }
             }
@@ -205,8 +204,7 @@ private data class QuickAction(
 )
 
 @Composable
-private fun ActionGroup(title: String, actions: List<QuickAction>, onTap: (QuickAction) -> Unit) {
-    SectionHeader(title)
+private fun ActionGroup(actions: List<QuickAction>, onTap: (QuickAction) -> Unit) {
     actions.chunked(3).forEach { rowItems ->
         Row(Modifier.fillMaxWidth().padding(bottom = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             rowItems.forEach { qa ->
