@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,6 +50,7 @@ fun VendorDetailScreen(vendorId: String, onBack: () -> Unit, viewModel: Supplier
     val complaints by viewModel.complaints.collectAsStateWithLifecycle()
 
     val vendor = vendors.firstOrNull { it.id == vendorId }
+    val ctx = androidx.compose.ui.platform.LocalContext.current
     val vDeliveries = deliveries.filter { it.vendorId == vendorId }
     val vPayments = payments.filter { it.vendorId == vendorId }
     val vComplaints = complaints.filter { it.vendorId == vendorId }
@@ -103,6 +105,30 @@ fun VendorDetailScreen(vendorId: String, onBack: () -> Unit, viewModel: Supplier
                     modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
                 ) {
                     Text(stringResource(R.string.record_cash_payment))
+                }
+            }
+            item {
+                val billedStr = Money.format(billed)
+                val paidStr = Money.format(paid)
+                val duesStr = Money.format(dues)
+                val duesLabel = stringResource(R.string.pending_dues)
+                val soldHdr = stringResource(R.string.sell_to_vendor)
+                val paidHdr = stringResource(R.string.received)
+                androidx.compose.material3.OutlinedButton(
+                    onClick = {
+                        val rows = entries.map { com.tenco.core.VendorHistoryPdf.Row(it.time, it.title, it.amount) }
+                        com.tenco.core.VendorHistoryPdf.generateAndShare(
+                            context = ctx,
+                            vendorName = vendor?.name ?: "",
+                            vendorPhone = vendor?.phone ?: "",
+                            summary = listOf(soldHdr to billedStr, paidHdr to paidStr, duesLabel to duesStr),
+                            rows = rows,
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    androidx.compose.material3.Icon(androidx.compose.material.icons.Icons.Rounded.Share, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                    Text(stringResource(R.string.share_history_pdf))
                 }
             }
             item { SectionHeader(stringResource(R.string.transaction_history)) }
