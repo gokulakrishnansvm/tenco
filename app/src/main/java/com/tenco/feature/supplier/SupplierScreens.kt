@@ -19,6 +19,8 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.rounded.ExpandLess
+import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.ReceiptLong
 import androidx.compose.material.icons.rounded.ReportProblem
 import androidx.compose.material.icons.rounded.Storefront
@@ -242,12 +244,14 @@ private fun AddPurchaseDialog(
 fun VendorsScreen(onBack: () -> Unit, onOpenVendor: (String) -> Unit = {}, viewModel: SupplierViewModel = hiltViewModel()) {
     val vendors by viewModel.vendors.collectAsStateWithLifecycle()
     var showDialog by remember { mutableStateOf(false) }
+    var prefillCity by remember { mutableStateOf("") }
+    val expandedCities = remember { androidx.compose.runtime.mutableStateMapOf<String, Boolean>() }
 
     TencoScaffold(
         title = stringResource(R.string.vendors),
         onBack = onBack,
         floatingActionButton = {
-            FloatingActionButton(onClick = { showDialog = true }) {
+            FloatingActionButton(onClick = { prefillCity = ""; showDialog = true }) {
                 Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.add))
             }
         },
@@ -260,11 +264,28 @@ fun VendorsScreen(onBack: () -> Unit, onOpenVendor: (String) -> Unit = {}, viewM
                 val grouped = vendors.groupBy { it.city.ifBlank { noCity } }.toSortedMap()
                 LazyColumn(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     grouped.forEach { (cityName, cityVendors) ->
+                        val isOpen = expandedCities[cityName] ?: true
                         item(key = "city-$cityName") {
-                            com.tenco.ui.components.SectionHeader("$cityName (${cityVendors.size})")
+                            Row(
+                                Modifier.fillMaxWidth().clickable { expandedCities[cityName] = !isOpen }.padding(vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Icon(
+                                    if (isOpen) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                )
+                                Text("  $cityName (${cityVendors.size})", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                                androidx.compose.material3.IconButton(onClick = {
+                                    prefillCity = if (cityName == noCity) "" else cityName
+                                    showDialog = true
+                                }) { Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.add), tint = MaterialTheme.colorScheme.primary) }
+                            }
                         }
-                        items(cityVendors, key = { it.id }) { v ->
-                            InfoCard(title = v.name, subtitle = v.phone, trailing = v.upiVpa ?: "", onClick = { onOpenVendor(v.id) })
+                        if (isOpen) {
+                            items(cityVendors, key = { it.id }) { v ->
+                                InfoCard(title = v.name, subtitle = v.phone, trailing = v.upiVpa ?: "", onClick = { onOpenVendor(v.id) })
+                            }
                         }
                     }
                 }
@@ -275,7 +296,7 @@ fun VendorsScreen(onBack: () -> Unit, onOpenVendor: (String) -> Unit = {}, viewM
         var name by remember { mutableStateOf("") }
         var phone by remember { mutableStateOf("") }
         var vpa by remember { mutableStateOf("") }
-        var city by remember { mutableStateOf("") }
+        var city by remember(prefillCity) { mutableStateOf(prefillCity) }
         val phoneKey = phone.filter(Char::isDigit).takeLast(10)
         val duplicate = phoneKey.length >= 10 && vendors.any { it.phone.filter(Char::isDigit).takeLast(10) == phoneKey }
         com.tenco.ui.components.TencoBottomSheet(title = stringResource(R.string.add), onDismiss = { showDialog = false }) {
