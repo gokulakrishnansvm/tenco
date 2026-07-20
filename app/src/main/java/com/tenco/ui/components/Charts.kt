@@ -114,29 +114,3 @@ fun ChartLegend(slices: List<ChartSlice>, modifier: Modifier = Modifier) {
         }
     }
 }
-
-/** Animated horizontal bar (0..1 fraction). Caller's modifier should set the width. */
-@Composable
-fun StatBar(fraction: Float, color: Color, modifier: Modifier = Modifier) {
-    val anim by animateFloatAsState(targetValue = fraction.coerceIn(0.0001f, 1f), animationSpec = tween(700), label = "bar")
-    Box(
-        modifier
-            .androidxFillMaxWidth()
-            .height(10.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surfaceVariant),
-    ) {
-        Box(
-            Modifier
-                .androidxFillMaxWidthFraction(anim)
-                .height(10.dp)
-                .clip(CircleShape)
-                .background(color),
-        )
-    }
-}
-
-private fun Modifier.androidxFillMaxWidth(): Modifier = this.then(Modifier.fillMaxWidth())
-
-private fun Modifier.androidxFillMaxWidthFraction(fraction: Float): Modifier =
-    this.then(Modifier.fillMaxWidth(fraction.coerceIn(0.0001f, 1f)))

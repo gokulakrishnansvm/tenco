@@ -301,61 +301,6 @@ private fun HomeHeaderBand(earningsPaise: Long, name: String, onNotifications: (
 }
 
 @Composable
-private fun GreetingHeader(onNotifications: () -> Unit, onProfile: () -> Unit) {
-    val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-    val greeting = when {
-        hour < 12 -> stringResource(R.string.greeting_morning)
-        hour < 17 -> stringResource(R.string.greeting_afternoon)
-        else -> stringResource(R.string.greeting_evening)
-    }
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-        Column {
-            Text("$greeting 👋", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(stringResource(R.string.role_supplier), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            androidx.compose.material3.IconButton(onClick = onNotifications) {
-                Icon(androidx.compose.material.icons.Icons.Rounded.Notifications, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
-            }
-            Surface(
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primaryContainer,
-                modifier = Modifier.size(48.dp).clickable { onProfile() },
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(Icons.Rounded.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun TransactionRow(name: String, amount: String, status: String) {
-    val statusColor = when (status) {
-        "COMPLETED" -> StatusCompleted
-        "FAILED" -> StatusFailed
-        else -> StatusPending
-    }
-    TencoCard(Modifier.fillMaxWidth()) {
-        Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-            Surface(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer, modifier = Modifier.size(44.dp)) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text(name.take(1).uppercase(), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                }
-            }
-            Column(Modifier.weight(1f).padding(start = 12.dp)) {
-                Text(name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                Surface(shape = MaterialTheme.shapes.small, color = statusColor.copy(alpha = 0.14f)) {
-                    Text(status.lowercase().replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.labelMedium, color = statusColor, modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp))
-                }
-            }
-            Text(amount, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-        }
-    }
-}
-
-@Composable
 private fun SupplierBottomBar(selected: Int, onSelect: (Int) -> Unit, onBuyStock: () -> Unit) {
     Box(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 16.dp, vertical = 10.dp)) {
         Surface(
