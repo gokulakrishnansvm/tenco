@@ -226,4 +226,5 @@
     <string name="cash_payment_request">Cash payment request</string>
     <string name="approve">Approve</string>
     <string name="in_review">In review</string>
+    <string name="pending_cash">Pending cash approvals</string>
 </resources>

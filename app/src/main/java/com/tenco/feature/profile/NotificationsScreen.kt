@@ -72,7 +72,7 @@ fun NotificationsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltV
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 items(cashPayments) { p ->
-                    CashApprovalCard(
+                    com.tenco.ui.components.CashApprovalCard(
                         name = names[p.vendorId] ?: "",
                         amount = com.tenco.core.Money.format(p.amountPaise),
                         onApprove = { viewModel.approvePayment(p.id) },
@@ -98,29 +98,3 @@ fun NotificationsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltV
     }
 }
 
-@Composable
-private fun CashApprovalCard(name: String, amount: String, onApprove: () -> Unit, onReject: () -> Unit) {
-    TencoCard(Modifier.fillMaxWidth()) {
-        Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Surface(shape = CircleShape, color = StatusPending.copy(alpha = 0.15f), modifier = Modifier.size(44.dp)) {
-                    Box(contentAlignment = Alignment.Center) { Icon(Icons.Rounded.Payments, null, tint = StatusPending) }
-                }
-                Column(Modifier.weight(1f).padding(start = 14.dp)) {
-                    Text(stringResource(R.string.cash_payment_request), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                    Text("$name · $amount", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                androidx.compose.material3.OutlinedButton(
-                    onClick = onReject,
-                    modifier = Modifier.weight(1f),
-                    colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                ) { Text(stringResource(R.string.reject)) }
-                androidx.compose.material3.Button(onClick = onApprove, modifier = Modifier.weight(1f)) {
-                    Text(stringResource(R.string.approve))
-                }
-            }
-        }
-    }
-}

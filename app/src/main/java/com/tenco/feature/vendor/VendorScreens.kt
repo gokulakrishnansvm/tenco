@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
@@ -135,6 +137,9 @@ private fun VendorHomeTab(
     viewModel: VendorViewModel,
 ) {
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
+    val payments by viewModel.payments.collectAsStateWithLifecycle()
+    val pendingCash = payments.filter { it.method == com.tenco.domain.PaymentMethod.CASH && it.status == com.tenco.domain.PaymentStatus.PENDING_VERIFICATION }
+    var showCashSheet by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val d = dashboard
     val langTag = androidx.compose.ui.platform.LocalConfiguration.current.locales[0].language
@@ -155,19 +160,37 @@ private fun VendorHomeTab(
             onLogout = onLogout,
         )
         Column(
-            Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 16.dp),
+            Modifier.fillMaxWidth().weight(1f)
+                .verticalScroll(androidx.compose.foundation.rememberScrollState())
+                .padding(horizontal = 20.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
 
-        Box(
-            Modifier.fillMaxWidth().height(66.dp).clip(MaterialTheme.shapes.extraLarge)
-                .background(com.tenco.ui.theme.Gradients.lime)
-                .clickable { onTab(1) },
-            contentAlignment = Alignment.Center,
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Rounded.CurrencyRupee, contentDescription = null, tint = Color.White)
-                Text("  " + stringResource(R.string.pay_now), style = MaterialTheme.typography.titleLarge, color = Color.White, fontWeight = FontWeight.Bold)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            androidx.compose.material3.Button(
+                onClick = { onTab(1) },
+                modifier = Modifier.weight(1f).height(58.dp),
+            ) {
+                Icon(Icons.Rounded.CurrencyRupee, contentDescription = null)
+                Text("  " + stringResource(R.string.pay_via_upi), fontWeight = FontWeight.Bold)
+            }
+            androidx.compose.material3.OutlinedButton(
+                onClick = { showCashSheet = true },
+                modifier = Modifier.weight(1f).height(58.dp),
+            ) {
+                Text(stringResource(R.string.pay_via_cash), fontWeight = FontWeight.Bold)
+            }
+        }
+
+        if (pendingCash.isNotEmpty()) {
+            com.tenco.ui.components.SectionHeader(stringResource(R.string.in_review))
+            pendingCash.forEach { p ->
+                com.tenco.ui.components.TencoCard(Modifier.fillMaxWidth()) {
+                    Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Text(Money.format(p.amountPaise), fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleMedium)
+                        com.tenco.ui.components.StatusChip(p.status, stringResource(R.string.in_review))
+                    }
+                }
             }
         }
 
@@ -180,6 +203,33 @@ private fun VendorHomeTab(
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/${Demo.SUPPLIER_PHONE.removePrefix("+")}")))
             }, Modifier.weight(1f))
             androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
+        }
+
+        if (showCashSheet) {
+            var amt by remember { mutableStateOf("") }
+            com.tenco.ui.components.TencoBottomSheet(title = stringResource(R.string.pay_via_cash), onDismiss = { showCashSheet = false }) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    OutlinedTextField(
+                        value = amt,
+                        onValueChange = { amt = it.filter { c -> c.isDigit() || c == '.' } },
+                        label = { Text(stringResource(R.string.amount_hint)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    com.tenco.ui.components.SheetActions(
+                        onCancel = { showCashSheet = false },
+                        onSave = {
+                            amt.toDoubleOrNull()?.let {
+                                viewModel.payCash(Money.rupeesToPaise(it))
+                                showCashSheet = false
+                                Toast.makeText(context, R.string.cash_sent_review, Toast.LENGTH_LONG).show()
+                            }
+                        },
+                        saveEnabled = amt.toDoubleOrNull() != null,
+                        saveText = stringResource(R.string.pay_via_cash),
+                    )
+                }
+            }
         }
     }
     }

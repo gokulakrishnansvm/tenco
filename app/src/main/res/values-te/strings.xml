@@ -202,4 +202,5 @@
     <string name="cash_payment_request">నగదు చెల్లింపు అభ్యర్థన</string>
     <string name="approve">ఆమోదించు</string>
     <string name="in_review">సమీక్షలో</string>
+    <string name="pending_cash">పెండింగ్ నగదు ఆమోదాలు</string>
 </resources>

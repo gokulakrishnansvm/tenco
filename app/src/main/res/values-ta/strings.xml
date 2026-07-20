@@ -202,4 +202,5 @@
     <string name="cash_payment_request">பண செலுத்துதல் கோரிக்கை</string>
     <string name="approve">அனுமதி</string>
     <string name="in_review">பரிசீலனையில்</string>
+    <string name="pending_cash">நிலுவையில் உள்ள பண அனுமதிகள்</string>
 </resources>

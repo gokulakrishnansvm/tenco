@@ -116,6 +116,9 @@ fun SupplierDashboardScreen(
 private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierViewModel) {
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
     val newOrders by viewModel.newOrderCount.collectAsStateWithLifecycle()
+    val pendingCash by viewModel.pendingCashPayments.collectAsStateWithLifecycle()
+    val allVendorsForCash by viewModel.allVendors.collectAsStateWithLifecycle()
+    val cashNames = allVendorsForCash.associate { it.id to it.name }
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
 
     androidx.compose.material3.pulltorefresh.PullToRefreshBox(
@@ -147,6 +150,20 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
                         SummaryChip(Icons.Rounded.TrendingDown, stringResource(R.string.losses), TileRed, Modifier.weight(1f)) {
                             com.tenco.ui.components.AnimatedMoneyShort(dashboard.lossesPaise)
                         }
+                    }
+                }
+            }
+
+            if (pendingCash.isNotEmpty()) {
+                item { com.tenco.ui.components.EntranceItem(3) { Box(Modifier.padding(horizontal = 20.dp)) { SectionHeader(stringResource(R.string.pending_cash)) } } }
+                items(pendingCash, key = { it.id }) { p ->
+                    Box(Modifier.padding(horizontal = 20.dp)) {
+                        com.tenco.ui.components.CashApprovalCard(
+                            name = cashNames[p.vendorId] ?: "",
+                            amount = Money.format(p.amountPaise),
+                            onApprove = { viewModel.approvePayment(p.id) },
+                            onReject = { viewModel.rejectPayment(p.id) },
+                        )
                     }
                 }
             }
