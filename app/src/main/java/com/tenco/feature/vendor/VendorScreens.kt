@@ -550,6 +550,7 @@ private fun complaintStatusLabel(status: String): String = when (status) {
 private fun paymentStatusLabel(status: String): String = when (status) {
     PaymentStatus.COMPLETED -> stringResource(R.string.status_completed)
     PaymentStatus.FAILED -> stringResource(R.string.status_failed)
+    PaymentStatus.REJECTED -> stringResource(R.string.status_rejected)
     PaymentStatus.PENDING_VERIFICATION -> stringResource(R.string.status_pending_verification)
     else -> stringResource(R.string.status_pending)
 }
