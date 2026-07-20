@@ -243,4 +243,5 @@
     <string name="amount">మొత్తం</string>
     <string name="note_optional">గమనిక (ఐచ్ఛికం)</string>
     <string name="deliveries">డెలివరీలు</string>
+    <string name="no_stock">స్టాక్ లేదు</string>
 </resources>

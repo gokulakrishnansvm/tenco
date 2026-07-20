@@ -180,12 +180,14 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
                     val dealers = QuickAction("dealers", Icons.Rounded.LocalShipping, stringResource(R.string.dealers), TilePurple, Routes.SUPPLIER_DEALERS_LIST)
                     val reports = QuickAction("reports", Icons.Rounded.Assessment, stringResource(R.string.menu_reports), TileTeal, Routes.SUPPLIER_REPORTS)
                     val insights = QuickAction("insights", Icons.Rounded.Insights, stringResource(R.string.insights), TileBlue, Routes.SUPPLIER_INSIGHTS)
+                    val advances = QuickAction("advances", Icons.Rounded.AccountBalanceWallet, stringResource(R.string.advance_payments), TileGreen, Routes.SUPPLIER_ADVANCES)
+                    val stockSource = QuickAction("stock_source", Icons.Rounded.Inventory2, stringResource(R.string.stock_by_source), TileOrange, Routes.SUPPLIER_STOCK_BY_SOURCE)
                     val onTap: (QuickAction) -> Unit = { qa -> viewModel.recordActionUse(qa.key); onNavigate(qa.route) }
                     Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         androidx.compose.material3.HorizontalDivider(Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
                         ActionGroup(listOf(orders, vendorsA, sell, pricing, approvals, complaints), onTap)
                         androidx.compose.material3.HorizontalDivider(Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
-                        ActionGroup(listOf(dealers, reports, insights), onTap)
+                        ActionGroup(listOf(dealers, advances, stockSource, reports, insights), onTap)
                     }
                 }
             }

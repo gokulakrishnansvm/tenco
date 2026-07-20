@@ -117,6 +117,12 @@ fun TencoNavHost(
         composable(Routes.SUPPLIER_ADJUSTMENTS) {
             com.tenco.feature.supplier.SupplierAdjustmentsScreen(onBack = navController::popBackStack)
         }
+        composable(Routes.SUPPLIER_ADVANCES) {
+            com.tenco.feature.supplier.AdvancePaymentsScreen(onBack = navController::popBackStack)
+        }
+        composable(Routes.SUPPLIER_STOCK_BY_SOURCE) {
+            com.tenco.feature.supplier.StockBySourceScreen(onBack = navController::popBackStack)
+        }
         composable(
             Routes.SUPPLIER_ORDER_DETAIL,
             arguments = listOf(androidx.navigation.navArgument("orderId") { type = androidx.navigation.NavType.StringType }),
