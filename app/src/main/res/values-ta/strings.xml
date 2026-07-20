@@ -213,4 +213,12 @@
     <string name="total_adjusted">மொத்த சரிசெய்தல்</string>
     <string name="affected_qty">பாதிக்கப்பட்ட அளவு</string>
     <string name="reduces_dues">சரிசெய்தல் விற்பனையாளர் நிலுவையை குறைக்கும்</string>
+    <string name="color_green">பச்சை</string>
+    <string name="color_red">சிவப்பு</string>
+    <string name="grade_big">பெருசு</string>
+    <string name="grade_medium">பொடி</string>
+    <string name="grade_small">சில்லு</string>
+    <string name="add_line">வரி சேர்</string>
+    <string name="batch">தொகுப்பு</string>
+    <string name="stock_summary">கையிருப்பு சுருக்கம்</string>
 </resources>

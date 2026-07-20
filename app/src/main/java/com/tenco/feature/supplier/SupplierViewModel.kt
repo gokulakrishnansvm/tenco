@@ -104,6 +104,10 @@ class SupplierViewModel @Inject constructor(
         repository.addPurchase(dealerId, quantity, unitCostPaise)
     }
 
+    fun addPurchaseBatch(dealerId: String, lines: List<TencoRepository.PurchaseLine>) = viewModelScope.launch {
+        repository.addPurchaseBatch(dealerId, lines)
+    }
+
     fun addDealer(name: String, location: String) = viewModelScope.launch {
         repository.addDealer(name, location)
     }

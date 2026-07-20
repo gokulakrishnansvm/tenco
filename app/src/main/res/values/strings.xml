@@ -237,4 +237,12 @@
     <string name="total_adjusted">Total adjusted</string>
     <string name="affected_qty">Qty affected</string>
     <string name="reduces_dues">Adjustments reduce vendor dues</string>
+    <string name="color_green">Green</string>
+    <string name="color_red">Red</string>
+    <string name="grade_big">Big</string>
+    <string name="grade_medium">Medium</string>
+    <string name="grade_small">Small</string>
+    <string name="add_line">Add line</string>
+    <string name="batch">Batch</string>
+    <string name="stock_summary">Stock summary</string>
 </resources>

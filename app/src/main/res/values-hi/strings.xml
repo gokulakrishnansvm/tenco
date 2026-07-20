@@ -213,4 +213,12 @@
     <string name="total_adjusted">कुल समायोजन</string>
     <string name="affected_qty">प्रभावित मात्रा</string>
     <string name="reduces_dues">समायोजन विक्रेता बकाया घटाते हैं</string>
+    <string name="color_green">हरा</string>
+    <string name="color_red">लाल</string>
+    <string name="grade_big">बड़ा</string>
+    <string name="grade_medium">मध्यम</string>
+    <string name="grade_small">छोटा</string>
+    <string name="add_line">पंक्ति जोड़ें</string>
+    <string name="batch">बैच</string>
+    <string name="stock_summary">स्टॉक सारांश</string>
 </resources>

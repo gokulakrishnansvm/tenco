@@ -19,6 +19,9 @@ data class PurchaseEntity(
     val quantity: Int,
     val unitCostPaise: Long,
     val createdAt: Long,
+    val batchId: String = "",
+    val color: String = "GREEN",
+    val grade: String = "MEDIUM",
 )
 
 @Entity(tableName = "vendors")

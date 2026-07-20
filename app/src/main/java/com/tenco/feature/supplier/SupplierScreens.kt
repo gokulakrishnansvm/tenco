@@ -2,6 +2,7 @@ package com.tenco.feature.supplier
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Groups
+import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.ReceiptLong
 import androidx.compose.material.icons.rounded.ReportProblem
 import androidx.compose.material.icons.rounded.Storefront
@@ -74,6 +76,7 @@ fun DealersScreen(onBack: () -> Unit, onOpenDealer: (String) -> Unit = {}, viewM
     val purchases by viewModel.purchases.collectAsStateWithLifecycle()
     var showDialog by remember { mutableStateOf(false) }
     var showDealer by remember { mutableStateOf(false) }
+    var showTruck by remember { mutableStateOf(false) }
 
     TencoScaffold(
         title = stringResource(R.string.buy_stock),
@@ -141,11 +144,15 @@ fun DealersScreen(onBack: () -> Unit, onOpenDealer: (String) -> Unit = {}, viewM
         AddPurchaseDialog(
             dealers = dealers.map { it.id to it.name },
             onDismiss = { showDialog = false },
-            onConfirm = { dealerId, qty, costPaise ->
-                viewModel.addPurchase(dealerId, qty, costPaise)
+            onConfirm = { dealerId, lines ->
+                viewModel.addPurchaseBatch(dealerId, lines)
                 showDialog = false
+                showTruck = true
             },
         )
+    }
+    if (showTruck) {
+        com.tenco.ui.components.CoconutEventOverlay(com.tenco.ui.components.CoconutEvent.TRUCK) { showTruck = false }
     }
 }
 
@@ -154,15 +161,18 @@ fun DealersScreen(onBack: () -> Unit, onOpenDealer: (String) -> Unit = {}, viewM
 private fun AddPurchaseDialog(
     dealers: List<Pair<String, String>>,
     onDismiss: () -> Unit,
-    onConfirm: (String, Int, Long) -> Unit,
+    onConfirm: (String, List<com.tenco.data.repository.TencoRepository.PurchaseLine>) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selected by remember { mutableStateOf(dealers.firstOrNull()) }
+    var color by remember { mutableStateOf(com.tenco.domain.CoconutColor.GREEN) }
+    var grade by remember { mutableStateOf(com.tenco.domain.CoconutGrade.BIG) }
     var qty by remember { mutableStateOf("") }
     var cost by remember { mutableStateOf("") }
+    val lines = remember { androidx.compose.runtime.mutableStateListOf<com.tenco.data.repository.TencoRepository.PurchaseLine>() }
 
     com.tenco.ui.components.TencoBottomSheet(title = stringResource(R.string.add_purchase), onDismiss = onDismiss) {
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
                 OutlinedTextField(
                     value = selected?.second ?: "",
@@ -178,17 +188,49 @@ private fun AddPurchaseDialog(
                     }
                 }
             }
-            NumberField(qty, { qty = it }, stringResource(R.string.quantity))
-            NumberField(cost, { cost = it }, stringResource(R.string.unit_cost))
-            com.tenco.ui.components.SheetActions(
-                onCancel = onDismiss,
-                onSave = {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                com.tenco.domain.CoconutColor.ALL.forEach { c ->
+                    TxnFilterChip(com.tenco.ui.components.coconutColorLabel(c), color == c) { color = c }
+                }
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                com.tenco.domain.CoconutGrade.ALL.forEach { g ->
+                    TxnFilterChip(com.tenco.ui.components.coconutGradeLabel(g), grade == g) { grade = g }
+                }
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Box(Modifier.weight(1f)) { NumberField(qty, { qty = it }, stringResource(R.string.quantity)) }
+                Box(Modifier.weight(1f)) { NumberField(cost, { cost = it }, stringResource(R.string.unit_cost)) }
+            }
+            androidx.compose.material3.OutlinedButton(
+                onClick = {
                     val q = qty.toIntOrNull() ?: 0
                     val c = cost.toDoubleOrNull() ?: 0.0
-                    val id = selected?.first
-                    if (id != null && q > 0) onConfirm(id, q, Money.rupeesToPaise(c))
+                    if (q > 0 && c > 0) {
+                        lines.add(com.tenco.data.repository.TencoRepository.PurchaseLine(color, grade, q, Money.rupeesToPaise(c)))
+                        qty = ""; cost = ""
+                    }
                 },
-                saveEnabled = (qty.toIntOrNull() ?: 0) > 0 && selected != null,
+                enabled = (qty.toIntOrNull() ?: 0) > 0 && (cost.toDoubleOrNull() ?: 0.0) > 0,
+                modifier = Modifier.fillMaxWidth(),
+            ) { Text("+ ${stringResource(R.string.add_line)}") }
+
+            lines.forEachIndexed { i, l ->
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        "${com.tenco.ui.components.coconutColorLabel(l.color)} ${com.tenco.ui.components.coconutGradeLabel(l.grade)} · ${l.quantity} @ ${Money.formatShort(l.unitCostPaise)}",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    androidx.compose.material3.IconButton(onClick = { lines.removeAt(i) }) {
+                        Icon(Icons.Rounded.DeleteOutline, contentDescription = stringResource(R.string.delete), tint = MaterialTheme.colorScheme.error)
+                    }
+                }
+            }
+
+            com.tenco.ui.components.SheetActions(
+                onCancel = onDismiss,
+                onSave = { selected?.first?.let { onConfirm(it, lines.toList()) } },
+                saveEnabled = selected != null && lines.isNotEmpty(),
                 saveText = stringResource(R.string.save),
             )
         }
@@ -495,6 +537,7 @@ fun ComplaintsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltView
     val vendors by viewModel.allVendors.collectAsStateWithLifecycle()
     val names = vendors.associate { it.id to it.name }
     var resolvingId by remember { mutableStateOf<String?>(null) }
+    var showSpoiled by remember { mutableStateOf(false) }
 
     TencoScaffold(title = stringResource(R.string.menu_complaints), onBack = onBack) { padding ->
         if (complaints.isEmpty()) {
@@ -543,12 +586,15 @@ fun ComplaintsScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltView
                     onCancel = { resolvingId = null },
                     onSave = {
                         val a = amount.toDoubleOrNull() ?: 0.0
-                        viewModel.resolveComplaint(id, Money.rupeesToPaise(a)); resolvingId = null
+                        viewModel.resolveComplaint(id, Money.rupeesToPaise(a)); resolvingId = null; showSpoiled = true
                     },
                     saveText = stringResource(R.string.resolve),
                 )
             }
         }
+    }
+    if (showSpoiled) {
+        com.tenco.ui.components.CoconutEventOverlay(com.tenco.ui.components.CoconutEvent.SPOILED) { showSpoiled = false }
     }
 }
 

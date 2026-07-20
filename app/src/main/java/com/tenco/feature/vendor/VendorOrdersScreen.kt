@@ -44,6 +44,7 @@ fun VendorOrdersScreen(vendorId: String, onBack: (() -> Unit)? = null, viewModel
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
     val context = androidx.compose.ui.platform.LocalContext.current
     var qty by remember { mutableStateOf("") }
+    var showOrderAnim by remember { mutableStateOf(false) }
     val coconuts = stringResource(R.string.coconuts)
 
     TencoScaffold(title = stringResource(R.string.my_orders), onBack = onBack) { padding ->
@@ -63,7 +64,7 @@ fun VendorOrdersScreen(vendorId: String, onBack: (() -> Unit)? = null, viewModel
                             modifier = Modifier.fillMaxWidth(),
                         )
                         Button(
-                            onClick = { qty.toIntOrNull()?.let { viewModel.placeOrder(it); qty = "" } },
+                            onClick = { qty.toIntOrNull()?.let { viewModel.placeOrder(it); qty = ""; showOrderAnim = true } },
                             enabled = (qty.toIntOrNull() ?: 0) > 0,
                             modifier = Modifier.fillMaxWidth().height(52.dp),
                         ) { Text(stringResource(R.string.place_order)) }
@@ -121,5 +122,8 @@ fun VendorOrdersScreen(vendorId: String, onBack: (() -> Unit)? = null, viewModel
                 }
             }
         }
+    }
+    if (showOrderAnim) {
+        com.tenco.ui.components.CoconutEventOverlay(com.tenco.ui.components.CoconutEvent.HARVEST) { showOrderAnim = false }
     }
 }

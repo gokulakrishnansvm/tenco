@@ -48,3 +48,19 @@ object ComplaintStatus {
     const val RESOLVED = "RESOLVED"
     const val REJECTED = "REJECTED"
 }
+
+
+/** Tender-coconut variety colour. */
+object CoconutColor {
+    const val GREEN = "GREEN"
+    const val RED = "RED"
+    val ALL = listOf(GREEN, RED)
+}
+
+/** Coconut size grade — Tamil: perusu (big), podi (medium), sillu (small). */
+object CoconutGrade {
+    const val BIG = "BIG"
+    const val MEDIUM = "MEDIUM"
+    const val SMALL = "SMALL"
+    val ALL = listOf(BIG, MEDIUM, SMALL)
+}

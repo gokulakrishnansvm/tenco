@@ -190,6 +190,18 @@ class TencoRepository @Inject constructor(
         val e = PurchaseEntity(newId(), dealerId, quantity, unitCostPaise, now()); purchaseDao.upsert(e); enqueue(OUT_PURCHASE, e.id)
     }
 
+    /** One purchase line: a colour+grade of coconut at a quantity and unit cost. */
+    data class PurchaseLine(val color: String, val grade: String, val quantity: Int, val unitCostPaise: Long)
+
+    /** Records multiple colour/grade lines as a single dealer batch. */
+    suspend fun addPurchaseBatch(dealerId: String, lines: List<PurchaseLine>) {
+        val batch = newId(); val ts = now()
+        lines.filter { it.quantity > 0 }.forEach { line ->
+            val e = PurchaseEntity(newId(), dealerId, line.quantity, line.unitCostPaise, ts, batchId = batch, color = line.color, grade = line.grade)
+            purchaseDao.upsert(e); enqueue(OUT_PURCHASE, e.id)
+        }
+    }
+
     suspend fun addVendor(name: String, phone: String, upiVpa: String?, languageTag: String, city: String = "") {
         val e = VendorEntity(newId(), name, phone, upiVpa, languageTag, city = city); vendorDao.upsert(e); enqueue(OUT_VENDOR, e.id)
     }

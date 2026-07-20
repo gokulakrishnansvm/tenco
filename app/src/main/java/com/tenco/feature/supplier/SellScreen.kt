@@ -41,6 +41,7 @@ fun SellScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel(
     val prices by viewModel.prices.collectAsStateWithLifecycle()
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var showHarvest by remember { mutableStateOf(false) }
 
     val latestPrice = prices.groupBy { it.vendorId }
         .mapValues { e -> e.value.maxByOrNull { it.effectiveFrom }?.unitPricePaise ?: 0L }
@@ -104,7 +105,7 @@ fun SellScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel(
                     if (id != null && qtyInt > 0 && priceRupees > 0 && !overStock) {
                         viewModel.sellToVendor(id, qtyInt, Money.rupeesToPaise(priceRupees))
                         Toast.makeText(context, R.string.sale_recorded, Toast.LENGTH_SHORT).show()
-                        onBack()
+                        showHarvest = true
                     }
                 },
                 enabled = !overStock,
@@ -113,6 +114,9 @@ fun SellScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel(
                 Text(stringResource(R.string.sell_to_vendor), style = MaterialTheme.typography.titleMedium)
             }
         }
+    }
+    if (showHarvest) {
+        com.tenco.ui.components.CoconutEventOverlay(com.tenco.ui.components.CoconutEvent.HARVEST) { onBack() }
     }
 }
 

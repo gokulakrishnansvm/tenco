@@ -30,9 +30,14 @@ object SeedData {
         listOf(pollachi, nellore, theni).forEach { dealerDao.upsert(it) }
 
         // Purchases (stock in) — unit cost in paise
-        purchaseDao.upsert(PurchaseEntity(id(), pollachi.id, 500, 2000, now - 5 * day)) // ₹20
-        purchaseDao.upsert(PurchaseEntity(id(), nellore.id, 300, 1800, now - 3 * day))  // ₹18
-        purchaseDao.upsert(PurchaseEntity(id(), theni.id, 200, 2200, now - 1 * day))    // ₹22
+        val b1 = id()
+        purchaseDao.upsert(PurchaseEntity(id(), pollachi.id, 1000, 5000, now - 5 * day, batchId = b1, color = "GREEN", grade = "BIG"))
+        purchaseDao.upsert(PurchaseEntity(id(), pollachi.id, 1000, 4000, now - 5 * day, batchId = b1, color = "GREEN", grade = "MEDIUM"))
+        purchaseDao.upsert(PurchaseEntity(id(), pollachi.id, 1000, 3000, now - 5 * day, batchId = b1, color = "GREEN", grade = "SMALL"))
+        val b2 = id()
+        purchaseDao.upsert(PurchaseEntity(id(), nellore.id, 400, 4500, now - 3 * day, batchId = b2, color = "RED", grade = "BIG"))
+        purchaseDao.upsert(PurchaseEntity(id(), nellore.id, 300, 3500, now - 3 * day, batchId = b2, color = "RED", grade = "MEDIUM"))
+        purchaseDao.upsert(PurchaseEntity(id(), theni.id, 200, 2200, now - 1 * day, batchId = id(), color = "GREEN", grade = "MEDIUM"))
 
         // Vendors
         val ravi = VendorEntity(id(), "Ravi Stall", "+919876543210", "ravi@upi", "ta", city = "Chennai")

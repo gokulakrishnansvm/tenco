@@ -213,4 +213,12 @@
     <string name="total_adjusted">మొత్తం సర్దుబాటు</string>
     <string name="affected_qty">ప్రభావిత పరిమాణం</string>
     <string name="reduces_dues">సర్దుబాట్లు వెండర్ బకాయిలను తగ్గిస్తాయి</string>
+    <string name="color_green">ఆకుపచ్చ</string>
+    <string name="color_red">ఎరుపు</string>
+    <string name="grade_big">పెద్ద</string>
+    <string name="grade_medium">మధ్యమ</string>
+    <string name="grade_small">చిన్న</string>
+    <string name="add_line">లైన్ జోడించు</string>
+    <string name="batch">బ్యాచ్</string>
+    <string name="stock_summary">స్టాక్ సారాంశం</string>
 </resources>
