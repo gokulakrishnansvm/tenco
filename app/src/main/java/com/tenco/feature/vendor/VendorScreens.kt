@@ -393,19 +393,6 @@ fun VendorPayScreen(
             ) {
                 Text(stringResource(R.string.pay_via_upi))
             }
-            OutlinedButton(
-                onClick = {
-                    val amt = amount.toDoubleOrNull()
-                    if (amt != null && amt > 0) {
-                        viewModel.payCash(Money.rupeesToPaise(amt))
-                        amount = ""
-                        Toast.makeText(context, R.string.cash_sent_review, Toast.LENGTH_LONG).show()
-                    }
-                },
-                modifier = Modifier.fillMaxWidth().height(52.dp),
-            ) {
-                Text(stringResource(R.string.pay_via_cash))
-            }
         }
     }
 

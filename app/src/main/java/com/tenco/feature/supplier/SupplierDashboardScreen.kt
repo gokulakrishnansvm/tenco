@@ -25,6 +25,7 @@ import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Inventory2
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Payments
 import androidx.compose.material.icons.rounded.PriceChange
 import androidx.compose.material.icons.rounded.ReceiptLong
 import androidx.compose.material.icons.rounded.ReportProblem
@@ -117,8 +118,6 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
     val newOrders by viewModel.newOrderCount.collectAsStateWithLifecycle()
     val pendingCash by viewModel.pendingCashPayments.collectAsStateWithLifecycle()
-    val allVendorsForCash by viewModel.allVendors.collectAsStateWithLifecycle()
-    val cashNames = allVendorsForCash.associate { it.id to it.name }
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
 
     androidx.compose.material3.pulltorefresh.PullToRefreshBox(
@@ -154,20 +153,6 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
                 }
             }
 
-            if (pendingCash.isNotEmpty()) {
-                item { com.tenco.ui.components.EntranceItem(3) { Box(Modifier.padding(horizontal = 20.dp)) { SectionHeader(stringResource(R.string.pending_cash)) } } }
-                items(pendingCash, key = { it.id }) { p ->
-                    Box(Modifier.padding(horizontal = 20.dp)) {
-                        com.tenco.ui.components.CashApprovalCard(
-                            name = cashNames[p.vendorId] ?: "",
-                            amount = Money.format(p.amountPaise),
-                            onApprove = { viewModel.approvePayment(p.id) },
-                            onReject = { viewModel.rejectPayment(p.id) },
-                        )
-                    }
-                }
-            }
-
             item { com.tenco.ui.components.EntranceItem(3) { Box(Modifier.padding(horizontal = 20.dp)) { SectionHeader(stringResource(R.string.quick_actions)) } } }
             item {
                 com.tenco.ui.components.EntranceItem(4) {
@@ -193,7 +178,8 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
                     Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         QuickActionTile(Icons.Rounded.ReportProblem, stringResource(R.string.menu_complaints), TileRed, { onNavigate(Routes.SUPPLIER_COMPLAINTS) }, Modifier.weight(1f))
                         QuickActionTile(Icons.Rounded.Inventory2, stringResource(R.string.menu_inventory), TileGreen, { onNavigate(Routes.SUPPLIER_INVENTORY) }, Modifier.weight(1f))
-                        androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
+                        val approvalsLabel = stringResource(R.string.approvals) + if (pendingCash.isNotEmpty()) " (${pendingCash.size})" else ""
+                        QuickActionTile(Icons.Rounded.Payments, approvalsLabel, TileOrange, { onNavigate(Routes.SUPPLIER_CASH_APPROVALS) }, Modifier.weight(1f))
                     }
                 }
             }

@@ -17,6 +17,7 @@ object Routes {
     const val SUPPLIER_INVENTORY = "supplier/inventory"
     const val SUPPLIER_SELL = "supplier/sell"
     const val SUPPLIER_ORDERS = "supplier/orders"
+    const val SUPPLIER_CASH_APPROVALS = "supplier/cash-approvals"
     const val SUPPLIER_ORDER_DETAIL = "supplier/order/{orderId}"
     fun orderDetail(id: String) = "supplier/order/$id"
     const val SUPPLIER_VENDOR_DETAIL = "supplier/vendor/{vendorId}"

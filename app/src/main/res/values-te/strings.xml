@@ -203,4 +203,5 @@
     <string name="approve">ఆమోదించు</string>
     <string name="in_review">సమీక్షలో</string>
     <string name="pending_cash">పెండింగ్ నగదు ఆమోదాలు</string>
+    <string name="approvals">ఆమోదాలు</string>
 </resources>

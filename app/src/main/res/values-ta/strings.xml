@@ -203,4 +203,5 @@
     <string name="approve">அனுமதி</string>
     <string name="in_review">பரிசீலனையில்</string>
     <string name="pending_cash">நிலுவையில் உள்ள பண அனுமதிகள்</string>
+    <string name="approvals">அனுமதிகள்</string>
 </resources>

@@ -203,4 +203,5 @@
     <string name="approve">स्वीकृत करें</string>
     <string name="in_review">समीक्षा में</string>
     <string name="pending_cash">लंबित नकद अनुमोदन</string>
+    <string name="approvals">अनुमोदन</string>
 </resources>
