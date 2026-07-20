@@ -510,10 +510,9 @@ fun VendorHistoryScreen(
 ) {
     LaunchedEffect(vendorId) { viewModel.setVendor(vendorId) }
     val payments by viewModel.payments.collectAsStateWithLifecycle()
-    val complaints by viewModel.complaints.collectAsStateWithLifecycle()
 
     TencoScaffold(title = stringResource(R.string.transaction_history), onBack = onBack) { padding ->
-        if (payments.isEmpty() && complaints.isEmpty()) {
+        if (payments.isEmpty()) {
             EmptyState(R.drawable.ic_coconut, stringResource(R.string.empty_transactions))
         } else {
             LazyColumn(Modifier.padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -525,30 +524,6 @@ fun VendorHistoryScreen(
                                 Text(dateFmt.format(Date(p.createdAt)), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                             }
                             StatusChip(p.status, paymentStatusLabel(p.status))
-                        }
-                    }
-                }
-                if (complaints.isNotEmpty()) {
-                    item {
-                        Text(
-                            stringResource(R.string.my_complaints),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(top = 8.dp),
-                        )
-                    }
-                    items(complaints) { c ->
-                        Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
-                            Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                                Column {
-                                    Text(
-                                        com.tenco.ui.components.complaintReasonLabel(c.reason) + if (c.shortQuantity > 0) " · ${c.shortQuantity} ${stringResource(R.string.coconuts)}" else "",
-                                        fontWeight = FontWeight.SemiBold,
-                                    )
-                                    Text(dateFmt.format(Date(c.createdAt)), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                                }
-                                StatusChip(c.status, complaintStatusLabel(c.status))
-                            }
                         }
                     }
                 }
