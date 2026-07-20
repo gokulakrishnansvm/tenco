@@ -29,6 +29,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -70,6 +73,39 @@ fun ProfileScreen(
                         Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.secondaryContainer, modifier = Modifier.padding(top = 6.dp)) {
                             Text(viewModel.role, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp))
                         }
+                    }
+                }
+            }
+
+            if (viewModel.isSupplier) {
+                var editPhone by remember { androidx.compose.runtime.mutableStateOf(viewModel.phone) }
+                var editUpi by remember { androidx.compose.runtime.mutableStateOf(viewModel.upi) }
+                val ctx = androidx.compose.ui.platform.LocalContext.current
+                TencoCard(Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text(stringResource(R.string.your_details), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                        androidx.compose.material3.OutlinedTextField(
+                            value = editPhone,
+                            onValueChange = { editPhone = it.filter(Char::isDigit) },
+                            label = { Text(stringResource(R.string.phone)) },
+                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Phone),
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        androidx.compose.material3.OutlinedTextField(
+                            value = editUpi,
+                            onValueChange = { editUpi = it },
+                            label = { Text(stringResource(R.string.upi_id)) },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        Button(
+                            onClick = {
+                                viewModel.saveContact(editPhone.trim(), editUpi.trim())
+                                android.widget.Toast.makeText(ctx, R.string.details_saved, android.widget.Toast.LENGTH_SHORT).show()
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) { Text(stringResource(R.string.save)) }
                     }
                 }
             }

@@ -221,4 +221,7 @@
     <string name="add_line">లైన్ జోడించు</string>
     <string name="batch">బ్యాచ్</string>
     <string name="stock_summary">స్టాక్ సారాంశం</string>
+    <string name="upi_id">UPI ఐడి</string>
+    <string name="your_details">మీ వివరాలు</string>
+    <string name="details_saved">వివరాలు సేవ్ చేయబడ్డాయి</string>
 </resources>

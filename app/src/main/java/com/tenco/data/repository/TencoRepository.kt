@@ -28,6 +28,7 @@ import javax.inject.Singleton
 @Singleton
 class TencoRepository @Inject constructor(
     private val db: TencoDatabase,
+    private val prefs: com.tenco.core.prefs.AppPreferences,
 ) {
     private val seedMutex = Mutex()
     private val dealerDao = db.dealerDao()
@@ -129,7 +130,7 @@ class TencoRepository @Inject constructor(
         VendorDashboard(
             vendorId = vendorId,
             vendorName = vendor?.name ?: "",
-            supplierVpa = SUPPLIER_VPA,
+            supplierVpa = prefs.supplierVpa,
             receivedQty = received,
             lastUnitPricePaise = lastPrice,
             pendingDuesPaise = (value - adjust - paid).coerceAtLeast(0),

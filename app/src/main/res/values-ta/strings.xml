@@ -221,4 +221,7 @@
     <string name="add_line">வரி சேர்</string>
     <string name="batch">தொகுப்பு</string>
     <string name="stock_summary">கையிருப்பு சுருக்கம்</string>
+    <string name="upi_id">UPI ஐடி</string>
+    <string name="your_details">உங்கள் விவரங்கள்</string>
+    <string name="details_saved">விவரங்கள் சேமிக்கப்பட்டன</string>
 </resources>

@@ -42,6 +42,11 @@ class AppPreferences @Inject constructor(@ApplicationContext context: Context) {
         get() = prefs.getString(KEY_USER_PHONE, null)
         set(value) = prefs.edit().putString(KEY_USER_PHONE, value).apply()
 
+    /** The supplier's own UPI VPA that vendors pay into. */
+    var supplierVpa: String
+        get() = prefs.getString(KEY_SUPPLIER_VPA, "tenco.supplier@upi") ?: "tenco.supplier@upi"
+        set(value) = prefs.edit().putString(KEY_SUPPLIER_VPA, value).apply()
+
     var accessToken: String?
         get() = prefs.getString(KEY_ACCESS_TOKEN, null)
         set(value) = prefs.edit().putString(KEY_ACCESS_TOKEN, value).apply()
@@ -112,6 +117,7 @@ class AppPreferences @Inject constructor(@ApplicationContext context: Context) {
         private const val KEY_VENDOR_ID = "selected_vendor_id"
         private const val KEY_USER_NAME = "user_name"
         private const val KEY_USER_PHONE = "user_phone"
+        private const val KEY_SUPPLIER_VPA = "supplier_vpa"
         private const val KEY_ACCESS_TOKEN = "access_token"
         private const val KEY_REFRESH_TOKEN = "refresh_token"
         private const val KEY_USER_ID = "user_id"

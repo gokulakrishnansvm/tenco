@@ -245,4 +245,7 @@
     <string name="add_line">Add line</string>
     <string name="batch">Batch</string>
     <string name="stock_summary">Stock summary</string>
+    <string name="upi_id">UPI ID</string>
+    <string name="your_details">Your details</string>
+    <string name="details_saved">Details saved</string>
 </resources>

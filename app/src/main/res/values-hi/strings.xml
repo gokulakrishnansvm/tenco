@@ -221,4 +221,7 @@
     <string name="add_line">पंक्ति जोड़ें</string>
     <string name="batch">बैच</string>
     <string name="stock_summary">स्टॉक सारांश</string>
+    <string name="upi_id">UPI आईडी</string>
+    <string name="your_details">आपका विवरण</string>
+    <string name="details_saved">विवरण सहेजा गया</string>
 </resources>

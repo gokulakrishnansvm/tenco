@@ -390,7 +390,14 @@ fun TransactionsScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewMode
     TencoScaffold(title = stringResource(R.string.transaction_history), onBack = onBack) { padding ->
         val purchaseLabel = stringResource(R.string.buy_stock)
         val rows = buildList {
-            purchases.forEach { p -> dealerNames[p.dealerId]?.let { add(Row4(p.createdAt, it, "$purchaseLabel · ${p.quantity} @ ${Money.formatShort(p.unitCostPaise)}", "PURCHASE", "DEALER")) } }
+            purchases.groupBy { it.batchId.ifBlank { it.id } }.forEach { (_, lines) ->
+                val first = lines.first()
+                dealerNames[first.dealerId]?.let { name ->
+                    val totalQty = lines.sumOf { it.quantity }
+                    val totalCost = lines.sumOf { it.quantity * it.unitCostPaise }
+                    add(Row4(first.createdAt, name, "$purchaseLabel · $totalQty ${'\u00B7'} ${Money.format(totalCost)}", "PURCHASE", "DEALER"))
+                }
+            }
             deliveries.forEach { d -> names[d.vendorId]?.let { add(Row4(d.createdAt, it, "${d.quantity} ${'@'} ${Money.formatShort(d.unitPricePaise)}", d.status, "VENDOR")) } }
             payments.forEach { pay -> names[pay.vendorId]?.let { add(Row4(pay.createdAt, it, Money.format(pay.amountPaise), pay.status, "VENDOR")) } }
         }.sortedByDescending { it.time }
