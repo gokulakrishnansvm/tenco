@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -88,7 +90,7 @@ fun SupplierDashboardScreen(
     var tab by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(0) }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        bottomBar = { SupplierBottomBar(tab) { tab = it } },
+        bottomBar = { SupplierBottomBar(tab, onSelect = { tab = it }, onBuyStock = { onNavigate(Routes.SUPPLIER_DEALERS) }) },
     ) { padding ->
         androidx.compose.animation.AnimatedContent(
             targetState = tab,
@@ -166,37 +168,26 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
                 }
             }
 
-            item { com.tenco.ui.components.EntranceItem(3) { Box(Modifier.padding(horizontal = 20.dp)) { SectionHeader(stringResource(R.string.quick_actions)) } } }
             item {
-                com.tenco.ui.components.EntranceItem(4) {
+                com.tenco.ui.components.EntranceItem(3) {
                     val ordersLabel = stringResource(R.string.orders) + if (newOrders > 0) " ($newOrders)" else ""
                     val approvalsLabel = stringResource(R.string.approvals) + if (pendingCash.isNotEmpty()) " (${pendingCash.size})" else ""
                     val complaintsLabel = stringResource(R.string.menu_complaints) + if (openComplaints > 0) " ($openComplaints)" else ""
-                    val defaultKeys = listOf("orders", "buy_stock", "dealers", "sell", "vendors", "pricing", "reports", "complaints", "inventory", "losses", "approvals")
-                    // Freeze the order once per screen entry (less aggressive: re-sorts only on revisit, not per tap).
-                    val keyOrder = remember { defaultKeys.sortedByDescending { actionUsage[it] ?: 0 } }
-                    val actions = listOf(
-                        QuickAction("orders", Icons.Rounded.ShoppingCart, ordersLabel, TileBlue, Routes.SUPPLIER_ORDERS),
-                        QuickAction("buy_stock", Icons.Rounded.Storefront, stringResource(R.string.buy_stock), TileGreen, Routes.SUPPLIER_DEALERS),
-                        QuickAction("dealers", Icons.Rounded.LocalShipping, stringResource(R.string.dealers), TilePurple, Routes.SUPPLIER_DEALERS_LIST),
-                        QuickAction("sell", Icons.Rounded.Sell, stringResource(R.string.sell_to_vendor), TileTeal, Routes.SUPPLIER_SELL),
-                        QuickAction("vendors", Icons.Rounded.Groups, stringResource(R.string.menu_vendors), TilePurple, Routes.SUPPLIER_VENDORS),
-                        QuickAction("pricing", Icons.Rounded.PriceChange, stringResource(R.string.menu_pricing), TileOrange, Routes.SUPPLIER_PRICING),
-                        QuickAction("reports", Icons.Rounded.Assessment, stringResource(R.string.menu_reports), TileTeal, Routes.SUPPLIER_REPORTS),
-                        QuickAction("complaints", Icons.Rounded.ReportProblem, complaintsLabel, TileRed, Routes.SUPPLIER_COMPLAINTS),
-                        QuickAction("inventory", Icons.Rounded.Inventory2, stringResource(R.string.menu_inventory), TileGreen, Routes.SUPPLIER_INVENTORY),
-                        QuickAction("losses", Icons.Rounded.TrendingDown, stringResource(R.string.adjustments), TileRed, Routes.SUPPLIER_ADJUSTMENTS),
-                        QuickAction("approvals", Icons.Rounded.Payments, approvalsLabel, TileOrange, Routes.SUPPLIER_CASH_APPROVALS),
-                    ).sortedBy { keyOrder.indexOf(it.key).let { i -> if (i < 0) Int.MAX_VALUE else i } }
-                    Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        actions.chunked(3).forEach { rowItems ->
-                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                rowItems.forEach { qa ->
-                                    QuickActionTile(qa.icon, qa.label, qa.color, { viewModel.recordActionUse(qa.key); onNavigate(qa.route) }, Modifier.weight(1f))
-                                }
-                                repeat(3 - rowItems.size) { androidx.compose.foundation.layout.Spacer(Modifier.weight(1f)) }
-                            }
-                        }
+                    val orders = QuickAction("orders", Icons.Rounded.ShoppingCart, ordersLabel, TileBlue, Routes.SUPPLIER_ORDERS)
+                    val vendorsA = QuickAction("vendors", Icons.Rounded.Groups, stringResource(R.string.menu_vendors), TilePurple, Routes.SUPPLIER_VENDORS)
+                    val sell = QuickAction("sell", Icons.Rounded.Sell, stringResource(R.string.sell_to_vendor), TileTeal, Routes.SUPPLIER_SELL)
+                    val pricing = QuickAction("pricing", Icons.Rounded.PriceChange, stringResource(R.string.menu_pricing), TileOrange, Routes.SUPPLIER_PRICING)
+                    val approvals = QuickAction("approvals", Icons.Rounded.Payments, approvalsLabel, TileOrange, Routes.SUPPLIER_CASH_APPROVALS)
+                    val complaints = QuickAction("complaints", Icons.Rounded.ReportProblem, complaintsLabel, TileRed, Routes.SUPPLIER_COMPLAINTS)
+                    val dealers = QuickAction("dealers", Icons.Rounded.LocalShipping, stringResource(R.string.dealers), TilePurple, Routes.SUPPLIER_DEALERS_LIST)
+                    val reports = QuickAction("reports", Icons.Rounded.Assessment, stringResource(R.string.menu_reports), TileTeal, Routes.SUPPLIER_REPORTS)
+                    val insights = QuickAction("insights", Icons.Rounded.Insights, stringResource(R.string.insights), TileBlue, Routes.SUPPLIER_INSIGHTS)
+                    val losses = QuickAction("losses", Icons.Rounded.TrendingDown, stringResource(R.string.adjustments), TileRed, Routes.SUPPLIER_ADJUSTMENTS)
+                    val onTap: (QuickAction) -> Unit = { qa -> viewModel.recordActionUse(qa.key); onNavigate(qa.route) }
+                    Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        ActionGroup(stringResource(R.string.menu_vendors), listOf(orders, vendorsA, sell, pricing, approvals, complaints), onTap)
+                        ActionGroup(stringResource(R.string.dealers), listOf(dealers), onTap)
+                        ActionGroup(stringResource(R.string.analytics), listOf(reports, insights, losses), onTap)
                     }
                 }
             }
@@ -212,6 +203,19 @@ private data class QuickAction(
     val color: androidx.compose.ui.graphics.Color,
     val route: String,
 )
+
+@Composable
+private fun ActionGroup(title: String, actions: List<QuickAction>, onTap: (QuickAction) -> Unit) {
+    SectionHeader(title)
+    actions.chunked(3).forEach { rowItems ->
+        Row(Modifier.fillMaxWidth().padding(bottom = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            rowItems.forEach { qa ->
+                QuickActionTile(qa.icon, qa.label, qa.color, { onTap(qa) }, Modifier.weight(1f))
+            }
+            repeat(3 - rowItems.size) { androidx.compose.foundation.layout.Spacer(Modifier.weight(1f)) }
+        }
+    }
+}
 
 @Composable
 private fun StockSummaryPanel(
@@ -354,16 +358,43 @@ private fun TransactionRow(name: String, amount: String, status: String) {
 }
 
 @Composable
-private fun SupplierBottomBar(selected: Int, onSelect: (Int) -> Unit) {
-    com.tenco.ui.components.TencoBottomNav(
-        items = listOf(
-            com.tenco.ui.components.NavItem(Icons.Rounded.Home, stringResource(R.string.nav_home)),
-            com.tenco.ui.components.NavItem(Icons.Rounded.Inventory2, stringResource(R.string.nav_stock)),
-            com.tenco.ui.components.NavItem(Icons.Rounded.ReceiptLong, stringResource(R.string.nav_txns)),
-            com.tenco.ui.components.NavItem(Icons.Rounded.AccountBalanceWallet, stringResource(R.string.nav_money)),
-            com.tenco.ui.components.NavItem(Icons.Rounded.Person, stringResource(R.string.menu_profile)),
-        ),
-        selected = selected,
-        onSelect = onSelect,
-    )
+private fun SupplierBottomBar(selected: Int, onSelect: (Int) -> Unit, onBuyStock: () -> Unit) {
+    Box(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 16.dp, vertical = 10.dp)) {
+        Surface(
+            shape = RoundedCornerShape(30.dp),
+            color = MaterialTheme.colorScheme.surface,
+            shadowElevation = 12.dp,
+            modifier = Modifier.fillMaxWidth().height(66.dp).align(Alignment.BottomCenter),
+        ) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                SupNavCell(Icons.Rounded.Home, stringResource(R.string.nav_home), selected == 0, Modifier.weight(1f)) { onSelect(0) }
+                SupNavCell(Icons.Rounded.Inventory2, stringResource(R.string.nav_stock), selected == 1, Modifier.weight(1f)) { onSelect(1) }
+                androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
+                SupNavCell(Icons.Rounded.ReceiptLong, stringResource(R.string.nav_txns), selected == 2, Modifier.weight(1f)) { onSelect(2) }
+                SupNavCell(Icons.Rounded.Person, stringResource(R.string.menu_profile), selected == 4, Modifier.weight(1f)) { onSelect(4) }
+            }
+        }
+        Column(Modifier.align(Alignment.TopCenter).offset(y = (-14).dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Surface(
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primary,
+                shadowElevation = 16.dp,
+                modifier = Modifier.size(60.dp).clickable { onBuyStock() },
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(Icons.Rounded.Storefront, contentDescription = stringResource(R.string.buy_stock), tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(30.dp))
+                }
+            }
+            Text(stringResource(R.string.buy_stock), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold, maxLines = 1)
+        }
+    }
+}
+
+@Composable
+private fun SupNavCell(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
+    val color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+    Column(modifier.clickable { onClick() }, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+        Icon(icon, contentDescription = label, tint = color, modifier = Modifier.size(24.dp))
+        Text(label, style = MaterialTheme.typography.labelSmall, color = color, maxLines = 1)
+    }
 }
