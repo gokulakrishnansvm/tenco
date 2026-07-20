@@ -454,10 +454,11 @@ fun VendorComplaintScreen(
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         photoUri = uri?.toString()
     }
+    val complaints by viewModel.complaints.collectAsStateWithLifecycle()
 
     TencoScaffold(title = stringResource(R.string.raise_complaint), onBack = onBack) { padding ->
         Column(
-            Modifier.padding(padding).padding(16.dp),
+            Modifier.padding(padding).verticalScroll(androidx.compose.foundation.rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(stringResource(R.string.complaint_reason), style = MaterialTheme.typography.titleMedium)
@@ -496,6 +497,27 @@ fun VendorComplaintScreen(
                 modifier = Modifier.fillMaxWidth().height(56.dp),
             ) {
                 Text(stringResource(R.string.submit))
+            }
+
+            if (complaints.isNotEmpty()) {
+                androidx.compose.material3.HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                com.tenco.ui.components.SectionHeader(stringResource(R.string.my_complaints))
+                complaints.forEach { c ->
+                    com.tenco.ui.components.TencoCard(Modifier.fillMaxWidth()) {
+                        Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                            Column(Modifier.weight(1f)) {
+                                Text(
+                                    com.tenco.ui.components.complaintReasonLabel(c.reason) + if (c.shortQuantity > 0) " · ${c.shortQuantity} ${stringResource(R.string.coconuts)}" else "",
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                                if (c.status == com.tenco.domain.ComplaintStatus.RESOLVED && c.adjustmentPaise > 0) {
+                                    Text("− ${Money.format(c.adjustmentPaise)}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
+                                }
+                            }
+                            StatusChip(c.status, complaintStatusLabel(c.status))
+                        }
+                    }
+                }
             }
         }
     }
