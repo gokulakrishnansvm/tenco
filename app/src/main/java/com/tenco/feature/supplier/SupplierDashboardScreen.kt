@@ -184,8 +184,9 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
                     val insights = QuickAction("insights", Icons.Rounded.Insights, stringResource(R.string.insights), TileBlue, Routes.SUPPLIER_INSIGHTS)
                     val onTap: (QuickAction) -> Unit = { qa -> viewModel.recordActionUse(qa.key); onNavigate(qa.route) }
                     Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        com.tenco.ui.components.LeafDivider()
                         ActionGroup(listOf(orders, vendorsA, sell, pricing, approvals, complaints), onTap)
-                        androidx.compose.material3.HorizontalDivider(Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
+                        com.tenco.ui.components.LeafDivider()
                         ActionGroup(listOf(dealers, reports, insights), onTap)
                     }
                 }

@@ -192,6 +192,27 @@ class TencoRepository @Inject constructor(
         val e = PurchaseEntity(newId(), dealerId, quantity, unitCostPaise, now()); purchaseDao.upsert(e); enqueue(OUT_PURCHASE, e.id)
     }
 
+    /** One line of a multi-type sale. */
+    data class SellLine(val color: String, val grade: String, val quantity: Int, val unitPricePaise: Long)
+
+    /**
+     * Supplier sells multiple colour/grade lines to a vendor. Recorded as priced, in-progress
+     * orders (one group) so the vendor tracks them and can request cancellation; on delivery each
+     * line depletes its grade's stock.
+     */
+    suspend fun sellToVendorOrders(vendorId: String, lines: List<SellLine>) {
+        val group = newId(); val ts = now()
+        lines.filter { it.quantity > 0 }.forEach { l ->
+            orderDao.upsert(
+                OrderEntity(
+                    id = newId(), vendorId = vendorId, quantity = l.quantity,
+                    unitPricePaise = l.unitPricePaise, status = com.tenco.domain.OrderStatus.IN_PROGRESS,
+                    paid = false, createdAt = ts, updatedAt = ts, color = l.color, grade = l.grade, groupId = group,
+                ),
+            )
+        }
+    }
+
     /** One purchase line: a colour+grade of coconut at a quantity and unit cost. */
     data class PurchaseLine(val color: String, val grade: String, val quantity: Int, val unitCostPaise: Long)
 

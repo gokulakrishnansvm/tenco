@@ -1,5 +1,7 @@
 package com.tenco.feature.supplier
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -59,36 +63,20 @@ fun SellScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel(
     val selectedId = selected?.id
     LaunchedEffectPrice(selectedId, latestPrice) { p -> if (p > 0) price = String.format("%.2f", p / 100.0) }
 
+    val lines = remember { androidx.compose.runtime.mutableStateListOf<com.tenco.data.repository.TencoRepository.SellLine>() }
     val qtyInt = qty.toIntOrNull() ?: 0
     val priceRupees = price.toDoubleOrNull() ?: 0.0
-    val totalPaise = (qtyInt * Money.rupeesToPaise(priceRupees))
-    val stock = purchases.filter { it.color == color && it.grade == grade }.sumOf { it.quantity } -
+    val available = purchases.filter { it.color == color && it.grade == grade }.sumOf { it.quantity } -
         deliveries.filter { it.color == color && it.grade == grade }.sumOf { it.quantity }
-    val overStock = qtyInt > stock
+    val addedForCombo = lines.filter { it.color == color && it.grade == grade }.sumOf { it.quantity }
+    val remaining = available - addedForCombo
+    val overStock = qtyInt > remaining
 
     TencoScaffold(title = stringResource(R.string.sell_to_vendor), onBack = onBack) { padding ->
         Column(
-            Modifier.padding(padding).padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            Modifier.padding(padding).verticalScroll(androidx.compose.foundation.rememberScrollState()).padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            TencoCard(Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("${com.tenco.ui.components.coconutColorLabel(color)} ${com.tenco.ui.components.coconutGradeLabel(grade)} · ${stringResource(R.string.stock_on_hand)}", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text("$stock ${stringResource(R.string.coconuts)}", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = if (stock <= 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
-                }
-            }
-
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                com.tenco.domain.CoconutColor.ALL.forEach { c ->
-                    androidx.compose.material3.FilterChip(selected = color == c, onClick = { color = c }, label = { Text(com.tenco.ui.components.coconutColorLabel(c)) })
-                }
-            }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                com.tenco.domain.CoconutGrade.ALL.forEach { g ->
-                    androidx.compose.material3.FilterChip(selected = grade == g, onClick = { grade = g }, label = { Text(com.tenco.ui.components.coconutGradeLabel(g)) })
-                }
-            }
-
             ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
                 OutlinedTextField(
                     value = selected?.name ?: "",
@@ -104,30 +92,66 @@ fun SellScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel(
                     }
                 }
             }
-            OutlinedTextField(qty, { qty = it.filter(Char::isDigit) }, label = { Text(stringResource(R.string.quantity)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(price, { price = it }, label = { Text(stringResource(R.string.unit_price)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), modifier = Modifier.fillMaxWidth())
-
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(stringResource(R.string.total), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text(Money.format(totalPaise), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+            TencoCard(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("${com.tenco.ui.components.coconutColorLabel(color)} ${com.tenco.ui.components.coconutGradeLabel(grade)} · ${stringResource(R.string.stock_on_hand)}", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("$remaining ${stringResource(R.string.coconuts)}", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = if (remaining <= 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
+                }
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                com.tenco.domain.CoconutColor.ALL.forEach { c ->
+                    androidx.compose.material3.FilterChip(selected = color == c, onClick = { color = c }, label = { Text(com.tenco.ui.components.coconutColorLabel(c)) })
+                }
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                com.tenco.domain.CoconutGrade.ALL.forEach { g ->
+                    androidx.compose.material3.FilterChip(selected = grade == g, onClick = { grade = g }, label = { Text(com.tenco.ui.components.coconutGradeLabel(g)) })
+                }
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(qty, { qty = it.filter(Char::isDigit) }, label = { Text(stringResource(R.string.quantity)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), singleLine = true, modifier = Modifier.weight(1f))
+                OutlinedTextField(price, { price = it }, label = { Text(stringResource(R.string.unit_price)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), singleLine = true, modifier = Modifier.weight(1f))
             }
             if (overStock) {
                 Text(stringResource(R.string.not_enough_stock), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
             }
+            androidx.compose.material3.OutlinedButton(
+                onClick = {
+                    lines.add(com.tenco.data.repository.TencoRepository.SellLine(color, grade, qtyInt, Money.rupeesToPaise(priceRupees)))
+                    qty = ""
+                },
+                enabled = qtyInt > 0 && priceRupees > 0 && !overStock && remaining > 0 && selected != null,
+                modifier = Modifier.fillMaxWidth(),
+            ) { Text("+ ${stringResource(R.string.add_line)}") }
+
+            lines.forEachIndexed { i, l ->
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                    Text("${com.tenco.ui.components.coconutColorLabel(l.color)} ${com.tenco.ui.components.coconutGradeLabel(l.grade)} · ${l.quantity} @ ${Money.formatShort(l.unitPricePaise)}", style = MaterialTheme.typography.bodyMedium)
+                    androidx.compose.material3.IconButton(onClick = { lines.removeAt(i) }) {
+                        androidx.compose.material3.Icon(androidx.compose.material.icons.Icons.Rounded.DeleteOutline, contentDescription = stringResource(R.string.delete), tint = MaterialTheme.colorScheme.error)
+                    }
+                }
+            }
+            if (lines.isNotEmpty()) {
+                val total = lines.sumOf { it.unitPricePaise * it.quantity }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(stringResource(R.string.total), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(Money.format(total), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                }
+            }
 
             Button(
                 onClick = {
-                    val id = selected?.id
-                    if (id != null && qtyInt > 0 && priceRupees > 0 && !overStock) {
-                        viewModel.sellToVendor(id, qtyInt, Money.rupeesToPaise(priceRupees), color, grade)
+                    selected?.id?.let { id ->
+                        viewModel.sellToVendorOrders(id, lines.toList())
                         Toast.makeText(context, R.string.sale_recorded, Toast.LENGTH_SHORT).show()
                         showHarvest = true
                     }
                 },
-                enabled = !overStock && stock > 0,
+                enabled = lines.isNotEmpty() && selected != null,
                 modifier = Modifier.fillMaxWidth().height(56.dp),
             ) {
-                Text(stringResource(R.string.sell_to_vendor), style = MaterialTheme.typography.titleMedium)
+                Text("${stringResource(R.string.sell_to_vendor)} (${lines.size})", style = MaterialTheme.typography.titleMedium)
             }
         }
     }

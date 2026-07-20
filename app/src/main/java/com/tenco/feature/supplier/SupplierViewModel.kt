@@ -147,6 +147,10 @@ class SupplierViewModel @Inject constructor(
         repository.addDelivery(vendorId, quantity, unitPricePaise, color, grade)
     }
 
+    fun sellToVendorOrders(vendorId: String, lines: List<TencoRepository.SellLine>) = viewModelScope.launch {
+        repository.sellToVendorOrders(vendorId, lines)
+    }
+
     /** Records an in-person cash collection from a vendor (reduces their dues). */
     fun recordCashPayment(vendorId: String, amountPaise: Long) = viewModelScope.launch {
         repository.recordPayment(
