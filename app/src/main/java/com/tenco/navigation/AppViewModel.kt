@@ -31,6 +31,7 @@ class AppViewModel @Inject constructor(
             !prefs.isLoggedIn -> Routes.LOGIN
             prefs.role == ROLE_SUPPLIER -> Routes.SUPPLIER_HOME
             prefs.role == ROLE_VENDOR -> Routes.VENDOR_HOME
+            prefs.role == ROLE_LOADMAN -> Routes.LOADMAN_HOME
             else -> Routes.ROLE
         }
 
@@ -53,6 +54,12 @@ class AppViewModel @Inject constructor(
     fun chooseSupplier() {
         prefs.role = ROLE_SUPPLIER
         viewModelScope.launch { applyRoleRemote(ROLE_SUPPLIER); syncManager.sync() }
+        viewModelScope.launch { pushRegistrar.registerCurrentToken() }
+    }
+
+    fun chooseLoadman() {
+        prefs.role = ROLE_LOADMAN
+        viewModelScope.launch { repository.ensureSeeded(); syncManager.sync() }
         viewModelScope.launch { pushRegistrar.registerCurrentToken() }
     }
 
@@ -90,5 +97,6 @@ class AppViewModel @Inject constructor(
     companion object {
         const val ROLE_SUPPLIER = "SUPPLIER"
         const val ROLE_VENDOR = "VENDOR"
+        const val ROLE_LOADMAN = "LOADMAN"
     }
 }

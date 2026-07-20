@@ -71,6 +71,12 @@ fun TencoNavHost(
                         }
                     }
                 },
+                onLoadman = {
+                    appViewModel.chooseLoadman()
+                    navController.navigate(Routes.LOADMAN_HOME) {
+                        popUpTo(Routes.ROLE) { inclusive = true }
+                    }
+                },
                 onChangeLanguage = onChangeLanguage,
             )
         }
@@ -185,6 +191,14 @@ fun TencoNavHost(
             VendorHistoryScreen(
                 vendorId = appViewModel.currentVendorId.orEmpty(),
                 onBack = navController::popBackStack,
+            )
+        }
+
+        // ---- Loadman ----
+        composable(Routes.LOADMAN_HOME) {
+            com.tenco.feature.loadman.LoadmanDashboardScreen(
+                onChangeLanguage = onChangeLanguage,
+                onLogout = logout,
             )
         }
     }

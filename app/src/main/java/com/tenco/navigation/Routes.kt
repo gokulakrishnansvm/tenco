@@ -39,4 +39,7 @@ object Routes {
     const val VENDOR_COMPLAINTS = "vendor/complaints-list"
     const val VENDOR_COMPLAINT = "vendor/complaint"
     const val VENDOR_HISTORY = "vendor/history"
+
+    // Loadman
+    const val LOADMAN_HOME = "loadman"
 }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Inventory2
+import androidx.compose.material.icons.rounded.LocalShipping
 import androidx.compose.material.icons.rounded.Storefront
 import androidx.compose.material.icons.rounded.Translate
 import androidx.compose.material3.Icon
@@ -34,11 +35,13 @@ import com.tenco.R
 import com.tenco.ui.theme.Gradients
 import com.tenco.ui.theme.TileBlue
 import com.tenco.ui.theme.TileGreen
+import com.tenco.ui.theme.TileOrange
 
 @Composable
 fun RoleSelectScreen(
     onSupplier: () -> Unit,
     onVendor: () -> Unit,
+    onLoadman: () -> Unit,
     onChangeLanguage: () -> Unit,
 ) {
     Column(
@@ -51,6 +54,8 @@ fun RoleSelectScreen(
         RoleCard(stringResource(R.string.role_supplier), stringResource(R.string.role_supplier_desc), Icons.Rounded.Inventory2, TileGreen, onSupplier)
         Spacer(Modifier.height(16.dp))
         RoleCard(stringResource(R.string.role_vendor), stringResource(R.string.role_vendor_desc), Icons.Rounded.Storefront, TileBlue, onVendor)
+        Spacer(Modifier.height(16.dp))
+        RoleCard(stringResource(R.string.role_loadman), stringResource(R.string.role_loadman_desc), Icons.Rounded.LocalShipping, TileOrange, onLoadman)
 
         Spacer(Modifier.height(28.dp))
         TextButton(onClick = onChangeLanguage, modifier = Modifier.fillMaxWidth()) {
