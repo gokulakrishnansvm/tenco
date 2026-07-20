@@ -74,7 +74,7 @@ fun InventoryScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewModel =
                             lines.forEach { l ->
                                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        com.tenco.ui.components.CoconutGlyph(l.color, l.grade)
+                                        Box(Modifier.size(10.dp).background(coconutColorSwatch(l.color), CircleShape))
                                         Text("  ${coconutColorLabel(l.color)} ${coconutGradeLabel(l.grade)}", style = MaterialTheme.typography.bodyMedium)
                                     }
                                     Text("${l.quantity} @ ${Money.formatShort(l.unitCostPaise)}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)

@@ -55,6 +55,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     TencoScaffold(title = stringResource(R.string.menu_profile), onBack = onBack) { padding ->
+        var showEdit by remember { mutableStateOf(false) }
         Column(
             Modifier.fillMaxSize().padding(padding).padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -78,35 +79,12 @@ fun ProfileScreen(
             }
 
             if (viewModel.isSupplier) {
-                var editPhone by remember { androidx.compose.runtime.mutableStateOf(viewModel.phone) }
-                var editUpi by remember { androidx.compose.runtime.mutableStateOf(viewModel.upi) }
-                val ctx = androidx.compose.ui.platform.LocalContext.current
-                TencoCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text(stringResource(R.string.your_details), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                        androidx.compose.material3.OutlinedTextField(
-                            value = editPhone,
-                            onValueChange = { editPhone = it.filter(Char::isDigit) },
-                            label = { Text(stringResource(R.string.phone)) },
-                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Phone),
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                        androidx.compose.material3.OutlinedTextField(
-                            value = editUpi,
-                            onValueChange = { editUpi = it },
-                            label = { Text(stringResource(R.string.upi_id)) },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                        Button(
-                            onClick = {
-                                viewModel.saveContact(editPhone.trim(), editUpi.trim())
-                                android.widget.Toast.makeText(ctx, R.string.details_saved, android.widget.Toast.LENGTH_SHORT).show()
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                        ) { Text(stringResource(R.string.save)) }
-                    }
+                androidx.compose.material3.OutlinedButton(
+                    onClick = { showEdit = true },
+                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                ) {
+                    Icon(Icons.Rounded.Person, contentDescription = null)
+                    Text("  " + stringResource(R.string.your_details), fontWeight = FontWeight.SemiBold)
                 }
             }
 
@@ -140,6 +118,40 @@ fun ProfileScreen(
             ) {
                 Icon(Icons.AutoMirrored.Rounded.Logout, contentDescription = null)
                 Text("  " + stringResource(R.string.logout), fontWeight = FontWeight.SemiBold)
+            }
+        }
+
+        if (showEdit) {
+            var editPhone by remember { mutableStateOf(viewModel.phone) }
+            var editUpi by remember { mutableStateOf(viewModel.upi) }
+            val ctx = androidx.compose.ui.platform.LocalContext.current
+            com.tenco.ui.components.TencoBottomSheet(title = stringResource(R.string.your_details), onDismiss = { showEdit = false }) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    androidx.compose.material3.OutlinedTextField(
+                        value = editPhone,
+                        onValueChange = { editPhone = it.filter(Char::isDigit) },
+                        label = { Text(stringResource(R.string.phone)) },
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Phone),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    androidx.compose.material3.OutlinedTextField(
+                        value = editUpi,
+                        onValueChange = { editUpi = it },
+                        label = { Text(stringResource(R.string.upi_id)) },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    com.tenco.ui.components.SheetActions(
+                        onCancel = { showEdit = false },
+                        onSave = {
+                            viewModel.saveContact(editPhone.trim(), editUpi.trim())
+                            showEdit = false
+                            android.widget.Toast.makeText(ctx, R.string.details_saved, android.widget.Toast.LENGTH_SHORT).show()
+                        },
+                        saveText = stringResource(R.string.save),
+                    )
+                }
             }
         }
     }

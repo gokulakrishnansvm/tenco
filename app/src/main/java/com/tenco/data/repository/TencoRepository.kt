@@ -233,6 +233,23 @@ class TencoRepository @Inject constructor(
         orderDao.upsert(e)
     }
 
+    /** One line of a multi-type order. */
+    data class OrderLine(val color: String, val grade: String, val quantity: Int)
+
+    /** Places several colour/grade order lines at once (each becomes an order the supplier fulfils). */
+    suspend fun placeOrders(vendorId: String, lines: List<OrderLine>) {
+        val lastPrice = priceDao.latestForVendor(vendorId)?.unitPricePaise
+        lines.filter { it.quantity > 0 }.forEach { l ->
+            orderDao.upsert(
+                OrderEntity(
+                    id = newId(), vendorId = vendorId, quantity = l.quantity,
+                    unitPricePaise = lastPrice, status = com.tenco.domain.OrderStatus.PLACED,
+                    paid = false, createdAt = now(), updatedAt = now(), color = l.color, grade = l.grade,
+                ),
+            )
+        }
+    }
+
     /** Supplier sets the unit price and confirms the order. */
     suspend fun setOrderPrice(orderId: String, unitPricePaise: Long) {
         val o = orderDao.getById(orderId) ?: return

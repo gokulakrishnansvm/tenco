@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -47,6 +50,7 @@ fun VendorOrdersScreen(vendorId: String, onBack: (() -> Unit)? = null, viewModel
     var orderColor by remember { mutableStateOf(com.tenco.domain.CoconutColor.GREEN) }
     var orderGrade by remember { mutableStateOf(com.tenco.domain.CoconutGrade.MEDIUM) }
     var showOrderAnim by remember { mutableStateOf(false) }
+    val orderLines = remember { androidx.compose.runtime.mutableStateListOf<com.tenco.data.repository.TencoRepository.OrderLine>() }
     val coconuts = stringResource(R.string.coconuts)
 
     TencoScaffold(title = stringResource(R.string.my_orders), onBack = onBack) { padding ->
@@ -75,11 +79,29 @@ fun VendorOrdersScreen(vendorId: String, onBack: (() -> Unit)? = null, viewModel
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.fillMaxWidth(),
                         )
-                        Button(
-                            onClick = { qty.toIntOrNull()?.let { viewModel.placeOrder(it, orderColor, orderGrade); qty = ""; showOrderAnim = true } },
+                        androidx.compose.material3.OutlinedButton(
+                            onClick = {
+                                val q = qty.toIntOrNull() ?: 0
+                                if (q > 0) { orderLines.add(com.tenco.data.repository.TencoRepository.OrderLine(orderColor, orderGrade, q)); qty = "" }
+                            },
                             enabled = (qty.toIntOrNull() ?: 0) > 0,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) { Text("+ ${stringResource(R.string.add_line)}") }
+
+                        orderLines.forEachIndexed { i, l ->
+                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                                Text("${com.tenco.ui.components.coconutColorLabel(l.color)} ${com.tenco.ui.components.coconutGradeLabel(l.grade)} · ${l.quantity} $coconuts", style = MaterialTheme.typography.bodyMedium)
+                                androidx.compose.material3.IconButton(onClick = { orderLines.removeAt(i) }) {
+                                    Icon(Icons.Rounded.DeleteOutline, contentDescription = stringResource(R.string.delete), tint = MaterialTheme.colorScheme.error)
+                                }
+                            }
+                        }
+
+                        Button(
+                            onClick = { viewModel.placeOrders(orderLines.toList()); orderLines.clear(); showOrderAnim = true },
+                            enabled = orderLines.isNotEmpty(),
                             modifier = Modifier.fillMaxWidth().height(52.dp),
-                        ) { Text(stringResource(R.string.place_order)) }
+                        ) { Text("${stringResource(R.string.place_order)} (${orderLines.size})") }
                     }
                 }
             }

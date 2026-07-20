@@ -224,18 +224,15 @@ private fun StockSummaryPanel(
                 val colorTotal = com.tenco.domain.CoconutGrade.ALL.sumOf { net(color, it) }
                 if (colorTotal > 0) {
                     Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                        com.tenco.ui.components.CoconutGlyph(color, com.tenco.domain.CoconutGrade.MEDIUM)
+                        Box(Modifier.size(12.dp).background(com.tenco.ui.components.coconutColorSwatch(color), androidx.compose.foundation.shape.CircleShape))
                         Text("  ${com.tenco.ui.components.coconutColorLabel(color)}", fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
                         Text("$colorTotal", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                     }
                     com.tenco.domain.CoconutGrade.ALL.forEach { grade ->
                         val q = net(color, grade)
                         if (q > 0) {
-                            Row(Modifier.padding(start = 16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                                Row(Modifier.weight(1f), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                                    com.tenco.ui.components.CoconutGlyph(color, grade)
-                                    Text("  ${com.tenco.ui.components.coconutGradeLabel(grade)}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
+                            Row(Modifier.padding(start = 20.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                                Text(com.tenco.ui.components.coconutGradeLabel(grade), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
                                 Text("$q ${stringResource(R.string.coconuts)}", style = MaterialTheme.typography.bodyMedium)
                             }
                         }

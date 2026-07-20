@@ -74,6 +74,11 @@ class VendorViewModel @Inject constructor(
         if (quantity > 0) repository.placeOrder(id, quantity, color, grade)
     }
 
+    fun placeOrders(lines: List<com.tenco.data.repository.TencoRepository.OrderLine>) = viewModelScope.launch {
+        val id = vendorId.value ?: return@launch
+        if (lines.any { it.quantity > 0 }) repository.placeOrders(id, lines)
+    }
+
     fun payOrder(orderId: String) = viewModelScope.launch { repository.markOrderPaid(orderId) }
     fun cancelOrder(orderId: String) = viewModelScope.launch { repository.requestOrderCancel(orderId) }
 
