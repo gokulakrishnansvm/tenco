@@ -220,4 +220,10 @@
     <string name="ord_cancelled">Cancelled</string>
     <string name="confirm_cancellation">Confirm cancellation</string>
     <string name="new_orders">New orders</string>
+    <string name="pay_via_upi">Pay via UPI</string>
+    <string name="pay_via_cash">Pay via Cash</string>
+    <string name="cash_sent_review">Cash payment sent for approval</string>
+    <string name="cash_payment_request">Cash payment request</string>
+    <string name="approve">Approve</string>
+    <string name="in_review">In review</string>
 </resources>

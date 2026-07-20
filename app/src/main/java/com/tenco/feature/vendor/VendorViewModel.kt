@@ -77,6 +77,14 @@ class VendorViewModel @Inject constructor(
     fun payOrder(orderId: String) = viewModelScope.launch { repository.markOrderPaid(orderId) }
     fun cancelOrder(orderId: String) = viewModelScope.launch { repository.requestOrderCancel(orderId) }
 
+    /** Records a cash payment that stays in review until the supplier approves it. */
+    fun payCash(amountPaise: Long) = viewModelScope.launch {
+        val id = vendorId.value ?: return@launch
+        if (amountPaise > 0) {
+            repository.recordPayment(id, amountPaise, PaymentMethod.CASH, PaymentStatus.PENDING_VERIFICATION, note = "Cash")
+        }
+    }
+
     fun confirmLatestDelivery() = viewModelScope.launch {
         deliveries.value.firstOrNull { it.confirmedAt == null }?.let {
             repository.confirmDelivery(it.id)

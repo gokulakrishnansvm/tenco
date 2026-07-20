@@ -196,4 +196,10 @@
     <string name="ord_cancelled">रद्द किया गया</string>
     <string name="confirm_cancellation">रद्दीकरण की पुष्टि करें</string>
     <string name="new_orders">नए ऑर्डर</string>
+    <string name="pay_via_upi">UPI से भुगतान करें</string>
+    <string name="pay_via_cash">नकद से भुगतान करें</string>
+    <string name="cash_sent_review">नकद भुगतान अनुमोदन के लिए भेजा गया</string>
+    <string name="cash_payment_request">नकद भुगतान अनुरोध</string>
+    <string name="approve">स्वीकृत करें</string>
+    <string name="in_review">समीक्षा में</string>
 </resources>

@@ -196,4 +196,10 @@
     <string name="ord_cancelled">ரத்து செய்யப்பட்டது</string>
     <string name="confirm_cancellation">ரத்தை உறுதிப்படுத்து</string>
     <string name="new_orders">புதிய ஆர்டர்கள்</string>
+    <string name="pay_via_upi">UPI மூலம் செலுத்து</string>
+    <string name="pay_via_cash">பணமாக செலுத்து</string>
+    <string name="cash_sent_review">பண செலுத்துதல் அனுமதிக்கு அனுப்பப்பட்டது</string>
+    <string name="cash_payment_request">பண செலுத்துதல் கோரிக்கை</string>
+    <string name="approve">அனுமதி</string>
+    <string name="in_review">பரிசீலனையில்</string>
 </resources>

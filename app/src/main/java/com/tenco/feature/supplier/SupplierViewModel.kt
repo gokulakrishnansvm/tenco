@@ -15,6 +15,7 @@ import com.tenco.domain.SupplierDashboard
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -118,6 +119,14 @@ class SupplierViewModel @Inject constructor(
     fun setOrderPrice(orderId: String, unitPricePaise: Long) = viewModelScope.launch { repository.setOrderPrice(orderId, unitPricePaise) }
     fun advanceOrder(orderId: String, status: String) = viewModelScope.launch { repository.advanceOrderStatus(orderId, status) }
     fun confirmOrderCancel(orderId: String) = viewModelScope.launch { repository.confirmOrderCancel(orderId) }
+
+    /** Cash payments from vendors awaiting the supplier's approval. */
+    val pendingCashPayments: StateFlow<List<com.tenco.data.local.PaymentEntity>> =
+        repository.observePayments()
+            .map { list -> list.filter { it.method == com.tenco.domain.PaymentMethod.CASH && it.status == com.tenco.domain.PaymentStatus.PENDING_VERIFICATION } }
+            .stateInVm(emptyList())
+    fun approvePayment(paymentId: String) = viewModelScope.launch { repository.approvePayment(paymentId) }
+    fun rejectPayment(paymentId: String) = viewModelScope.launch { repository.rejectPayment(paymentId) }
 
     /** Records a sale to a vendor (creates a delivery), which raises the vendor's dues. */
     fun sellToVendor(vendorId: String, quantity: Int, unitPricePaise: Long) = viewModelScope.launch {

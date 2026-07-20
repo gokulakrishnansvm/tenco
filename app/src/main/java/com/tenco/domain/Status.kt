@@ -11,6 +11,7 @@ object PaymentStatus {
     const val PENDING_VERIFICATION = "PENDING_VERIFICATION"
     const val COMPLETED = "COMPLETED"
     const val FAILED = "FAILED"
+    const val REJECTED = "REJECTED"
 }
 
 object PaymentMethod {

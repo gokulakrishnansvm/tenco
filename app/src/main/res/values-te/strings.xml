@@ -196,4 +196,10 @@
     <string name="ord_cancelled">రద్దు చేయబడింది</string>
     <string name="confirm_cancellation">రద్దును నిర్ధారించు</string>
     <string name="new_orders">కొత్త ఆర్డర్లు</string>
+    <string name="pay_via_upi">UPI ద్వారా చెల్లించు</string>
+    <string name="pay_via_cash">నగదు ద్వారా చెల్లించు</string>
+    <string name="cash_sent_review">నగదు చెల్లింపు ఆమోదానికి పంపబడింది</string>
+    <string name="cash_payment_request">నగదు చెల్లింపు అభ్యర్థన</string>
+    <string name="approve">ఆమోదించు</string>
+    <string name="in_review">సమీక్షలో</string>
 </resources>

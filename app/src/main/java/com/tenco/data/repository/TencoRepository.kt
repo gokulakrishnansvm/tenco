@@ -267,6 +267,18 @@ class TencoRepository @Inject constructor(
         paymentDao.upsert(e); enqueue(OUT_PAYMENT, e.id)
     }
 
+    /** Supplier approves a vendor's pending cash payment; it then counts toward dues/earnings. */
+    suspend fun approvePayment(paymentId: String) {
+        val p = paymentDao.getById(paymentId) ?: return
+        paymentDao.upsert(p.copy(status = PaymentStatus.COMPLETED)); enqueue(OUT_PAYMENT, paymentId)
+    }
+
+    /** Supplier rejects a vendor's pending cash payment. */
+    suspend fun rejectPayment(paymentId: String) {
+        val p = paymentDao.getById(paymentId) ?: return
+        paymentDao.upsert(p.copy(status = PaymentStatus.REJECTED)); enqueue(OUT_PAYMENT, paymentId)
+    }
+
     suspend fun raiseComplaint(vendorId: String, deliveryId: String, reason: String, photoUri: String?) {
         val e = ComplaintEntity(newId(), deliveryId, vendorId, reason, photoUri, 0, ComplaintStatus.OPEN, now())
         complaintDao.upsert(e); enqueue(OUT_COMPLAINT, e.id)

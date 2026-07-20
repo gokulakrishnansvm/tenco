@@ -156,6 +156,9 @@ interface PaymentDao {
     @Query("SELECT * FROM payments WHERE id IN (:ids)")
     suspend fun getByIds(ids: List<String>): List<PaymentEntity>
 
+    @Query("SELECT * FROM payments WHERE id = :id")
+    suspend fun getById(id: String): PaymentEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(payment: PaymentEntity)
 
