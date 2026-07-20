@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/shell.tsx","./src/lib/api.ts","./src/lib/tenco.ts","./src/pages/complaints.tsx","./src/pages/dashboard.tsx","./src/pages/dealers.tsx","./src/pages/login.tsx","./src/pages/vendors.tsx"],"version":"5.9.3"}
