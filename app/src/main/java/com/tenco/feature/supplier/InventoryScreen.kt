@@ -51,43 +51,14 @@ fun InventoryScreen(onBack: (() -> Unit)? = null, viewModel: SupplierViewModel =
         if (valid.isEmpty()) {
             EmptyState(R.drawable.ic_coconut, stringResource(R.string.no_data))
         } else {
-            // Batches grouped (batchId, or the row id for legacy single purchases), oldest first for numbering.
+            // Batches grouped (batchId, or the row id for legacy single purchases), newest first.
             val batches = valid.groupBy { it.batchId.ifBlank { it.id } }
-                .toList().sortedBy { it.second.minOf { p -> p.createdAt } }
+                .toList().sortedByDescending { it.second.maxOf { p -> p.createdAt } }
             LazyColumn(
                 Modifier.padding(padding).padding(horizontal = 16.dp),
                 contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                // Stock summary by colour + grade
-                item { SectionHeader(stringResource(R.string.stock_summary)) }
-                item {
-                    TencoCard(Modifier.fillMaxWidth()) {
-                        Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            CoconutColor.ALL.forEach { color ->
-                                val forColor = valid.filter { it.color == color }
-                                if (forColor.isNotEmpty()) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Box(Modifier.size(12.dp).background(coconutColorSwatch(color), CircleShape))
-                                        Text("  ${coconutColorLabel(color)}", fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-                                        Text("${forColor.sumOf { it.quantity }}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                                    }
-                                    CoconutGrade.ALL.forEach { grade ->
-                                        val q = forColor.filter { it.grade == grade }.sumOf { it.quantity }
-                                        if (q > 0) {
-                                            Row(Modifier.padding(start = 20.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                                                Text(coconutGradeLabel(grade), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
-                                                Text("$q ${stringResource(R.string.coconuts)}", style = MaterialTheme.typography.bodyMedium)
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                item { SectionHeader(stringResource(R.string.batch)) }
                 itemsIndexed(batches) { index, entry ->
                     val lines = entry.second
                     val dealer = dealerById[lines.first().dealerId]

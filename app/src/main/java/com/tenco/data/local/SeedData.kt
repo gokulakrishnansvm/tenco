@@ -65,9 +65,12 @@ object SeedData {
             PaymentEntity(id(), lakshmi.id, 180000, PaymentMethod.UPI, PaymentStatus.COMPLETED, "UPI456", null, now - 1 * day)
         ) // ₹1800 == full
 
-        // Complaint (open)
+        // Complaints
         complaintDao.upsert(
             ComplaintEntity(id(), d2.id, ravi.id, "spoiled", null, 0, ComplaintStatus.OPEN, now - 12 * 60 * 60 * 1000L, shortQuantity = 8)
+        )
+        complaintDao.upsert(
+            ComplaintEntity(id(), d3.id, lakshmi.id, "short", null, 15000, ComplaintStatus.RESOLVED, now - 6 * 60 * 60 * 1000L, shortQuantity = 12)
         )
     }
 

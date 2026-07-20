@@ -35,8 +35,7 @@ fun CoconutEventOverlay(event: CoconutEvent, onEnd: () -> Unit) {
         onEnd()
     }
     val p = progress.value
-    val scrim = if (event == CoconutEvent.SPOILED) Color(0x33B00020) else Color(0x1F000000)
-    Box(Modifier.fillMaxSize().background(scrim), contentAlignment = Alignment.Center) {
+    Box(Modifier.fillMaxSize().background(Color(0x1F000000)), contentAlignment = Alignment.Center) {
         when (event) {
             CoconutEvent.TRUCK -> {
                 // Constant-speed drive left→right; mirror the emoji so it faces its direction.
@@ -44,13 +43,11 @@ fun CoconutEventOverlay(event: CoconutEvent, onEnd: () -> Unit) {
                 Text("🚚", fontSize = 88.sp, modifier = Modifier.offset(x = x).graphicsLayer(scaleX = -1f))
             }
             CoconutEvent.HARVEST -> {
-                Confetti(particleCount = 70)
-                // Smooth pop-in that settles (no jitter).
-                val s = 0.5f + 0.6f * (p * 2.4f).coerceAtMost(1f)
-                Text("🥥", fontSize = 96.sp, modifier = Modifier.scale(s).alpha((p * 4f).coerceAtMost(1f)))
+                // Smooth coconut-drop shower only — no popping emoji.
+                Confetti(particleCount = 80)
             }
             CoconutEvent.SPOILED -> {
-                // One gentle sway + tilt while fading out.
+                // One gentle sway + tilt while fading out (no red tint).
                 val sway = (sin(p * 6.2832f) * 6f).dp
                 val tilt = sin(p * 3.1416f) * 14f
                 Text(

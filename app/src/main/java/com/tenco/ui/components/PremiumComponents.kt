@@ -110,9 +110,10 @@ fun SummaryChip(
     label: String,
     accent: Color,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
     value: @Composable () -> Unit,
 ) {
-    TencoCard(modifier = modifier) {
+    TencoCard(modifier = modifier, onClick = onClick) {
         Column(Modifier.padding(14.dp)) {
             Surface(shape = RoundedCornerShape(12.dp), color = accent.copy(alpha = 0.15f), modifier = Modifier.size(34.dp)) {
                 Box(contentAlignment = Alignment.Center) { Icon(icon, null, tint = accent, modifier = Modifier.size(20.dp)) }
