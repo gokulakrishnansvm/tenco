@@ -44,3 +44,8 @@ interface DeviceTokenRepository : JpaRepository<DeviceToken, String> {
     fun findByUserId(userId: String): List<DeviceToken>
     fun findByToken(token: String): DeviceToken?
 }
+
+interface OrderRepository : JpaRepository<Order, String> {
+    fun findByVendorId(vendorId: String): List<Order>
+    fun findByUpdatedAtGreaterThan(cursor: Long): List<Order>
+}

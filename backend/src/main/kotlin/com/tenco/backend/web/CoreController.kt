@@ -13,6 +13,10 @@ data class PriceBody(val vendorId: String, val unitPricePaise: Long)
 data class DeliveryBody(val vendorId: String, val quantity: Int, val unitPricePaise: Long)
 data class ComplaintBody(val vendorId: String, val deliveryId: String, val reason: String, val photoUrl: String?)
 data class ResolveBody(val adjustmentPaise: Long)
+data class OrderBody(val vendorId: String, val quantity: Int, val color: String = "GREEN", val grade: String = "MEDIUM", val unitPricePaise: Long? = null, val status: String? = null)
+data class OrderPriceBody(val unitPricePaise: Long)
+data class OrderStatusBody(val status: String)
+data class PaymentStatusBody(val status: String)
 
 @RestController
 @RequestMapping("/api")
@@ -24,6 +28,7 @@ class CoreController(
     private val deliveries: DeliveryRepository,
     private val complaints: ComplaintRepository,
     private val payments: PaymentRepository,
+    private val orders: OrderRepository,
     private val core: CoreService,
 ) {
     // Dealers & purchases
@@ -83,6 +88,38 @@ class CoreController(
     @GetMapping("/vendors/{id}/dashboard") fun vendorDashboard(@PathVariable id: String) = core.vendorDashboard(id)
     @PreAuthorize("hasRole('SUPPLIER')")
     @GetMapping("/reports/pnl") fun pnl() = core.pnl()
+
+    // Orders
+    @GetMapping("/orders") fun orders(@RequestParam(required = false) vendorId: String?) =
+        if (vendorId != null) orders.findByVendorId(vendorId) else orders.findAll()
+
+    @PostMapping("/orders") fun placeOrder(@RequestBody b: OrderBody) = orders.save(
+        Order(
+            vendorId = b.vendorId, quantity = b.quantity, color = b.color, grade = b.grade,
+            unitPricePaise = b.unitPricePaise, status = b.status ?: "PLACED",
+        )
+    )
+
+    @PreAuthorize("hasRole('SUPPLIER')")
+    @PutMapping("/orders/{id}/price") fun setOrderPrice(@PathVariable id: String, @RequestBody b: OrderPriceBody): Order {
+        val o = orders.findById(id).orElseThrow()
+        o.unitPricePaise = b.unitPricePaise; o.status = "CONFIRMED"; o.updatedAt = now()
+        return orders.save(o)
+    }
+
+    @PutMapping("/orders/{id}/status") fun setOrderStatus(@PathVariable id: String, @RequestBody b: OrderStatusBody): Order {
+        val o = orders.findById(id).orElseThrow()
+        o.status = b.status; o.updatedAt = now()
+        return orders.save(o)
+    }
+
+    // Cash payment approvals
+    @PreAuthorize("hasRole('SUPPLIER')")
+    @PutMapping("/payments/{id}/status") fun setPaymentStatus(@PathVariable id: String, @RequestBody b: PaymentStatusBody): Payment {
+        val p = payments.findById(id).orElseThrow()
+        p.status = b.status; p.updatedAt = now()
+        return payments.save(p)
+    }
 }
 
 // ---- Delta sync ----

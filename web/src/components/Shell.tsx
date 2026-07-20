@@ -3,8 +3,12 @@ import { clearSession } from "../lib/api";
 
 const links = [
   { to: "/", label: "Dashboard", icon: "📊", end: true },
+  { to: "/orders", label: "Orders", icon: "🛒" },
+  { to: "/approvals", label: "Cash approvals", icon: "💰" },
   { to: "/vendors", label: "Vendors", icon: "🧑‍🌾" },
+  { to: "/pricing", label: "Pricing", icon: "🏷️" },
   { to: "/dealers", label: "Dealers", icon: "🚚" },
+  { to: "/transactions", label: "Transactions", icon: "🧾" },
   { to: "/complaints", label: "Complaints", icon: "⚠️" },
 ];
 

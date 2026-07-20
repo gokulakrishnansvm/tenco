@@ -110,3 +110,19 @@ class DeviceToken(
     var token: String = "",
     var updatedAt: Long = now(),
 )
+
+@Entity
+@Table(name = "orders", indexes = [Index(columnList = "vendorId")])
+class Order(
+    @Id var id: String = newId(),
+    var vendorId: String = "",
+    var quantity: Int = 0,
+    var unitPricePaise: Long? = null,
+    var status: String = "PLACED", // PLACED|CONFIRMED|IN_PROGRESS|IN_TRANSIT|DELIVERED|CANCEL_REQUESTED|CANCELLED
+    var paid: Boolean = false,
+    var color: String = "GREEN",
+    var grade: String = "MEDIUM",
+    var groupId: String = "",
+    var createdAt: Long = now(),
+    var updatedAt: Long = now(),
+)
