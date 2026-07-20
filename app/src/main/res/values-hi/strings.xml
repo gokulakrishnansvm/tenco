@@ -226,4 +226,21 @@
     <string name="details_saved">विवरण सहेजा गया</string>
     <string name="edit">संपादित करें</string>
     <string name="analytics">विश्लेषण</string>
+    <string name="source_location">स्रोत / स्थान</string>
+    <string name="advance_payments">अग्रिम भुगतान</string>
+    <string name="add_advance">अग्रिम जोड़ें</string>
+    <string name="return_advance">अग्रिम लौटाएं</string>
+    <string name="advance_balance">अग्रिम शेष</string>
+    <string name="returned">लौटाया</string>
+    <string name="no_advances">कोई अग्रिम नहीं</string>
+    <string name="stock_by_source">स्रोत अनुसार स्टॉक</string>
+    <string name="role_loadman">लोडमैन</string>
+    <string name="role_loadman_desc">विक्रेताओं को नारियल पहुंचाएं</string>
+    <string name="to_deliver">डिलीवरी हेतु</string>
+    <string name="nothing_to_deliver">डिलीवरी हेतु कुछ नहीं</string>
+    <string name="delivered">डिलीवर हो गया</string>
+    <string name="share_history_pdf">इतिहास साझा करें (PDF)</string>
+    <string name="amount">राशि</string>
+    <string name="note_optional">नोट (वैकल्पिक)</string>
+    <string name="deliveries">डिलीवरी</string>
 </resources>

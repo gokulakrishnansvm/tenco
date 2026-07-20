@@ -226,4 +226,21 @@
     <string name="details_saved">விவரங்கள் சேமிக்கப்பட்டன</string>
     <string name="edit">திருத்து</string>
     <string name="analytics">பகுப்பாய்வு</string>
+    <string name="source_location">மூலம் / இடம்</string>
+    <string name="advance_payments">முன்பணம்</string>
+    <string name="add_advance">முன்பணம் சேர்</string>
+    <string name="return_advance">முன்பணம் திரும்ப</string>
+    <string name="advance_balance">முன்பண இருப்பு</string>
+    <string name="returned">திரும்பியது</string>
+    <string name="no_advances">முன்பணம் இல்லை</string>
+    <string name="stock_by_source">மூலம் வாரியாக இருப்பு</string>
+    <string name="role_loadman">ஏற்றுபவர்</string>
+    <string name="role_loadman_desc">வியாபாரிகளுக்கு டெலிவரி செய்யுங்கள்</string>
+    <string name="to_deliver">டெலிவரி செய்ய</string>
+    <string name="nothing_to_deliver">டெலிவரி எதுவும் இல்லை</string>
+    <string name="delivered">டெலிவரி ஆனது</string>
+    <string name="share_history_pdf">வரலாறு பகிர் (PDF)</string>
+    <string name="amount">தொகை</string>
+    <string name="note_optional">குறிப்பு (விருப்பம்)</string>
+    <string name="deliveries">டெலிவரிகள்</string>
 </resources>

@@ -39,6 +39,7 @@ class TencoRepository @Inject constructor(
     private val complaintDao = db.complaintDao()
     private val paymentDao = db.paymentDao()
     private val orderDao = db.orderDao()
+    private val advanceDao = db.advancePaymentDao()
     private val outboxDao = db.outboxDao()
 
     // --- Raw observers ---
@@ -51,8 +52,7 @@ class TencoRepository @Inject constructor(
     fun observeDeliveries(): Flow<List<DeliveryEntity>> = deliveryDao.observeAll()
     fun observePayments(): Flow<List<PaymentEntity>> = paymentDao.observeAll()
     fun observeComplaints(): Flow<List<ComplaintEntity>> = complaintDao.observeAll()
-    fun observeOrders(): Flow<List<OrderEntity>> = orderDao.observeAll()
-    fun observeOrdersForVendor(vendorId: String): Flow<List<OrderEntity>> = orderDao.observeForVendor(vendorId)
+    fun observeOrders(): Flow<List<OrderEntity>> = orderDao.observeAll()    fun observeOrdersForVendor(vendorId: String): Flow<List<OrderEntity>> = orderDao.observeForVendor(vendorId)
     fun observeOrder(id: String): Flow<OrderEntity?> = orderDao.observeById(id)
     fun observeNewOrderCount(): Flow<Int> = orderDao.observeNewCount()
     fun observeOpenComplaintCount(): Flow<Int> = complaintDao.observeOpenCount()
@@ -200,14 +200,15 @@ class TencoRepository @Inject constructor(
      * orders (one group) so the vendor tracks them and can request cancellation; on delivery each
      * line depletes its grade's stock.
      */
-    suspend fun sellToVendorOrders(vendorId: String, lines: List<SellLine>) {
+    suspend fun sellToVendorOrders(vendorId: String, lines: List<SellLine>, sourceLocation: String = "") {
         val group = newId(); val ts = now()
         lines.filter { it.quantity > 0 }.forEach { l ->
             orderDao.upsert(
                 OrderEntity(
                     id = newId(), vendorId = vendorId, quantity = l.quantity,
                     unitPricePaise = l.unitPricePaise, status = com.tenco.domain.OrderStatus.IN_PROGRESS,
-                    paid = false, createdAt = ts, updatedAt = ts, color = l.color, grade = l.grade, groupId = group,
+                    paid = false, createdAt = ts, updatedAt = ts, color = l.color, grade = l.grade,
+                    groupId = group, sourceLocation = sourceLocation,
                 ),
             )
         }
@@ -215,7 +216,6 @@ class TencoRepository @Inject constructor(
 
     /** One purchase line: a colour+grade of coconut at a quantity and unit cost. */
     data class PurchaseLine(val color: String, val grade: String, val quantity: Int, val unitCostPaise: Long)
-
     /** Records multiple colour/grade lines as a single dealer batch. */
     suspend fun addPurchaseBatch(dealerId: String, lines: List<PurchaseLine>) {
         val batch = newId(); val ts = now()
@@ -381,9 +381,20 @@ class TencoRepository @Inject constructor(
         dealerDao.setArchived(dealerId, true)
     }
 
+    // --- Advance payments (supplier-only ledger) ---
+    fun observeAdvances(): Flow<List<com.tenco.data.local.AdvancePaymentEntity>> = advanceDao.observeAll()
+    fun observeAdvancesForVendor(vendorId: String): Flow<List<com.tenco.data.local.AdvancePaymentEntity>> =
+        advanceDao.observeForVendor(vendorId)
+
+    /** Records an advance received from, or returned to, a vendor. */
+    suspend fun addAdvance(vendorId: String, amountPaise: Long, type: String, note: String = "") {
+        advanceDao.upsert(
+            com.tenco.data.local.AdvancePaymentEntity(newId(), vendorId, amountPaise, type, note, now()),
+        )
+    }
+
     private fun newId() = UUID.randomUUID().toString()
     private fun now() = System.currentTimeMillis()
-
     // --- Outbox access (client->server sync) ---
     suspend fun outboxAll() = outboxDao.all()
     suspend fun clearOutbox(seqs: List<String>) = outboxDao.deleteBySeqs(seqs.map { it.toLong() })

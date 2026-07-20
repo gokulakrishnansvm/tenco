@@ -202,3 +202,15 @@ interface OrderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(order: OrderEntity)
 }
+
+@Dao
+interface AdvancePaymentDao {
+    @Query("SELECT * FROM advance_payments ORDER BY createdAt DESC")
+    fun observeAll(): Flow<List<AdvancePaymentEntity>>
+
+    @Query("SELECT * FROM advance_payments WHERE vendorId = :vendorId ORDER BY createdAt DESC")
+    fun observeForVendor(vendorId: String): Flow<List<AdvancePaymentEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(advance: AdvancePaymentEntity)
+}

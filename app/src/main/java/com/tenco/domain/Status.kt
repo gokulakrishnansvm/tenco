@@ -64,3 +64,9 @@ object CoconutGrade {
     const val SMALL = "SMALL"
     val ALL = listOf(BIG, MEDIUM, SMALL)
 }
+
+/** Advance-payment ledger entry direction (supplier-only tracking). */
+object AdvanceType {
+    const val RECEIVED = "RECEIVED"   // advance taken from the vendor
+    const val RETURNED = "RETURNED"   // advance given back to the vendor
+}

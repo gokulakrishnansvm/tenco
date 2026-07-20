@@ -148,8 +148,15 @@ class SupplierViewModel @Inject constructor(
         repository.addDelivery(vendorId, quantity, unitPricePaise, color, grade)
     }
 
-    fun sellToVendorOrders(vendorId: String, lines: List<TencoRepository.SellLine>) = viewModelScope.launch {
-        repository.sellToVendorOrders(vendorId, lines)
+    fun sellToVendorOrders(vendorId: String, lines: List<TencoRepository.SellLine>, sourceLocation: String = "") = viewModelScope.launch {
+        repository.sellToVendorOrders(vendorId, lines, sourceLocation)
+    }
+
+    // Advance payments (supplier-only ledger)
+    val advances: StateFlow<List<com.tenco.data.local.AdvancePaymentEntity>> =
+        repository.observeAdvances().stateInVm(emptyList())
+    fun addAdvance(vendorId: String, amountPaise: Long, type: String, note: String = "") = viewModelScope.launch {
+        repository.addAdvance(vendorId, amountPaise, type, note)
     }
 
     /** Records an in-person cash collection from a vendor (reduces their dues). */

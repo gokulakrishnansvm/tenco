@@ -226,4 +226,21 @@
     <string name="details_saved">వివరాలు సేవ్ చేయబడ్డాయి</string>
     <string name="edit">సవరించు</string>
     <string name="analytics">విశ్లేషణ</string>
+    <string name="source_location">మూలం / స్థానం</string>
+    <string name="advance_payments">అడ్వాన్స్ చెల్లింపులు</string>
+    <string name="add_advance">అడ్వాన్స్ జోడించు</string>
+    <string name="return_advance">అడ్వాన్స్ తిరిగి ఇవ్వు</string>
+    <string name="advance_balance">అడ్వాన్స్ బ్యాలెన్స్</string>
+    <string name="returned">తిరిగి ఇవ్వబడింది</string>
+    <string name="no_advances">అడ్వాన్సులు లేవు</string>
+    <string name="stock_by_source">మూలం వారీగా స్టాక్</string>
+    <string name="role_loadman">లోడ్‌మన్</string>
+    <string name="role_loadman_desc">వ్యాపారులకు కొబ్బరికాయలు డెలివరీ చేయండి</string>
+    <string name="to_deliver">డెలివరీ చేయాలి</string>
+    <string name="nothing_to_deliver">డెలివరీ ఏమీ లేదు</string>
+    <string name="delivered">డెలివరీ అయింది</string>
+    <string name="share_history_pdf">చరిత్రను షేర్ చేయి (PDF)</string>
+    <string name="amount">మొత్తం</string>
+    <string name="note_optional">గమనిక (ఐచ్ఛికం)</string>
+    <string name="deliveries">డెలివరీలు</string>
 </resources>

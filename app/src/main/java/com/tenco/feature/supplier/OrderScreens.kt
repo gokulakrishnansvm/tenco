@@ -99,6 +99,9 @@ fun SupplierOrderDetailScreen(orderId: String, onBack: () -> Unit, viewModel: Su
                         lines.forEach { l ->
                             Text("${com.tenco.ui.components.coconutColorLabel(l.color)} ${com.tenco.ui.components.coconutGradeLabel(l.grade)} · ${l.quantity} $coconuts", style = MaterialTheme.typography.bodyLarge)
                         }
+                        if (o.sourceLocation.isNotBlank()) {
+                            Text("${stringResource(R.string.source_location)}: ${o.sourceLocation}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
                         if (priced) {
                             Text("${stringResource(R.string.order_total)}: ${Money.format(total)}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                         }

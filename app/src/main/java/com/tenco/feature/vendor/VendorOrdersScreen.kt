@@ -145,6 +145,9 @@ fun VendorMyOrdersScreen(vendorId: String, onBack: (() -> Unit)? = null, viewMod
                                     o.unitPricePaise?.let { Text(Money.format(it * o.quantity), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold) }
                                 }
                             }
+                            lines.firstOrNull { it.sourceLocation.isNotBlank() }?.let { src ->
+                                Text("${stringResource(R.string.source_location)}: ${src.sourceLocation}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
                             OrderTimeline(status)
                             if (priced) {
                                 Text("${stringResource(R.string.order_total)}: ${Money.format(total)}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)

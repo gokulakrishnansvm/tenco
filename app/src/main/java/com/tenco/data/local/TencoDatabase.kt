@@ -13,9 +13,10 @@ import androidx.room.RoomDatabase
         ComplaintEntity::class,
         PaymentEntity::class,
         OrderEntity::class,
+        AdvancePaymentEntity::class,
         OutboxEntity::class,
     ],
-    version = 9,
+    version = 10,
     exportSchema = false,
 )
 abstract class TencoDatabase : RoomDatabase() {
@@ -27,6 +28,7 @@ abstract class TencoDatabase : RoomDatabase() {
     abstract fun complaintDao(): ComplaintDao
     abstract fun paymentDao(): PaymentDao
     abstract fun orderDao(): OrderDao
+    abstract fun advancePaymentDao(): AdvancePaymentDao
     abstract fun outboxDao(): OutboxDao
 
     companion object {

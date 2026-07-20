@@ -250,4 +250,21 @@
     <string name="details_saved">Details saved</string>
     <string name="edit">Edit</string>
     <string name="analytics">Analytics</string>
+    <string name="source_location">Source / location</string>
+    <string name="advance_payments">Advance payments</string>
+    <string name="add_advance">Add advance</string>
+    <string name="return_advance">Return advance</string>
+    <string name="advance_balance">Advance balance</string>
+    <string name="returned">Returned</string>
+    <string name="no_advances">No advances yet</string>
+    <string name="stock_by_source">Stock by source</string>
+    <string name="role_loadman">Loadman</string>
+    <string name="role_loadman_desc">Deliver coconuts to vendors</string>
+    <string name="to_deliver">To deliver</string>
+    <string name="nothing_to_deliver">Nothing to deliver</string>
+    <string name="delivered">Delivered</string>
+    <string name="share_history_pdf">Share history (PDF)</string>
+    <string name="amount">Amount</string>
+    <string name="note_optional">Note (optional)</string>
+    <string name="deliveries">Deliveries</string>
 </resources>

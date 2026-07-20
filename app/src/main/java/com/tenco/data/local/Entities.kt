@@ -95,6 +95,21 @@ data class OrderEntity(
     val color: String = "GREEN",
     val grade: String = "MEDIUM",
     val groupId: String = "",
+    val sourceLocation: String = "", // where these coconuts were sourced (dealer/location)
+)
+
+/**
+ * Supplier-only ledger of advance payments received from vendors (before the ~4-month season).
+ * Tracks only additions (RECEIVED) and returns (RETURNED); never shown to the vendor.
+ */
+@Entity(tableName = "advance_payments", indices = [Index("vendorId")])
+data class AdvancePaymentEntity(
+    @PrimaryKey val id: String,
+    val vendorId: String,
+    val amountPaise: Long,
+    val type: String,   // RECEIVED | RETURNED
+    val note: String = "",
+    val createdAt: Long,
 )
 
 /** Records a locally-changed entity awaiting push to the backend (client->server sync). */

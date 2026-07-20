@@ -58,6 +58,7 @@ fun SellScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel(
     var selected by remember(vendors) { mutableStateOf(vendors.firstOrNull()) }
     var qty by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
+    var source by remember { mutableStateOf("") }
 
     // Prefill price from the selected vendor's latest price.
     val selectedId = selected?.id
@@ -108,6 +109,13 @@ fun SellScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel(
                     androidx.compose.material3.FilterChip(selected = grade == g, onClick = { grade = g }, label = { Text(com.tenco.ui.components.coconutGradeLabel(g)) })
                 }
             }
+            OutlinedTextField(
+                source,
+                { source = it },
+                label = { Text(stringResource(R.string.source_location)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(qty, { qty = it.filter(Char::isDigit) }, label = { Text(stringResource(R.string.quantity)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), singleLine = true, modifier = Modifier.weight(1f))
                 OutlinedTextField(price, { price = it }, label = { Text(stringResource(R.string.unit_price)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), singleLine = true, modifier = Modifier.weight(1f))
@@ -143,7 +151,7 @@ fun SellScreen(onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel(
             Button(
                 onClick = {
                     selected?.id?.let { id ->
-                        viewModel.sellToVendorOrders(id, lines.toList())
+                        viewModel.sellToVendorOrders(id, lines.toList(), source.trim())
                         Toast.makeText(context, R.string.sale_recorded, Toast.LENGTH_SHORT).show()
                         showHarvest = true
                     }
