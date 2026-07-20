@@ -115,7 +115,7 @@ fun VendorDashboardScreen(
             modifier = Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding()),
         ) { t ->
             when (t) {
-                0 -> VendorHomeTab(onChangeLanguage, onLogout, { tab = it }, { onNavigate(Routes.VENDOR_ORDERS) }, { onNavigate(Routes.VENDOR_COMPLAINTS) }, viewModel)
+                0 -> VendorHomeTab(onChangeLanguage, onLogout, { tab = it }, { onNavigate(Routes.VENDOR_ORDERS) }, { onNavigate(Routes.VENDOR_COMPLAINTS) }, { onNavigate(Routes.VENDOR_MY_ORDERS) }, viewModel)
                 1 -> VendorPayScreen(vendorId, onBack = { tab = 0 })
                 2 -> VendorHistoryScreen(vendorId, onBack = { tab = 0 })
                 3 -> VendorComplaintScreen(vendorId, onBack = { tab = 0 })
@@ -136,6 +136,7 @@ private fun VendorHomeTab(
     onTab: (Int) -> Unit,
     onOrders: () -> Unit,
     onComplaints: () -> Unit,
+    onMyOrders: () -> Unit,
     viewModel: VendorViewModel,
 ) {
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
@@ -205,6 +206,10 @@ private fun VendorHomeTab(
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/${Demo.SUPPLIER_PHONE.removePrefix("+")}")))
             }, Modifier.weight(1f))
             com.tenco.ui.components.QuickActionTile(Icons.Rounded.Assignment, stringResource(R.string.my_complaints), com.tenco.ui.theme.TilePurple, onComplaints, Modifier.weight(1f))
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            com.tenco.ui.components.QuickActionTile(Icons.Rounded.ShoppingCart, stringResource(R.string.my_orders), com.tenco.ui.theme.TileGreen, onMyOrders, Modifier.weight(1f))
+            androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
         }
 
         if (showCashSheet) {

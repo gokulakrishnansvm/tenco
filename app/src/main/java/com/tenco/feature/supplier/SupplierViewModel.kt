@@ -120,6 +120,8 @@ class SupplierViewModel @Inject constructor(
         repository.observeOrders().stateInVm(emptyList())
     val newOrderCount: StateFlow<Int> =
         repository.observeNewOrderCount().stateInVm(0)
+    val openComplaintCount: StateFlow<Int> =
+        repository.observeOpenComplaintCount().stateInVm(0)
     fun observeOrder(id: String) = repository.observeOrder(id)
     fun setOrderPrice(orderId: String, unitPricePaise: Long) = viewModelScope.launch { repository.setOrderPrice(orderId, unitPricePaise) }
     fun advanceOrder(orderId: String, status: String) = viewModelScope.launch { repository.advanceOrderStatus(orderId, status) }

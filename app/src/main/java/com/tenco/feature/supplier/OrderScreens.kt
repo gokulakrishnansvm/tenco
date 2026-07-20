@@ -48,16 +48,23 @@ fun SupplierOrdersScreen(onBack: () -> Unit, onOpenOrder: (String) -> Unit, view
             EmptyState(R.drawable.ic_coconut, stringResource(R.string.no_orders))
         } else {
             LazyColumn(Modifier.padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                items(visible) { o ->
-                    TencoCard(Modifier.fillMaxWidth(), onClick = { onOpenOrder(o.id) }) {
+                val groups = visible.groupBy { it.groupId.ifBlank { it.id } }
+                    .toList().sortedByDescending { it.second.maxOf { o -> o.updatedAt } }
+                items(groups, key = { it.first }) { (_, lines) ->
+                    val head = lines.first()
+                    val priced = lines.all { it.unitPricePaise != null }
+                    val total = lines.sumOf { (it.unitPricePaise ?: 0L) * it.quantity }
+                    TencoCard(Modifier.fillMaxWidth(), onClick = { onOpenOrder(head.id) }) {
                         Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Column {
-                                Text(names[o.vendorId] ?: "", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                                Text("${com.tenco.ui.components.coconutColorLabel(o.color)} ${com.tenco.ui.components.coconutGradeLabel(o.grade)} · ${o.quantity} $coconuts", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Column(Modifier.weight(1f)) {
+                                Text(names[head.vendorId] ?: "", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                                lines.forEach { o ->
+                                    Text("${com.tenco.ui.components.coconutColorLabel(o.color)} ${com.tenco.ui.components.coconutGradeLabel(o.grade)} · ${o.quantity} $coconuts", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
                             }
                             Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                OrderStatusChip(o.status)
-                                o.unitPricePaise?.let { Text(Money.format(it * o.quantity), fontWeight = FontWeight.SemiBold) }
+                                OrderStatusChip(head.status)
+                                if (priced) Text(Money.format(total), fontWeight = FontWeight.SemiBold)
                             }
                         }
                     }
@@ -70,6 +77,7 @@ fun SupplierOrdersScreen(onBack: () -> Unit, onOpenOrder: (String) -> Unit, view
 @Composable
 fun SupplierOrderDetailScreen(orderId: String, onBack: () -> Unit, viewModel: SupplierViewModel = hiltViewModel()) {
     val order by viewModel.observeOrder(orderId).collectAsStateWithLifecycle(initialValue = null)
+    val allOrders by viewModel.orders.collectAsStateWithLifecycle()
     val vendors by viewModel.allVendors.collectAsStateWithLifecycle()
     val names = vendors.associate { it.id to it.name }
     var priceText by remember { mutableStateOf("") }
@@ -80,13 +88,19 @@ fun SupplierOrderDetailScreen(orderId: String, onBack: () -> Unit, viewModel: Su
         if (o == null) {
             EmptyState(R.drawable.ic_coconut, stringResource(R.string.no_orders))
         } else {
+            val groupKey = o.groupId.ifBlank { o.id }
+            val lines = allOrders.filter { it.groupId.ifBlank { it.id } == groupKey }
+            val priced = lines.all { it.unitPricePaise != null }
+            val total = lines.sumOf { (it.unitPricePaise ?: 0L) * it.quantity }
             Column(Modifier.padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 TencoCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(names[o.vendorId] ?: "", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                        Text("${com.tenco.ui.components.coconutColorLabel(o.color)} ${com.tenco.ui.components.coconutGradeLabel(o.grade)} · ${o.quantity} $coconuts", style = MaterialTheme.typography.bodyLarge)
-                        o.unitPricePaise?.let {
-                            Text("${stringResource(R.string.order_total)}: ${Money.format(it * o.quantity)}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                        lines.forEach { l ->
+                            Text("${com.tenco.ui.components.coconutColorLabel(l.color)} ${com.tenco.ui.components.coconutGradeLabel(l.grade)} · ${l.quantity} $coconuts", style = MaterialTheme.typography.bodyLarge)
+                        }
+                        if (priced) {
+                            Text("${stringResource(R.string.order_total)}: ${Money.format(total)}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -96,13 +110,13 @@ fun SupplierOrderDetailScreen(orderId: String, onBack: () -> Unit, viewModel: Su
 
                 if (o.status == OrderStatus.CANCEL_REQUESTED) {
                     Button(
-                        onClick = { viewModel.confirmOrderCancel(o.id) },
+                        onClick = { lines.forEach { viewModel.confirmOrderCancel(it.id) } },
                         colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                         modifier = Modifier.fillMaxWidth().height(52.dp),
                     ) { Text(stringResource(R.string.confirm_cancellation)) }
                 } else if (o.status == OrderStatus.CANCELLED) {
                     // Terminal state — no actions.
-                } else if (o.unitPricePaise == null) {
+                } else if (!priced) {
                     OutlinedTextField(
                         value = priceText,
                         onValueChange = { priceText = it.filter { c -> c.isDigit() || c == '.' } },
@@ -111,7 +125,7 @@ fun SupplierOrderDetailScreen(orderId: String, onBack: () -> Unit, viewModel: Su
                         modifier = Modifier.fillMaxWidth(),
                     )
                     Button(
-                        onClick = { priceText.toDoubleOrNull()?.let { viewModel.setOrderPrice(o.id, Money.rupeesToPaise(it)) } },
+                        onClick = { priceText.toDoubleOrNull()?.let { p -> lines.forEach { viewModel.setOrderPrice(it.id, Money.rupeesToPaise(p)) } } },
                         enabled = priceText.toDoubleOrNull() != null,
                         modifier = Modifier.fillMaxWidth().height(52.dp),
                     ) { Text(stringResource(R.string.set_price)) }
@@ -119,7 +133,7 @@ fun SupplierOrderDetailScreen(orderId: String, onBack: () -> Unit, viewModel: Su
                     val next = OrderStatus.next(o.status)
                     if (next != null) {
                         Button(
-                            onClick = { viewModel.advanceOrder(o.id, next) },
+                            onClick = { lines.forEach { viewModel.advanceOrder(it.id, next) } },
                             modifier = Modifier.fillMaxWidth().height(52.dp),
                         ) { Text(advanceLabel(next)) }
                     }

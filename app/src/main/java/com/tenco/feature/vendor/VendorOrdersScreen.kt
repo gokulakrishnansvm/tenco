@@ -105,59 +105,75 @@ fun VendorOrdersScreen(vendorId: String, onBack: (() -> Unit)? = null, viewModel
                     }
                 }
             }
+        }
+    }
+    if (showOrderAnim) {
+        com.tenco.ui.components.CoconutEventOverlay(com.tenco.ui.components.CoconutEvent.HARVEST) { showOrderAnim = false }
+    }
+}
 
-            items(orders) { o ->
-                TencoCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                            Column {
-                                Text("${com.tenco.ui.components.coconutColorLabel(o.color)} ${com.tenco.ui.components.coconutGradeLabel(o.grade)} · ${o.quantity} $coconuts", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                                Text(
-                                    o.unitPricePaise?.let { "${stringResource(R.string.order_total)}: ${Money.format(it * o.quantity)}" }
-                                        ?: stringResource(R.string.awaiting_price),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
+
+@Composable
+fun VendorMyOrdersScreen(vendorId: String, onBack: (() -> Unit)? = null, viewModel: VendorViewModel = hiltViewModel()) {
+    LaunchedEffect(vendorId) { viewModel.setVendor(vendorId) }
+    val orders by viewModel.orders.collectAsStateWithLifecycle()
+    val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val coconuts = stringResource(R.string.coconuts)
+
+    TencoScaffold(title = stringResource(R.string.my_orders), onBack = onBack) { padding ->
+        val groups = orders.groupBy { it.groupId.ifBlank { it.id } }
+            .toList().sortedByDescending { it.second.maxOf { o -> o.updatedAt } }
+        if (groups.isEmpty()) {
+            com.tenco.ui.components.EmptyState(R.drawable.ic_coconut, stringResource(R.string.no_orders))
+        } else {
+            LazyColumn(Modifier.fillMaxSize().padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(groups, key = { it.first }) { (_, lines) ->
+                    val status = lines.first().status
+                    val priced = lines.all { it.unitPricePaise != null }
+                    val total = lines.sumOf { (it.unitPricePaise ?: 0L) * it.quantity }
+                    val paid = lines.all { it.paid }
+                    TencoCard(Modifier.fillMaxWidth()) {
+                        Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                                Text("${lines.size} ${stringResource(R.string.orders)}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                                OrderStatusChip(status)
                             }
-                            OrderStatusChip(o.status)
-                        }
-                        OrderTimeline(o.status)
-                        if (o.unitPricePaise != null && !o.paid && o.status != OrderStatus.DELIVERED && o.status != OrderStatus.CANCELLED) {
-                            Button(
-                                onClick = {
-                                    val amt = o.unitPricePaise * o.quantity / 100.0
-                                    val launched = com.tenco.core.UpiPayment.launch(
-                                        context,
-                                        dashboard?.supplierVpa ?: com.tenco.core.Demo.SUPPLIER_VPA,
-                                        com.tenco.core.Demo.SUPPLIER_NAME,
-                                        amt,
-                                        "TENCO order",
-                                    )
-                                    if (launched) viewModel.payOrder(o.id)
-                                    else android.widget.Toast.makeText(context, R.string.no_upi_app, android.widget.Toast.LENGTH_LONG).show()
-                                },
-                                modifier = Modifier.fillMaxWidth().height(48.dp),
-                            ) {
-                                Text("${stringResource(R.string.pay_now)} · ${Money.format(o.unitPricePaise * o.quantity)}")
+                            lines.forEach { o ->
+                                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                    Text("${com.tenco.ui.components.coconutColorLabel(o.color)} ${com.tenco.ui.components.coconutGradeLabel(o.grade)} · ${o.quantity} $coconuts", style = MaterialTheme.typography.bodyMedium)
+                                    o.unitPricePaise?.let { Text(Money.format(it * o.quantity), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold) }
+                                }
                             }
-                        } else if (o.paid) {
-                            OutlinedButton(onClick = {}, enabled = false, modifier = Modifier.fillMaxWidth()) {
-                                Text(stringResource(R.string.status_completed))
+                            OrderTimeline(status)
+                            if (priced) {
+                                Text("${stringResource(R.string.order_total)}: ${Money.format(total)}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                            } else {
+                                Text(stringResource(R.string.awaiting_price), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
-                        }
-                        if (OrderStatus.cancellable(o.status) && !o.paid) {
-                            OutlinedButton(
-                                onClick = { viewModel.cancelOrder(o.id) },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                            ) { Text(stringResource(R.string.cancel_order)) }
+                            if (priced && !paid && status != OrderStatus.CANCELLED) {
+                                Button(
+                                    onClick = {
+                                        val launched = com.tenco.core.UpiPayment.launch(context, dashboard?.supplierVpa ?: com.tenco.core.Demo.SUPPLIER_VPA, com.tenco.core.Demo.SUPPLIER_NAME, total / 100.0, "TENCO order")
+                                        if (launched) lines.forEach { if (!it.paid) viewModel.payOrder(it.id) }
+                                        else android.widget.Toast.makeText(context, R.string.no_upi_app, android.widget.Toast.LENGTH_LONG).show()
+                                    },
+                                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                                ) { Text("${stringResource(R.string.pay_now)} · ${Money.format(total)}") }
+                            } else if (paid) {
+                                OutlinedButton(onClick = {}, enabled = false, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.status_completed)) }
+                            }
+                            if (OrderStatus.cancellable(status) && !paid) {
+                                OutlinedButton(
+                                    onClick = { lines.forEach { viewModel.cancelOrder(it.id) } },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                                ) { Text(stringResource(R.string.cancel_order)) }
+                            }
                         }
                     }
                 }
             }
         }
-    }
-    if (showOrderAnim) {
-        com.tenco.ui.components.CoconutEventOverlay(com.tenco.ui.components.CoconutEvent.HARVEST) { showOrderAnim = false }
     }
 }

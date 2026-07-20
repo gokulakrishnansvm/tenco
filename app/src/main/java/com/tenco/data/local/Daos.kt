@@ -126,6 +126,9 @@ interface ComplaintDao {
     @Query("SELECT * FROM complaints ORDER BY createdAt DESC")
     fun observeAll(): Flow<List<ComplaintEntity>>
 
+    @Query("SELECT COUNT(*) FROM complaints WHERE status = 'OPEN'")
+    fun observeOpenCount(): Flow<Int>
+
     @Query("SELECT * FROM complaints WHERE vendorId = :vendorId ORDER BY createdAt DESC")
     fun observeForVendor(vendorId: String): Flow<List<ComplaintEntity>>
 

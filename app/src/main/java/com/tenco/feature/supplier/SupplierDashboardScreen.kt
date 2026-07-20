@@ -118,6 +118,7 @@ fun SupplierDashboardScreen(
 private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierViewModel) {
     val dashboard by viewModel.dashboard.collectAsStateWithLifecycle()
     val newOrders by viewModel.newOrderCount.collectAsStateWithLifecycle()
+    val openComplaints by viewModel.openComplaintCount.collectAsStateWithLifecycle()
     val pendingCash by viewModel.pendingCashPayments.collectAsStateWithLifecycle()
     val actionUsage by viewModel.actionUsage.collectAsStateWithLifecycle()
     val purchases by viewModel.purchases.collectAsStateWithLifecycle()
@@ -169,6 +170,7 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
                 com.tenco.ui.components.EntranceItem(4) {
                     val ordersLabel = stringResource(R.string.orders) + if (newOrders > 0) " ($newOrders)" else ""
                     val approvalsLabel = stringResource(R.string.approvals) + if (pendingCash.isNotEmpty()) " (${pendingCash.size})" else ""
+                    val complaintsLabel = stringResource(R.string.menu_complaints) + if (openComplaints > 0) " ($openComplaints)" else ""
                     val defaultKeys = listOf("orders", "buy_stock", "sell", "vendors", "pricing", "reports", "complaints", "inventory", "losses", "approvals")
                     // Freeze the order once per screen entry (less aggressive: re-sorts only on revisit, not per tap).
                     val keyOrder = remember { defaultKeys.sortedByDescending { actionUsage[it] ?: 0 } }
@@ -179,7 +181,7 @@ private fun SupplierHomeTab(onNavigate: (String) -> Unit, viewModel: SupplierVie
                         QuickAction("vendors", Icons.Rounded.Groups, stringResource(R.string.menu_vendors), TilePurple, Routes.SUPPLIER_VENDORS),
                         QuickAction("pricing", Icons.Rounded.PriceChange, stringResource(R.string.menu_pricing), TileOrange, Routes.SUPPLIER_PRICING),
                         QuickAction("reports", Icons.Rounded.Assessment, stringResource(R.string.menu_reports), TileTeal, Routes.SUPPLIER_REPORTS),
-                        QuickAction("complaints", Icons.Rounded.ReportProblem, stringResource(R.string.menu_complaints), TileRed, Routes.SUPPLIER_COMPLAINTS),
+                        QuickAction("complaints", Icons.Rounded.ReportProblem, complaintsLabel, TileRed, Routes.SUPPLIER_COMPLAINTS),
                         QuickAction("inventory", Icons.Rounded.Inventory2, stringResource(R.string.menu_inventory), TileGreen, Routes.SUPPLIER_INVENTORY),
                         QuickAction("losses", Icons.Rounded.TrendingDown, stringResource(R.string.adjustments), TileRed, Routes.SUPPLIER_ADJUSTMENTS),
                         QuickAction("approvals", Icons.Rounded.Payments, approvalsLabel, TileOrange, Routes.SUPPLIER_CASH_APPROVALS),

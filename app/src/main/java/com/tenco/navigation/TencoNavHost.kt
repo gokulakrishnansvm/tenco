@@ -162,6 +162,12 @@ fun TencoNavHost(
                 onBack = navController::popBackStack,
             )
         }
+        composable(Routes.VENDOR_MY_ORDERS) {
+            com.tenco.feature.vendor.VendorMyOrdersScreen(
+                vendorId = appViewModel.currentVendorId.orEmpty(),
+                onBack = navController::popBackStack,
+            )
+        }
         composable(Routes.VENDOR_COMPLAINT) {
             VendorComplaintScreen(
                 vendorId = appViewModel.currentVendorId.orEmpty(),

@@ -94,6 +94,7 @@ data class OrderEntity(
     val updatedAt: Long,
     val color: String = "GREEN",
     val grade: String = "MEDIUM",
+    val groupId: String = "",
 )
 
 /** Records a locally-changed entity awaiting push to the backend (client->server sync). */

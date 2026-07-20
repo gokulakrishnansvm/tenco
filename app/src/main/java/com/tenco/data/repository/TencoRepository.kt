@@ -55,6 +55,7 @@ class TencoRepository @Inject constructor(
     fun observeOrdersForVendor(vendorId: String): Flow<List<OrderEntity>> = orderDao.observeForVendor(vendorId)
     fun observeOrder(id: String): Flow<OrderEntity?> = orderDao.observeById(id)
     fun observeNewOrderCount(): Flow<Int> = orderDao.observeNewCount()
+    fun observeOpenComplaintCount(): Flow<Int> = complaintDao.observeOpenCount()
     fun observeVendor(id: String): Flow<VendorEntity?> = vendorDao.observeById(id)
     fun observePaymentsForVendor(vendorId: String): Flow<List<PaymentEntity>> =
         paymentDao.observeForVendor(vendorId)
@@ -239,12 +240,13 @@ class TencoRepository @Inject constructor(
     /** Places several colour/grade order lines at once (each becomes an order the supplier fulfils). */
     suspend fun placeOrders(vendorId: String, lines: List<OrderLine>) {
         val lastPrice = priceDao.latestForVendor(vendorId)?.unitPricePaise
+        val group = newId(); val ts = now()
         lines.filter { it.quantity > 0 }.forEach { l ->
             orderDao.upsert(
                 OrderEntity(
                     id = newId(), vendorId = vendorId, quantity = l.quantity,
                     unitPricePaise = lastPrice, status = com.tenco.domain.OrderStatus.PLACED,
-                    paid = false, createdAt = now(), updatedAt = now(), color = l.color, grade = l.grade,
+                    paid = false, createdAt = ts, updatedAt = ts, color = l.color, grade = l.grade, groupId = group,
                 ),
             )
         }
