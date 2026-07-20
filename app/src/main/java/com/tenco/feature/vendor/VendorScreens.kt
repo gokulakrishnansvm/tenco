@@ -219,13 +219,14 @@ private fun VendorHomeTab(
                     com.tenco.ui.components.SheetActions(
                         onCancel = { showCashSheet = false },
                         onSave = {
-                            amt.toDoubleOrNull()?.let {
-                                viewModel.payCash(Money.rupeesToPaise(it))
+                            val v = amt.toDoubleOrNull() ?: 0.0
+                            if (v > 0) {
+                                viewModel.payCash(Money.rupeesToPaise(v))
                                 showCashSheet = false
                                 Toast.makeText(context, R.string.cash_sent_review, Toast.LENGTH_LONG).show()
                             }
                         },
-                        saveEnabled = amt.toDoubleOrNull() != null,
+                        saveEnabled = (amt.toDoubleOrNull() ?: 0.0) > 0.0,
                         saveText = stringResource(R.string.pay_via_cash),
                     )
                 }
