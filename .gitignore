@@ -23,3 +23,6 @@ app/keystore.properties
 app/keystore/
 *.jks
 *.keystore
+
+# Kotlin compiler session cache
+.kotlin/
