@@ -27,6 +27,7 @@ import com.tenco.ui.components.HeroEarningsCard
 import com.tenco.ui.components.SectionHeader
 import com.tenco.ui.components.StatusChip
 import com.tenco.ui.components.TencoCard
+import androidx.compose.material.icons.rounded.Edit
 import com.tenco.ui.components.TencoScaffold
 import com.tenco.ui.theme.StatusCompleted
 import com.tenco.ui.theme.StatusFailed
@@ -70,11 +71,15 @@ fun VendorDetailScreen(vendorId: String, onBack: () -> Unit, viewModel: Supplier
 
     var showCash by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     var showDelete by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    var showEdit by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
 
     TencoScaffold(
         title = vendor?.name ?: stringResource(R.string.vendors),
         onBack = onBack,
         actions = {
+            androidx.compose.material3.IconButton(onClick = { showEdit = true }) {
+                androidx.compose.material3.Icon(androidx.compose.material.icons.Icons.Rounded.Edit, contentDescription = stringResource(R.string.edit), tint = MaterialTheme.colorScheme.onSurface)
+            }
             androidx.compose.material3.IconButton(onClick = { showDelete = true }) {
                 androidx.compose.material3.Icon(androidx.compose.material.icons.Icons.Rounded.DeleteOutline, contentDescription = stringResource(R.string.delete), tint = MaterialTheme.colorScheme.onSurface)
             }
@@ -115,6 +120,31 @@ fun VendorDetailScreen(vendorId: String, onBack: () -> Unit, viewModel: Supplier
         }
     }
 
+    if (showEdit && vendor != null) {
+        var eName by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(vendor.name) }
+        var ePhone by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(vendor.phone) }
+        var eCity by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(vendor.city) }
+        var eUpi by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(vendor.upiVpa ?: "") }
+        com.tenco.ui.components.TencoBottomSheet(title = stringResource(R.string.edit), onDismiss = { showEdit = false }) {
+            androidx.compose.foundation.layout.Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                androidx.compose.material3.OutlinedTextField(eName, { eName = it }, label = { Text(stringResource(R.string.vendor_name)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                androidx.compose.material3.OutlinedTextField(
+                    ePhone, { ePhone = it.filter(Char::isDigit) },
+                    label = { Text(stringResource(R.string.phone)) },
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Phone),
+                    singleLine = true, modifier = Modifier.fillMaxWidth(),
+                )
+                androidx.compose.material3.OutlinedTextField(eCity, { eCity = it }, label = { Text(stringResource(R.string.city)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                androidx.compose.material3.OutlinedTextField(eUpi, { eUpi = it }, label = { Text(stringResource(R.string.upi_id)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                com.tenco.ui.components.SheetActions(
+                    onCancel = { showEdit = false },
+                    onSave = { viewModel.updateVendor(vendorId, eName.trim(), ePhone.trim(), eUpi.trim().ifBlank { null }, eCity.trim()); showEdit = false },
+                    saveEnabled = eName.isNotBlank(),
+                    saveText = stringResource(R.string.save),
+                )
+            }
+        }
+    }
     if (showCash) {
         var amount by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(String.format("%.2f", dues / 100.0)) }
         com.tenco.ui.components.TencoBottomSheet(title = stringResource(R.string.record_cash_payment), onDismiss = { showCash = false }) {

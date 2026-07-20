@@ -208,6 +208,12 @@ class TencoRepository @Inject constructor(
         val e = VendorEntity(newId(), name, phone, upiVpa, languageTag, city = city); vendorDao.upsert(e); enqueue(OUT_VENDOR, e.id)
     }
 
+    /** Edit an existing vendor's details. */
+    suspend fun updateVendor(id: String, name: String, phone: String, upiVpa: String?, city: String) {
+        val v = vendorDao.getById(id) ?: return
+        vendorDao.upsert(v.copy(name = name, phone = phone, upiVpa = upiVpa, city = city)); enqueue(OUT_VENDOR, id)
+    }
+
     /** Sets one price for many vendors at once; skips any whose latest price already equals it. */
     suspend fun setPriceForVendors(vendorIds: List<String>, unitPricePaise: Long) {
         vendorIds.forEach { vid ->

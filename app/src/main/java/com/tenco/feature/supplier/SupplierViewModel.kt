@@ -113,6 +113,9 @@ class SupplierViewModel @Inject constructor(
     }
 
     fun deleteVendor(vendorId: String) = viewModelScope.launch { repository.deleteVendor(vendorId) }
+    fun updateVendor(id: String, name: String, phone: String, upiVpa: String?, city: String) = viewModelScope.launch {
+        repository.updateVendor(id, name, phone, upiVpa, city)
+    }
     fun deleteDealer(dealerId: String) = viewModelScope.launch { repository.deleteDealer(dealerId) }
 
     // Vendor orders
